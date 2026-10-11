@@ -13,14 +13,14 @@ views:
       heading: Studio
       icon: mdi:radio-tower
     - type: tile
-      entity: script.pink_radio_studio_control
+      entity: script.pinkradio_studio_control
       name: Άνοιγμα studio
       icon: mdi:power
       hide_state: true
       vertical: false
       tap_action: &id001
         action: perform-action
-        perform_action: script.pink_radio_studio_control
+        perform_action: script.pinkradio_studio_control
         data:
           studio_action: prepare
       icon_tap_action: *id001
@@ -28,14 +28,14 @@ views:
         columns: 6
         rows: 1
     - type: tile
-      entity: script.pink_radio_studio_control
+      entity: script.pinkradio_studio_control
       name: Κλείσιμο studio
       icon: mdi:power-off
       hide_state: true
       vertical: false
       tap_action: &id002
         action: perform-action
-        perform_action: script.pink_radio_studio_control
+        perform_action: script.pinkradio_studio_control
         data:
           studio_action: 'off'
         confirmation:
@@ -45,14 +45,14 @@ views:
         columns: 6
         rows: 1
     - type: tile
-      entity: script.pink_radio_studio_audio_control
+      entity: script.pinkradio_studio_audio_control
       name: Ήχος ON
       icon: mdi:speaker
       hide_state: true
       vertical: false
       tap_action: &id003
         action: perform-action
-        perform_action: script.pink_radio_studio_audio_control
+        perform_action: script.pinkradio_studio_audio_control
         data:
           action: 'on'
       icon_tap_action: *id003
@@ -60,14 +60,14 @@ views:
         columns: 6
         rows: 1
     - type: tile
-      entity: script.pink_radio_studio_audio_control
+      entity: script.pinkradio_studio_audio_control
       name: Ήχος OFF
       icon: mdi:speaker-off
       hide_state: true
       vertical: false
       tap_action: &id004
         action: perform-action
-        perform_action: script.pink_radio_studio_audio_control
+        perform_action: script.pinkradio_studio_audio_control
         data:
           action: 'off'
       icon_tap_action: *id004
@@ -173,14 +173,14 @@ views:
         columns: 6
         rows: 1
     - type: tile
-      entity: script.pink_radio_neon_control
+      entity: script.pinkradio_neon_control
       name: Όλα ON
       icon: mdi:lightbulb-group
       hide_state: true
       vertical: false
       tap_action: &id005
         action: perform-action
-        perform_action: script.pink_radio_neon_control
+        perform_action: script.pinkradio_neon_control
         data:
           action: 'on'
       icon_tap_action: *id005
@@ -188,14 +188,14 @@ views:
         columns: 6
         rows: 1
     - type: tile
-      entity: script.pink_radio_neon_control
+      entity: script.pinkradio_neon_control
       name: Όλα OFF
       icon: mdi:lightbulb-group-off
       hide_state: true
       vertical: false
       tap_action: &id006
         action: perform-action
-        perform_action: script.pink_radio_neon_control
+        perform_action: script.pinkradio_neon_control
         data:
           action: 'off'
       icon_tap_action: *id006
@@ -320,7 +320,7 @@ views:
         columns: 6
         rows: 1
     - type: tile
-      entity: script.studio_led_disco_mode
+      entity: script.pinkradio_led_disco_mode
       name: Disco
       icon: mdi:disc
       tap_action:

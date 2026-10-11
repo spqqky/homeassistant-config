@@ -1,261 +1,176 @@
-# packages/pinkradio/pinkradio_studio.yaml (scope: pinkradio)
-# Μεταφέρθηκε αυτούσιο από automations.yaml/scripts.yaml στο βήμα 2β. Επεξεργασία μόνο εδώ, όχι από το UI.
+# packages/pinkradio/pinkradio_studio.yaml (scope: pinkradio, βήμα 8α)
+#
+# «άναψε/κλείσε <συσκευή> [στο στούντιο]». Ένα trigger id ανά συσκευή και κατάσταση: <target>__on / <target>__off.
+# Παραλλαγές inline (οι λίστες του custom_sentences ΔΕΝ λειτουργούν στα triggers).
+# «τον ήχο» θέλει πάντα «στο στούντιο», για να μην κλείνει το studio όταν στο σαλόνι εννοείς την TV.
+# Πρίζες: plug1 KRK αριστερό · plug2 ON AIR · plug3 Anarchy · plug4 Thunder · plug5 Pink Radio (logo)
+#         plug6 κονσόλα Onyx · plug7 KRK δεξί · plug8 ενισχυτής κιθάρας
 
 automation:
-  - id: '1791046516667'
-    alias: Voice - Pink Radio Studio Control
-    description: Ενιαίος φωνητικός έλεγχος neon, audio και συνολικής προετοιμασίας studio
-    triggers:
-    - trigger: conversation
-      command:
-      - άναψε τα neon στο στούντιο
-      - άναψε τα neon στο studio
-      - άναψε τα neon στο pink radio
-      - ανάψε τα neon στο στούντιο
-      - ανάψε τα neon στο studio
-      - ανάψε τα neon στο pink radio
-      - άνοιξε τα neon στο στούντιο
-      - άνοιξε τα neon στο studio
-      - άνοιξε τα neon στο pink radio
-      - άναψε τα νέον στο στούντιο
-      - άναψε τα νέον στο studio
-      - άναψε τα νέον στο pink radio
-      - ανάψε τα νέον στο στούντιο
-      - ανάψε τα νέον στο studio
-      - ανάψε τα νέον στο pink radio
-      - άνοιξε τα νέον στο στούντιο
-      - άνοιξε τα νέον στο studio
-      - άνοιξε τα νέον στο pink radio
-      - ανάψε τις πινακίδες στο στούντιο
-      - ανάψε τις πινακίδες στο studio
-      - ανάψε τις πινακίδες στο pink radio
-      - άναψε τις πινακίδες στο στούντιο
-      - άναψε τις πινακίδες στο studio
-      - άναψε τις πινακίδες στο pink radio
-      - άνοιξε τις πινακίδες στο στούντιο
-      - άνοιξε τις πινακίδες στο studio
-      - άνοιξε τις πινακίδες στο pink radio
-      id: neon_on
-    - trigger: conversation
-      command:
-      - κλείσε τα neon στο στούντιο
-      - κλείσε τα neon στο studio
-      - κλείσε τα neon στο pink radio
-      - σβήσε τα neon στο στούντιο
-      - σβήσε τα neon στο studio
-      - σβήσε τα neon στο pink radio
-      - κλείσε τις πινακίδες στο στούντιο
-      - κλείσε τις πινακίδες στο studio
-      - κλείσε τις πινακίδες στο pink radio
-      - σβήσε τις πινακίδες στο στούντιο
-      - σβήσε τις πινακίδες στο studio
-      - σβήσε τις πινακίδες στο pink radio
-      id: neon_off
-    - trigger: conversation
-      command:
-      - άναψε τον ήχο στο στούντιο
-      - άναψε τον ήχο στο studio
-      - άναψε την κονσόλα και τα ηχεία
-      - άναψε κονσόλα και ηχεία
-      - άναψε το studio audio
-      - άνοιξε τον ήχο στο στούντιο
-      - άνοιξε τον ήχο στο studio
-      - άνοιξε την κονσόλα και τα ηχεία
-      - άνοιξε κονσόλα και ηχεία
-      - άνοιξε το studio audio
-      - άναψε τα ηχεία στο στούντιο
-      - άναψε τα ηχεία στο studio
-      - άναψε τα ηχεία στο pink radio
-      - άναψε τα ηχεία του στούντιο
-      - άνοιξε τα ηχεία στο στούντιο
-      - άνοιξε τα ηχεία στο studio
-      - άνοιξε τα ηχεία στο pink radio
-      - άνοιξε τα ηχεία του στούντιο
-      id: audio_on
-    - trigger: conversation
-      command:
-      - κλείσε τον ήχο στο στούντιο
-      - κλείσε τον ήχο στο studio
-      - κλείσε την κονσόλα και τα ηχεία
-      - κλείσε κονσόλα και ηχεία
-      - κλείσε το studio audio
-      - σβήσε τον ήχο στο στούντιο
-      - σβήσε τον ήχο στο studio
-      - σβήσε την κονσόλα και τα ηχεία
-      - σβήσε κονσόλα και ηχεία
-      - σβήσε το studio audio
-      - κλείσε τα ηχεία στο στούντιο
-      - κλείσε τα ηχεία στο studio
-      - κλείσε τα ηχεία στο pink radio
-      - κλείσε τα ηχεία του στούντιο
-      - σβήσε τα ηχεία στο στούντιο
-      - σβήσε τα ηχεία στο studio
-      - σβήσε τα ηχεία στο pink radio
-      - σβήσε τα ηχεία του στούντιο
-      id: audio_off
-    - trigger: conversation
-      command:
-      - ετοίμασε το στούντιο
-      - ετοίμασε το studio
-      - ετοίμασε το pink radio
-      - ετοιμάσε το στούντιο
-      - ετοιμάσε το studio
-      - ετοιμάσε το pink radio
-      - άνοιξε το στούντιο
-      - άνοιξε το studio
-      - ανοίξε το στούντιο
-      - ανοίξε το studio
-      - άναψε το στούντιο
-      - άναψε το studio
-      - ανάψε το στούντιο
-      - ανάψε το studio
-      - άνοιξε όλο το στούντιο
-      - άνοιξε όλο το studio
-      - άναψε όλο το στούντιο
-      - άναψε όλο το studio
-      - ανάψε όλο το στούντιο
-      - ανάψε όλο το studio
-      id: prepare
-    - trigger: conversation
-      command:
-      - κλείσε το στούντιο
-      - κλείσε το studio
-      - κλείσε το pink radio
-      - σβήσε το στούντιο
-      - σβήσε το studio
-      id: studio_off
-    conditions: []
-    actions:
-    - alias: "Guard: μόνο από το studio ή το σαλόνι"
-      if:
-        - condition: template
-          value_template: >-
-            {% set d = trigger.device_id | default(none) %}
-            {% set a = area_id(d) if d else none %}
-            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
-      then:
-        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
-        - stop: Εκτός scope (pinkradio)
-    - choose:
-      - conditions:
-        - condition: trigger
-          id: neon_on
-        sequence:
-        - action: script.pink_radio_neon_control
-          data:
-            action: 'on'
-        - set_conversation_response: Άναψα τα neon στο studio.
-      - conditions:
-        - condition: trigger
-          id: neon_off
-        sequence:
-        - action: script.pink_radio_neon_control
-          data:
-            action: 'off'
-        - set_conversation_response: Έκλεισα τα neon στο studio.
-      - conditions:
-        - condition: trigger
-          id: audio_on
-        sequence:
-        - action: script.pink_radio_studio_audio_control
-          data:
-            action: 'on'
-        - set_conversation_response: Άναψα τον ήχο στο studio.
-      - conditions:
-        - condition: trigger
-          id: audio_off
-        sequence:
-        - action: script.pink_radio_studio_audio_control
-          data:
-            action: 'off'
-        - set_conversation_response: Έκλεισα τον ήχο στο studio.
-      - conditions:
-        - condition: trigger
-          id: prepare
-        sequence:
-        - action: script.pink_radio_studio_control
-          data:
-            studio_action: prepare
-        - set_conversation_response: Το studio είναι έτοιμο.
-      - conditions:
-        - condition: trigger
-          id: studio_off
-        sequence:
-        - action: script.pink_radio_studio_control
-          data:
-            studio_action: 'off'
-        - set_conversation_response: Έκλεισα το studio.
-    mode: single
-  - id: '1790453241879'
-    alias: Voice - Guitar Amp ON/OFF
-    description: Φωνητικός έλεγχος ενισχυτή κιθάρας Pink Radio
-    triggers:
-    - trigger: conversation
-      command:
-      - άναψε τον ενισχυτή
-      - άνοιξε τον ενισχυτή
-      - άναψε τον ενισχυτή κιθάρας
-      - άνοιξε τον ενισχυτή κιθάρας
-      - άναψε τον κιθαριστικό ενισχυτή
-      - άνοιξε τον κιθαριστικό ενισχυτή
-      - άναψε τον μάρσαλ
-      - άνοιξε τον μάρσαλ
-      - άναψε τον marshal
-      - άνοιξε τον marshal
-      - άναψε την κιθάρα
-      id: amp_on
-    - trigger: conversation
-      command:
-      - κλείσε τον ενισχυτή
-      - κλείσε τον ενισχυτή κιθάρας
-      - κλείσε τον κιθαριστικό ενισχυτή
-      - κλείσε τον μάρσαλ
-      - κλείσε τον marshal
-      - κλείσε την κιθάρα
-      - σβήσε τον ενισχυτή
-      - σβήστε τον ενισχυτή
-      - σβήσε τον ενισχυτή κιθάρας
-      - σβήσε τον κιθαριστικό ενισχυτή
-      - σβήστε τον κιθαριστικό ενισχυτή
-      - σβήσε τον μάρσαλ
-      - σβήστε τον μάρσαλ
-      - σβήσε τον marshal
-      - σβήστε τον marshal
-      - σβήσε την κιθάρα
-      - σβήστε την κιθάρα
-      id: amp_off
-    actions:
-    - alias: "Guard: μόνο από το studio ή το σαλόνι"
-      if:
-        - condition: template
-          value_template: >-
-            {% set d = trigger.device_id | default(none) %}
-            {% set a = area_id(d) if d else none %}
-            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
-      then:
-        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
-        - stop: Εκτός scope (pinkradio)
-    - choose:
-      - conditions:
-        - condition: trigger
-          id: amp_on
-        sequence:
-        - action: switch.turn_on
-          target:
-            entity_id: switch.pinkradio_guitar_amp
-        - set_conversation_response: Άναψα τον ενισχυτή κιθάρας.
-      - conditions:
-        - condition: trigger
-          id: amp_off
-        sequence:
-        - action: switch.turn_off
-          target:
-            entity_id: switch.pinkradio_guitar_amp
-        - set_conversation_response: Έκλεισα τον ενισχυτή κιθάρας.
-    mode: single
+- id: pinkradio_voice_studio
+  alias: Pink Radio - Voice Studio
+  description: Neon (όλα ή ένα-ένα), κονσόλα, KRK, ήχος, ενισχυτής, άνοιγμα/κλείσιμο studio.
+  mode: queued
+  max: 5
+  triggers:
+  - trigger: conversation
+    id: neon_all__on
+    command:
+    - (άναψε|ανάψε|άνοιξε|ανοίξε|ενεργοποίησε) [όλα ](τα|τις) (neon|νέον|νέων|νεον|πινακίδες|ταμπέλες) [(στο|του|στον) (στούντιο|studio|pink radio)]
+  - trigger: conversation
+    id: neon_all__off
+    command:
+    - (κλείσε|σβήσε|σβήσαι|σβήστε|απενεργοποίησε) [όλα ](τα|τις) (neon|νέον|νέων|νεον|πινακίδες|ταμπέλες) [(στο|του|στον) (στούντιο|studio|pink radio)]
+  - trigger: conversation
+    id: neon_onair__on
+    command:
+    - (άναψε|ανάψε|άνοιξε|ανοίξε|ενεργοποίησε) το (on air|ον έαρ|ον αιρ|όν έρ) [(neon|νέον)] [(στο|του|στον) (στούντιο|studio|pink radio)]
+  - trigger: conversation
+    id: neon_onair__off
+    command:
+    - (κλείσε|σβήσε|σβήσαι|σβήστε|απενεργοποίησε) το (on air|ον έαρ|ον αιρ|όν έρ) [(neon|νέον)] [(στο|του|στον) (στούντιο|studio|pink radio)]
+  - trigger: conversation
+    id: neon_logo__on
+    command:
+    - (άναψε|ανάψε|άνοιξε|ανοίξε|ενεργοποίησε) (το neon pink radio|το νέον pink radio|το pink radio neon|το pink radio νέον|το λογότυπο|το logo) [(στο|του|στον) (στούντιο|studio|pink
+      radio)]
+  - trigger: conversation
+    id: neon_logo__off
+    command:
+    - (κλείσε|σβήσε|σβήσαι|σβήστε|απενεργοποίησε) (το neon pink radio|το νέον pink radio|το pink radio neon|το pink radio νέον|το λογότυπο|το logo) [(στο|του|στον)
+      (στούντιο|studio|pink radio)]
+  - trigger: conversation
+    id: anarchy__on
+    command:
+    - (άναψε|ανάψε|άνοιξε|ανοίξε|ενεργοποίησε) (το|την) (anarchy|αναρχία|ανάρκι) [(neon|νέον)] [(στο|του|στον) (στούντιο|studio|pink radio)]
+  - trigger: conversation
+    id: anarchy__off
+    command:
+    - (κλείσε|σβήσε|σβήσαι|σβήστε|απενεργοποίησε) (το|την) (anarchy|αναρχία|ανάρκι) [(neon|νέον)] [(στο|του|στον) (στούντιο|studio|pink radio)]
+  - trigger: conversation
+    id: thunder__on
+    command:
+    - (άναψε|ανάψε|άνοιξε|ανοίξε|ενεργοποίησε) (το|τον) (thunder|θάντερ|κεραυνό) [(neon|νέον)] [(στο|του|στον) (στούντιο|studio|pink radio)]
+  - trigger: conversation
+    id: thunder__off
+    command:
+    - (κλείσε|σβήσε|σβήσαι|σβήστε|απενεργοποίησε) (το|τον) (thunder|θάντερ|κεραυνό) [(neon|νέον)] [(στο|του|στον) (στούντιο|studio|pink radio)]
+  - trigger: conversation
+    id: console__on
+    command:
+    - (άναψε|ανάψε|άνοιξε|ανοίξε|ενεργοποίησε) (την κονσόλα|το μίξερ|την onyx|το onyx) [(στο|του|στον) (στούντιο|studio|pink radio)]
+  - trigger: conversation
+    id: console__off
+    command:
+    - (κλείσε|σβήσε|σβήσαι|σβήστε|απενεργοποίησε) (την κονσόλα|το μίξερ|την onyx|το onyx) [(στο|του|στον) (στούντιο|studio|pink radio)]
+  - trigger: conversation
+    id: krk_left__on
+    command:
+    - (άναψε|ανάψε|άνοιξε|ανοίξε|ενεργοποίησε) (το αριστερό (ηχείο|krk)|το krk αριστερό) [(στο|του|στον) (στούντιο|studio|pink radio)]
+  - trigger: conversation
+    id: krk_left__off
+    command:
+    - (κλείσε|σβήσε|σβήσαι|σβήστε|απενεργοποίησε) (το αριστερό (ηχείο|krk)|το krk αριστερό) [(στο|του|στον) (στούντιο|studio|pink radio)]
+  - trigger: conversation
+    id: krk_right__on
+    command:
+    - (άναψε|ανάψε|άνοιξε|ανοίξε|ενεργοποίησε) (το δεξί (ηχείο|krk)|το krk δεξί) [(στο|του|στον) (στούντιο|studio|pink radio)]
+  - trigger: conversation
+    id: krk_right__off
+    command:
+    - (κλείσε|σβήσε|σβήσαι|σβήστε|απενεργοποίησε) (το δεξί (ηχείο|krk)|το krk δεξί) [(στο|του|στον) (στούντιο|studio|pink radio)]
+  - trigger: conversation
+    id: audio__on
+    command:
+    - (άναψε|ανάψε|άνοιξε|ανοίξε|ενεργοποίησε) (τα ηχεία|τα krk|την κονσόλα και τα ηχεία|κονσόλα και ηχεία|το studio audio) [(στο|του|στον) (στούντιο|studio|pink radio)]
+    - (άναψε|ανάψε|άνοιξε|ανοίξε|ενεργοποίησε) τον ήχο (στο|του|στον) (στούντιο|studio|pink radio)
+  - trigger: conversation
+    id: audio__off
+    command:
+    - (κλείσε|σβήσε|σβήσαι|σβήστε|απενεργοποίησε) (τα ηχεία|τα krk|την κονσόλα και τα ηχεία|κονσόλα και ηχεία|το studio audio) [(στο|του|στον) (στούντιο|studio|pink radio)]
+    - (κλείσε|σβήσε|σβήσαι|σβήστε|απενεργοποίησε) τον ήχο (στο|του|στον) (στούντιο|studio|pink radio)
+  - trigger: conversation
+    id: amp__on
+    command:
+    - (άναψε|ανάψε|άνοιξε|ανοίξε|ενεργοποίησε) (τον ενισχυτή [κιθάρας]|τον κιθαριστικό ενισχυτή|τον (μάρσαλ|marshal|marshall)|την κιθάρα) [(στο|του|στον) (στούντιο|studio|pink
+      radio)]
+  - trigger: conversation
+    id: amp__off
+    command:
+    - (κλείσε|σβήσε|σβήσαι|σβήστε|απενεργοποίησε) (τον ενισχυτή [κιθάρας]|τον κιθαριστικό ενισχυτή|τον (μάρσαλ|marshal|marshall)|την κιθάρα) [(στο|του|στον) (στούντιο|studio|pink
+      radio)]
+  - trigger: conversation
+    id: studio__on
+    command:
+    - (ετοίμασε|ετοιμάσε|ετοίμασέ) [όλο ]το (στούντιο|studio|pink radio)
+    - (άναψε|ανάψε|άνοιξε|ανοίξε|ενεργοποίησε) [όλο ]το (στούντιο|studio)
+  - trigger: conversation
+    id: studio__off
+    command:
+    - (κλείσε|σβήσε|σβήσαι|σβήστε|απενεργοποίησε) [όλο ]το (στούντιο|studio|pink radio)
+  conditions: []
+  actions:
+  - alias: 'Guard: μόνο από το studio ή το σαλόνι'
+    if:
+    - condition: template
+      value_template: '{% set d = trigger.device_id | default(none) %}
 
+        {% set a = area_id(d) if d else none %}
+
+        {{ d is not none and not (a in [''pinkradio_studio'', ''living_room''] or floor_id(d) == ''pinkradio'') }}'
+    then:
+    - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
+    - stop: Εκτός scope (pinkradio)
+  - variables:
+      target: '{{ trigger.id.split(''__'')[0] }}'
+      turn_on: '{{ trigger.id.split(''__'')[1] == ''on'' }}'
+      switches:
+        neon_onair: switch.pinkradio_neon_onair
+        neon_logo: switch.pinkradio_neon_logo
+        anarchy: switch.pinkradio_neon_anarchy
+        thunder: switch.pinkradio_neon_thunder
+        console: switch.pinkradio_onyx_console
+        krk_left: switch.pinkradio_krk_left
+        krk_right: switch.pinkradio_krk_right
+        amp: switch.pinkradio_guitar_amp
+      names:
+        neon_all: τα neon
+        neon_onair: το ON AIR
+        neon_logo: το neon Pink Radio
+        anarchy: το Anarchy
+        thunder: το Thunder
+        console: την κονσόλα
+        krk_left: το αριστερό KRK
+        krk_right: το δεξί KRK
+        audio: την κονσόλα και τα ηχεία
+        amp: τον ενισχυτή κιθάρας
+  - choose:
+    - conditions: '{{ target == ''studio'' }}'
+      sequence:
+      - action: script.pinkradio_studio_control
+        data:
+          studio_action: '{{ ''prepare'' if turn_on else ''off'' }}'
+      - set_conversation_response: '{{ ''Το studio είναι έτοιμο.'' if turn_on else ''Έκλεισα το studio.'' }}'
+    - conditions: '{{ target == ''neon_all'' }}'
+      sequence:
+      - action: script.pinkradio_neon_control
+        data:
+          action: '{{ ''on'' if turn_on else ''off'' }}'
+    - conditions: '{{ target == ''audio'' }}'
+      sequence:
+      - action: script.pinkradio_studio_audio_control
+        data:
+          action: '{{ ''on'' if turn_on else ''off'' }}'
+    - conditions: '{{ target in switches }}'
+      sequence:
+      - action: '{{ ''switch.turn_on'' if turn_on else ''switch.turn_off'' }}'
+        target:
+          entity_id: '{{ switches[target] }}'
+  - if: '{{ target != ''studio'' }}'
+    then:
+    - set_conversation_response: '{{ (''Άναψα '' if turn_on else ''Έκλεισα '') ~ names.get(target, target) ~ ''.'' }}'
 script:
-  pink_radio_neon_control:
+  pinkradio_neon_control:
     alias: Pink Radio - Neon Control
     mode: single
     fields:
@@ -291,7 +206,7 @@ script:
             - switch.pinkradio_neon_thunder
             - switch.pinkradio_neon_logo
     description: ''
-  pink_radio_studio_audio_control:
+  pinkradio_studio_audio_control:
     alias: Pink Radio - Studio Audio Control
     mode: single
     fields:
@@ -324,7 +239,7 @@ script:
             - switch.pinkradio_onyx_console
             - switch.pinkradio_krk_left
             - switch.pinkradio_krk_right
-  pink_radio_studio_control:
+  pinkradio_studio_control:
     alias: Pink Radio - Studio Control
     description: Κεντρικός έλεγχος προετοιμασίας και κλεισίματος του Pink Radio studio
     mode: single
@@ -343,10 +258,10 @@ script:
         - condition: template
           value_template: '{{ studio_action == ''prepare'' }}'
         sequence:
-        - action: script.pink_radio_studio_audio_control
+        - action: script.pinkradio_studio_audio_control
           data:
             action: 'on'
-        - action: script.pink_radio_neon_control
+        - action: script.pinkradio_neon_control
           data:
             action: 'on'
         - action: light.turn_on
@@ -367,9 +282,9 @@ script:
           target:
             entity_id:
             - light.pinkradio_led_main
-        - action: script.pink_radio_neon_control
+        - action: script.pinkradio_neon_control
           data:
             action: 'off'
-        - action: script.pink_radio_studio_audio_control
+        - action: script.pinkradio_studio_audio_control
           data:
             action: 'off'

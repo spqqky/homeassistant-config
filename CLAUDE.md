@@ -56,7 +56,7 @@
 | `packages/home/home_vacuum.yaml` | φωνητικά της σκούπας σπιτιού |
 | `packages/home/home_announcements.yaml` | Voice - Ανακοινώσεις |
 | `packages/home/home_media.yaml` | Music Assistant, Radio, scripts έντασης |
-| `packages/pinkradio/pinkradio_studio.yaml` | Studio Control, Guitar Amp, scripts neon/audio/studio |
+| `packages/pinkradio/pinkradio_studio.yaml` | «Pink Radio - Voice Studio» (neon, κονσόλα, KRK, ήχος, ενισχυτής, studio), scripts `pinkradio_neon_control` / `_studio_audio_control` / `_studio_control` |
 | `packages/pinkradio/pinkradio_led.yaml` | φωνητικά των LED, disco script |
 | `packages/pinkradio/pinkradio_vacuum.yaml` | φωνητικά της σκούπας Pink |
 | `packages/shared/shared_reminders.yaml` | reminders (scripts + notifications) |
@@ -269,11 +269,11 @@ Media players: `media_player.jbl_nest`, `media_player.nefeli_room`, `media_playe
 
 ### Pink Radio studio
 
-- LED: `light.pink_radio_led_main`, `light.pink_radio_led_drums` → θα γίνουν `light.pinkradio_*`.
-- Shelly plugs (παλιά IDs): `switch.pink_radio_plug2` … `switch.pink_radio_plug7`.
+- LED: `light.pinkradio_led_main`, `light.pinkradio_led_drums`.
+- Shelly plugs: `switch.pinkradio_*` (βλ. πίνακα naming).
   Λογική: plug1 KRK αριστερό, plug2 neon ON AIR, plug3 neon Anarchy, plug4 neon Thunder, plug5 neon Pink Radio, plug6 κονσόλα Onyx12, plug7 KRK δεξί, plug8 ενισχυτής κιθάρας.
-  → θα πάρουν λειτουργικά ονόματα `pinkradio_*`.
-- Υπάρχοντα scripts και τελικά ονόματα:
+- Φωνή: trigger ids `<target>__on/off`. «τον ήχο» χωρίς «στο στούντιο» δεν πιάνει (στο σαλόνι θα έκλεινε το studio αντί για την TV).
+- Scripts:
 
   | Τώρα | Τελικό | Παράμετρος |
   |---|---|---|
