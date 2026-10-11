@@ -82,12 +82,12 @@
       - action: vacuum.set_fan_speed
         continue_on_error: true
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -106,12 +106,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -130,12 +130,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -154,12 +154,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -178,12 +178,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -202,12 +202,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -226,12 +226,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -250,12 +250,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -273,12 +273,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -297,12 +297,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -321,12 +321,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -346,17 +346,17 @@
       - choose:
         - conditions:
           - condition: template
-            value_template: '{{ state_attr(''vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner'',
+            value_template: '{{ state_attr(''vacuum.home_vacuum'',
               ''battery_level'') | int >= 20 }}'
           sequence:
           - action: vacuum.set_fan_speed
             target:
-              entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+              entity_id: vacuum.home_vacuum
             data:
               fan_speed: Basic
           - action: vacuum.start
             target:
-              entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+              entity_id: vacuum.home_vacuum
           - action: tts.speak
             target:
               entity_id: tts.google_translate_en_com
@@ -444,12 +444,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Strong
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -468,12 +468,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Strong
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -492,12 +492,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Strong
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -516,12 +516,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Strong
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -540,12 +540,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Strong
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -564,12 +564,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Strong
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -588,12 +588,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Strong
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -612,12 +612,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Strong
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -636,12 +636,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Strong
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -660,12 +660,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Strong
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -684,12 +684,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Strong
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -709,19 +709,19 @@
       - choose:
         - conditions:
           - condition: template
-            value_template: '{{ state_attr(''vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner'',
+            value_template: '{{ state_attr(''vacuum.home_vacuum'',
               ''battery_level'') | int >= 20 }}
 
               '
           sequence:
           - action: vacuum.set_fan_speed
             target:
-              entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+              entity_id: vacuum.home_vacuum
             data:
               fan_speed: Strong
           - action: vacuum.start
             target:
-              entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+              entity_id: vacuum.home_vacuum
           - set_conversation_response: Έγινε.
           - action: tts.speak
             target:
@@ -810,12 +810,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Silent
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -834,12 +834,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Silent
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -858,12 +858,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Silent
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -882,12 +882,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Silent
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -906,12 +906,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Silent
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -930,12 +930,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Silent
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -954,12 +954,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Silent
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -978,12 +978,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Silent
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1002,12 +1002,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Silent
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1026,12 +1026,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Silent
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1050,12 +1050,12 @@
       sequence:
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Silent
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1075,19 +1075,19 @@
       - choose:
         - conditions:
           - condition: template
-            value_template: '{{ state_attr(''vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner'',
+            value_template: '{{ state_attr(''vacuum.home_vacuum'',
               ''battery_level'') | int >= 20 }}
 
               '
           sequence:
           - action: vacuum.set_fan_speed
             target:
-              entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+              entity_id: vacuum.home_vacuum
             data:
               fan_speed: Silent
           - action: vacuum.start
             target:
-              entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+              entity_id: vacuum.home_vacuum
           - set_conversation_response: Έγινε.
           - action: tts.speak
             target:
@@ -1176,23 +1176,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level2
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1211,23 +1211,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level2
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1246,23 +1246,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level2
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1281,23 +1281,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level2
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1316,23 +1316,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level2
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1351,23 +1351,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level2
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1386,23 +1386,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level2
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1421,23 +1421,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level2
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1456,23 +1456,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level2
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1491,23 +1491,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level2
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1526,23 +1526,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level2
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1562,30 +1562,30 @@
       - choose:
         - conditions:
           - condition: template
-            value_template: '{{ state_attr(''vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner'',
+            value_template: '{{ state_attr(''vacuum.home_vacuum'',
               ''battery_level'') | int >= 20 }}
 
               '
           sequence:
           - action: xiaomi_miot.set_miot_property
             data:
-              entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+              entity_id: vacuum.home_vacuum
               siid: 2
               piid: 3
               value: 3
           - action: vacuum.set_fan_speed
             target:
-              entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+              entity_id: vacuum.home_vacuum
             data:
               fan_speed: Basic
           - action: select.select_option
             target:
-              entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+              entity_id: select.home_vacuum_mop_water_output_level
             data:
               option: Level2
           - action: button.press
             target:
-              entity_id: button.xiaomi_b108gl_fb61_start_sweep_mop
+              entity_id: button.home_vacuum_start_sweep_mop
           - set_conversation_response: Έγινε.
           - action: tts.speak
             target:
@@ -1680,23 +1680,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level3
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1715,23 +1715,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level3
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1750,23 +1750,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level3
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1785,23 +1785,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level3
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1820,23 +1820,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level3
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1855,23 +1855,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level3
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1890,23 +1890,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level3
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1925,23 +1925,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level3
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1960,23 +1960,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level3
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -1995,23 +1995,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level3
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -2030,23 +2030,23 @@
       sequence:
       - action: xiaomi_miot.set_miot_property
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           piid: 3
           value: 3
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: select.select_option
         target:
-          entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+          entity_id: select.home_vacuum_mop_water_output_level
         data:
           option: Level3
       - action: xiaomi_miot.call_action
         data:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
           siid: 2
           aiid: 13
           params:
@@ -2066,30 +2066,30 @@
       - choose:
         - conditions:
           - condition: template
-            value_template: '{{ state_attr(''vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner'',
+            value_template: '{{ state_attr(''vacuum.home_vacuum'',
               ''battery_level'') | int >= 20 }}
 
               '
           sequence:
           - action: xiaomi_miot.set_miot_property
             data:
-              entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+              entity_id: vacuum.home_vacuum
               siid: 2
               piid: 3
               value: 3
           - action: vacuum.set_fan_speed
             target:
-              entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+              entity_id: vacuum.home_vacuum
             data:
               fan_speed: Basic
           - action: select.select_option
             target:
-              entity_id: select.xiaomi_b108gl_fb61_mop_water_output_level
+              entity_id: select.home_vacuum_mop_water_output_level
             data:
               option: Level3
           - action: button.press
             target:
-              entity_id: button.xiaomi_b108gl_fb61_start_sweep_mop
+              entity_id: button.home_vacuum_start_sweep_mop
           - set_conversation_response: Έγινε.
           - action: tts.speak
             target:
@@ -2169,12 +2169,12 @@
       - set_conversation_response: Έγινε.
       - action: vacuum.set_fan_speed
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
         data:
           fan_speed: Basic
       - action: vacuum.start
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
       - action: tts.speak
         target:
           entity_id: tts.google_translate_en_com
@@ -2189,7 +2189,7 @@
       - set_conversation_response: Έγινε.
       - action: vacuum.stop
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
       - action: tts.speak
         target:
           entity_id: tts.google_translate_en_com
@@ -2204,7 +2204,7 @@
       - set_conversation_response: Έγινε.
       - action: vacuum.pause
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
       - action: tts.speak
         target:
           entity_id: tts.google_translate_en_com
@@ -2219,7 +2219,7 @@
       - set_conversation_response: Έγινε.
       - action: button.press
         target:
-          entity_id: button.xiaomi_b108gl_fb61_continue_sweep
+          entity_id: button.home_vacuum_continue_sweep
       - action: tts.speak
         target:
           entity_id: tts.google_translate_en_com
@@ -2234,7 +2234,7 @@
       - set_conversation_response: Έγινε.
       - action: vacuum.return_to_base
         target:
-          entity_id: vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner
+          entity_id: vacuum.home_vacuum
       - action: tts.speak
         target:
           entity_id: tts.google_translate_en_com
@@ -2252,7 +2252,7 @@
           entity_id: tts.google_translate_en_com
         data:
           media_player_entity_id: media_player.jbl_nest
-          message: Η μπαταρία της σκούπας είναι στο {{ state_attr('vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner',
+          message: Η μπαταρία της σκούπας είναι στο {{ state_attr('vacuum.home_vacuum',
             'battery_level') | int }} τοις εκατό.
           language: el
     - conditions:
@@ -2265,7 +2265,7 @@
           entity_id: tts.google_translate_en_com
         data:
           media_player_entity_id: media_player.jbl_nest
-          message: "{% set status = state_attr('vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner',
+          message: "{% set status = state_attr('vacuum.home_vacuum',
             'vacuum.status_desc') %} {% if status == 'Charged' %}\n  Η σκούπα είναι
             φορτισμένη και βρίσκεται στη βάση.\n{% elif status == 'Charging' %}\n
             \ Η σκούπα φορτίζει αυτή τη στιγμή.\n{% elif status == 'Cleaning' %}\n
@@ -2284,7 +2284,7 @@
           entity_id: tts.google_translate_en_com
         data:
           media_player_entity_id: media_player.jbl_nest
-          message: "{% set status = state_attr('vacuum.saloni_skoupa_spitiou_marusca_robot_cleaner',
+          message: "{% set status = state_attr('vacuum.home_vacuum',
             'vacuum.status_desc') %} {% if status in ['Charged', 'Charging'] %}\n
             \ Ναι, η σκούπα είναι στη βάση.\n{% else %}\n  Όχι, η σκούπα δεν είναι
             αυτή τη στιγμή στη βάση.\n{% endif %}"
@@ -2554,7 +2554,7 @@
           Αλεξάνδρας.
       - action: music_assistant.play_media
         target:
-          entity_id: media_player.alexandra_room
+          entity_id: media_player.alex_room
         data:
           media_id: '{{ trigger.slots.song }}'
     - conditions:
@@ -2720,7 +2720,7 @@
       - set_conversation_response: Παίζω {{ trigger.slots.station }} στην κρεβατοκάμαρα.
       - action: music_assistant.play_media
         target:
-          entity_id: media_player.sarah_room_2
+          entity_id: media_player.sarah_room
         data:
           media_id: '{{ trigger.slots.station }}'
           media_type: radio
@@ -2732,7 +2732,7 @@
           Αλεξάνδρας.
       - action: music_assistant.play_media
         target:
-          entity_id: media_player.alexandra_room
+          entity_id: media_player.alex_room
         data:
           media_id: '{{ trigger.slots.station }}'
           media_type: radio
@@ -2788,7 +2788,7 @@
       sequence:
       - action: media_player.media_stop
         target:
-          entity_id: media_player.alexandra_room
+          entity_id: media_player.alex_room
       - set_conversation_response: Σταμάτησα το δωμάτιο της Αλεξάνδρας.
     - conditions:
       - condition: trigger
@@ -3975,18 +3975,18 @@
       sequence:
       - action: select.select_option
         target:
-          entity_id: select.pink_radio_skoupa_pink_mode
+          entity_id: select.pinkradio_vacuum_mode
         data:
           option: Sweep
       - action: vacuum.set_fan_speed
         continue_on_error: true
         target:
-          entity_id: vacuum.pink_radio_skoupa_pink_robot_cleaner
+          entity_id: vacuum.pinkradio_vacuum
         data:
           fan_speed: Basic
       - action: button.press
         target:
-          entity_id: button.pink_radio_skoupa_pink_start_only_sweep
+          entity_id: button.pinkradio_vacuum_start_only_sweep
       - set_conversation_response: Ξεκινάω σκούπισμα στο Pink Radio.
     - conditions:
       - condition: trigger
@@ -3994,12 +3994,12 @@
       sequence:
       - action: select.select_option
         target:
-          entity_id: select.pink_radio_skoupa_pink_mode
+          entity_id: select.pinkradio_vacuum_mode
         data:
           option: Mop
       - action: button.press
         target:
-          entity_id: button.pink_radio_skoupa_pink_start_mop
+          entity_id: button.pinkradio_vacuum_start_mop
       - set_conversation_response: Ξεκινάω σφουγγάρισμα στο Pink Radio.
     - conditions:
       - condition: trigger
@@ -4007,7 +4007,7 @@
       sequence:
       - action: button.press
         target:
-          entity_id: button.pink_radio_skoupa_pink_start_sweep_mop
+          entity_id: button.pinkradio_vacuum_start_sweep_mop
       - set_conversation_response: Ξεκινάω σκούπισμα και σφουγγάρισμα στο Pink Radio.
     - conditions:
       - condition: trigger
@@ -4016,12 +4016,12 @@
       - action: vacuum.set_fan_speed
         continue_on_error: true
         target:
-          entity_id: vacuum.pink_radio_skoupa_pink_robot_cleaner
+          entity_id: vacuum.pinkradio_vacuum
         data:
           fan_speed: Basic
       - action: vacuum.start
         target:
-          entity_id: vacuum.pink_radio_skoupa_pink_robot_cleaner
+          entity_id: vacuum.pinkradio_vacuum
       - set_conversation_response: Ξεκινάω το καθάρισμα στο Pink Radio.
     - conditions:
       - condition: trigger
@@ -4029,7 +4029,7 @@
       sequence:
       - action: vacuum.stop
         target:
-          entity_id: vacuum.pink_radio_skoupa_pink_robot_cleaner
+          entity_id: vacuum.pinkradio_vacuum
       - set_conversation_response: Σταμάτησα τη σκούπα στο Pink Radio.
     - conditions:
       - condition: trigger
@@ -4037,7 +4037,7 @@
       sequence:
       - action: vacuum.pause
         target:
-          entity_id: vacuum.pink_radio_skoupa_pink_robot_cleaner
+          entity_id: vacuum.pinkradio_vacuum
       - set_conversation_response: Έκανα παύση στη σκούπα του Pink Radio.
     - conditions:
       - condition: trigger
@@ -4045,7 +4045,7 @@
       sequence:
       - action: vacuum.start
         target:
-          entity_id: vacuum.pink_radio_skoupa_pink_robot_cleaner
+          entity_id: vacuum.pinkradio_vacuum
       - set_conversation_response: Συνεχίζω το καθάρισμα στο Pink Radio.
     - conditions:
       - condition: trigger
@@ -4053,21 +4053,21 @@
       sequence:
       - action: vacuum.return_to_base
         target:
-          entity_id: vacuum.pink_radio_skoupa_pink_robot_cleaner
+          entity_id: vacuum.pinkradio_vacuum
       - set_conversation_response: Επιστρέφω στη βάση στο Pink Radio.
     - conditions:
       - condition: trigger
         id: battery
       sequence:
       - set_conversation_response: Η μπαταρία της σκούπας στο Pink Radio είναι στο
-          {{ state_attr('vacuum.pink_radio_skoupa_pink_robot_cleaner', 'battery_level')
+          {{ state_attr('vacuum.pinkradio_vacuum', 'battery_level')
           | int(0) }} τοις εκατό.
     - conditions:
       - condition: trigger
         id: status
       sequence:
-      - set_conversation_response: '{% set s = states(''vacuum.pink_radio_skoupa_pink_robot_cleaner'')
-          %} {% set d = state_attr(''vacuum.pink_radio_skoupa_pink_robot_cleaner'',
+      - set_conversation_response: '{% set s = states(''vacuum.pinkradio_vacuum'')
+          %} {% set d = state_attr(''vacuum.pinkradio_vacuum'',
           ''vacuum.status_desc'') %} {% if s == ''cleaning'' or d == ''Cleaning''
           %}Η σκούπα στο Pink Radio καθαρίζει αυτή τη στιγμή.{% elif s == ''paused''
           or d == ''Paused'' %}Η σκούπα στο Pink Radio είναι σε παύση.{% elif s ==
@@ -4080,8 +4080,8 @@
       - condition: trigger
         id: dock_status
       sequence:
-      - set_conversation_response: '{% set s = states(''vacuum.pink_radio_skoupa_pink_robot_cleaner'')
-          %} {% set d = state_attr(''vacuum.pink_radio_skoupa_pink_robot_cleaner'',
+      - set_conversation_response: '{% set s = states(''vacuum.pinkradio_vacuum'')
+          %} {% set d = state_attr(''vacuum.pinkradio_vacuum'',
           ''vacuum.status_desc'') %} {% if s == ''docked'' or d in [''Charged'',''Charging'']
           %}Ναι, η σκούπα στο Pink Radio είναι στη βάση.{% else %}Όχι, η σκούπα στο
           Pink Radio δεν είναι αυτή τη στιγμή στη βάση.{% endif %}'
