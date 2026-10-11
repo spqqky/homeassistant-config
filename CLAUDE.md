@@ -63,7 +63,7 @@
 **Ονόματα:** με βάση το δωμάτιο και τον ρόλο, όχι τη μάρκα. Ο player του Music Assistant έχει το ίδιο όνομα με
 `(MA)` στο device και `_ma` στο entity. Το Cast entity χρησιμοποιείται για TTS, το `_ma` για μουσική.
 
-| Device name | Entity ID (στόχος βήματος 3) | Σημερινό entity ID |
+| Device name | Entity ID | Παλιό entity ID (πριν το βήμα 3) |
 |---|---|---|
 | Living Room Speaker | `media_player.home_living_room_speaker` | `media_player.jbl_nest` |
 | Living Room Speaker (MA) | `media_player.home_living_room_speaker_ma` | `media_player.jbl_nest_music` |
@@ -90,8 +90,14 @@
 | Home Vacuum | `vacuum.home_vacuum` | (ίδιο) |
 | Pink Radio Vacuum | `vacuum.pinkradio_vacuum` | (ίδιο) |
 
-Μέχρι το βήμα 3 τα YAML χρησιμοποιούν τα **σημερινά** entity IDs. Τα device names αλλάζουν ελεύθερα,
-τα entity IDs μόνο μαζί με grep και διόρθωση (κανόνας 6).
+Τα υπόλοιπα entities κάθε device ακολουθούν το πρόθεμά του (`select.home_living_room_assistant_wake_word`,
+`sensor.pinkradio_neon_onair_power` κ.λπ.). Πλήρης λίστα: `docs/step3_entity_renames.csv`.
+Μαζικές μετονομασίες: `tools/rename_entities.py <csv> [--apply]` (websocket API, κρατά ιστορικό).
+Γέφυρες satellite → ηχείο (mic_to_mediaplayer): `sensor.home_<room>_assistant_bridge_pipeline_status`.
+
+**Γνωστά προβλήματα integrations**
+- `mic_to_mediaplayer` v1.5.3: διαβάζει μόνο τα `entry.data` και αγνοεί τα options. Για αλλαγή satellite ή ηχείου:
+  **διαγραφή και επαναπροσθήκη** του entry, όχι Configure.
 
 ## Πώς θέλω να λειτουργεί το Voice
 

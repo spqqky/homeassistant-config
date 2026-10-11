@@ -97,7 +97,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Πάω να καθαρίσω το σαλόνι.
           language: el
     - conditions:
@@ -121,7 +121,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Πάω να καθαρίσω το δωμάτιο της Νεφέλης.
           language: el
     - conditions:
@@ -145,7 +145,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Πάω να καθαρίσω το δωμάτιο της Αλεξάνδρας.
           language: el
     - conditions:
@@ -169,7 +169,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω την κρεβατοκάμαρα.
           language: el
     - conditions:
@@ -193,7 +193,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Πάω να καθαρίσω το μπάνιο.
           language: el
     - conditions:
@@ -217,7 +217,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω το βε σε.
           language: el
     - conditions:
@@ -241,7 +241,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Πάω να καθαρίσω το χώλ.
           language: el
     - conditions:
@@ -265,7 +265,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σαλόνι και χώλ.
     - conditions:
       - condition: trigger
@@ -288,7 +288,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω τα παιδικά δωμάτια.
           language: el
     - conditions:
@@ -312,7 +312,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω κρεβατοκάμαρα και μπάνιο.
           language: el
     - conditions:
@@ -336,7 +336,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σαλόνι, χώλ και μπάνιο.
           language: el
     - conditions:
@@ -361,7 +361,7 @@
             target:
               entity_id: tts.google_translate_en_com
             data:
-              media_player_entity_id: media_player.jbl_nest
+              media_player_entity_id: media_player.home_living_room_speaker
               message: Ξεκινάω για όλο το σπίτι.
               language: el
         default:
@@ -370,7 +370,7 @@
           target:
             entity_id: tts.google_translate_en_com
           data:
-            media_player_entity_id: media_player.jbl_nest
+            media_player_entity_id: media_player.home_living_room_speaker
             message: Η μπαταρία είναι χαμηλή. Άφησέ με να φορτίσω λίγο πρώτα.
             language: el
   mode: single
@@ -459,7 +459,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω δυνατό καθάρισμα στο σαλόνι.
           language: el
     - conditions:
@@ -483,7 +483,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω δυνατό καθάρισμα στο δωμάτιο της Νεφέλης.
           language: el
     - conditions:
@@ -507,7 +507,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω δυνατό καθάρισμα στο δωμάτιο της Αλεξάνδρας.
           language: el
     - conditions:
@@ -531,7 +531,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω δυνατό καθάρισμα στην κρεβατοκάμαρα.
           language: el
     - conditions:
@@ -555,7 +555,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω δυνατό καθάρισμα στο μπάνιο.
           language: el
     - conditions:
@@ -579,7 +579,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω δυνατό καθάρισμα στο βε σε.
           language: el
     - conditions:
@@ -603,7 +603,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω δυνατό καθάρισμα στο χώλ.
           language: el
     - conditions:
@@ -627,7 +627,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω δυνατό καθάρισμα σε σαλόνι και χώλ.
           language: el
     - conditions:
@@ -651,7 +651,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω δυνατό καθάρισμα στα παιδικά δωμάτια.
           language: el
     - conditions:
@@ -675,7 +675,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω δυνατό καθάρισμα σε κρεβατοκάμαρα και μπάνιο.
           language: el
     - conditions:
@@ -699,7 +699,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω δυνατό καθάρισμα σε σαλόνι, χώλ και μπάνιο.
           language: el
     - conditions:
@@ -727,7 +727,7 @@
             target:
               entity_id: tts.google_translate_en_com
             data:
-              media_player_entity_id: media_player.jbl_nest
+              media_player_entity_id: media_player.home_living_room_speaker
               message: Ξεκινάω δυνατό καθάρισμα σε όλο το σπίτι.
               language: el
         default:
@@ -736,7 +736,7 @@
           target:
             entity_id: tts.google_translate_en_com
           data:
-            media_player_entity_id: media_player.jbl_nest
+            media_player_entity_id: media_player.home_living_room_speaker
             message: Η μπαταρία είναι χαμηλή. Άφησέ με να φορτίσω λίγο πρώτα.
             language: el
   mode: single
@@ -825,7 +825,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω ήσυχο καθάρισμα στο σαλόνι.
           language: el
     - conditions:
@@ -849,7 +849,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω ήσυχο καθάρισμα στο δωμάτιο της Νεφέλης.
           language: el
     - conditions:
@@ -873,7 +873,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω ήσυχο καθάρισμα στο δωμάτιο της Αλεξάνδρας.
           language: el
     - conditions:
@@ -897,7 +897,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω ήσυχο καθάρισμα στην κρεβατοκάμαρα.
           language: el
     - conditions:
@@ -921,7 +921,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω ήσυχο καθάρισμα στο μπάνιο.
           language: el
     - conditions:
@@ -945,7 +945,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω ήσυχο καθάρισμα στο βε σε.
           language: el
     - conditions:
@@ -969,7 +969,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω ήσυχο καθάρισμα στο χώλ.
           language: el
     - conditions:
@@ -993,7 +993,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω ήσυχο καθάρισμα σε σαλόνι και χώλ.
           language: el
     - conditions:
@@ -1017,7 +1017,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω ήσυχο καθάρισμα στα παιδικά δωμάτια.
           language: el
     - conditions:
@@ -1041,7 +1041,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω ήσυχο καθάρισμα σε κρεβατοκάμαρα και μπάνιο.
           language: el
     - conditions:
@@ -1065,7 +1065,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω ήσυχο καθάρισμα σε σαλόνι, χώλ και μπάνιο.
           language: el
     - conditions:
@@ -1093,7 +1093,7 @@
             target:
               entity_id: tts.google_translate_en_com
             data:
-              media_player_entity_id: media_player.jbl_nest
+              media_player_entity_id: media_player.home_living_room_speaker
               message: Ξεκινάω ήσυχο καθάρισμα σε όλο το σπίτι.
               language: el
         default:
@@ -1102,7 +1102,7 @@
           target:
             entity_id: tts.google_translate_en_com
           data:
-            media_player_entity_id: media_player.jbl_nest
+            media_player_entity_id: media_player.home_living_room_speaker
             message: Η μπαταρία είναι χαμηλή. Άφησέ με να φορτίσω λίγο πρώτα.
             language: el
   mode: single
@@ -1202,7 +1202,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σκούπισμα και σφουγγάρισμα στο σαλόνι.
           language: el
     - conditions:
@@ -1237,7 +1237,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σκούπισμα και σφουγγάρισμα στο δωμάτιο της Νεφέλης.
           language: el
     - conditions:
@@ -1272,7 +1272,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σκούπισμα και σφουγγάρισμα στο δωμάτιο της Αλεξάνδρας.
           language: el
     - conditions:
@@ -1307,7 +1307,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σκούπισμα και σφουγγάρισμα στην κρεβατοκάμαρα.
           language: el
     - conditions:
@@ -1342,7 +1342,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σκούπισμα και σφουγγάρισμα στο μπάνιο.
           language: el
     - conditions:
@@ -1377,7 +1377,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σκούπισμα και σφουγγάρισμα στο βε σε.
           language: el
     - conditions:
@@ -1412,7 +1412,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σκούπισμα και σφουγγάρισμα στο χώλ.
           language: el
     - conditions:
@@ -1447,7 +1447,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σκούπισμα και σφουγγάρισμα σε σαλόνι και χώλ.
           language: el
     - conditions:
@@ -1482,7 +1482,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σκούπισμα και σφουγγάρισμα στα παιδικά δωμάτια.
           language: el
     - conditions:
@@ -1517,7 +1517,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σκούπισμα και σφουγγάρισμα σε κρεβατοκάμαρα και μπάνιο.
           language: el
     - conditions:
@@ -1552,7 +1552,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σκούπισμα και σφουγγάρισμα σε σαλόνι, χώλ και μπάνιο.
           language: el
     - conditions:
@@ -1591,7 +1591,7 @@
             target:
               entity_id: tts.google_translate_en_com
             data:
-              media_player_entity_id: media_player.jbl_nest
+              media_player_entity_id: media_player.home_living_room_speaker
               message: Ξεκινάω σκούπισμα και σφουγγάρισμα σε όλο το σπίτι.
               language: el
         default:
@@ -1600,7 +1600,7 @@
           target:
             entity_id: tts.google_translate_en_com
           data:
-            media_player_entity_id: media_player.jbl_nest
+            media_player_entity_id: media_player.home_living_room_speaker
             message: Η μπαταρία είναι χαμηλή. Άφησέ με να φορτίσω λίγο πρώτα.
             language: el
   mode: single
@@ -1706,7 +1706,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σαλόνι με πολύ νερό.
           language: el
     - conditions:
@@ -1741,7 +1741,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω το δωμάτιο της Νεφέλης με πολύ νερό.
           language: el
     - conditions:
@@ -1776,7 +1776,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω το δωμάτιο της Αλεξάνδρας με πολύ νερό.
           language: el
     - conditions:
@@ -1811,7 +1811,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω την κρεβατοκάμαρα με πολύ νερό.
           language: el
     - conditions:
@@ -1846,7 +1846,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω το μπάνιο με πολύ νερό.
           language: el
     - conditions:
@@ -1881,7 +1881,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω το βε σε με πολύ νερό.
           language: el
     - conditions:
@@ -1916,7 +1916,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω το χώλ με πολύ νερό.
           language: el
     - conditions:
@@ -1951,7 +1951,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σαλόνι και χώλ με πολύ νερό.
           language: elω
     - conditions:
@@ -1986,7 +1986,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω τα παιδικά δωμάτια με πολύ νερό.
           language: el
     - conditions:
@@ -2021,7 +2021,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω κρεβατοκάμαρα και μπάνιο με πολύ νερό.
           language: el
     - conditions:
@@ -2056,7 +2056,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω σαλόνι, χώλ και μπάνιο με πολύ νερό.
           language: el
     - conditions:
@@ -2095,7 +2095,7 @@
             target:
               entity_id: tts.google_translate_en_com
             data:
-              media_player_entity_id: media_player.jbl_nest
+              media_player_entity_id: media_player.home_living_room_speaker
               message: Ξεκινάω όλο το σπίτι με πολύ νερό.
               language: el
         default:
@@ -2104,7 +2104,7 @@
           target:
             entity_id: tts.google_translate_en_com
           data:
-            media_player_entity_id: media_player.jbl_nest
+            media_player_entity_id: media_player.home_living_room_speaker
             message: Η μπαταρία είναι χαμηλή. Άφησέ με να φορτίσω λίγο πρώτα.
             language: el
   mode: single
@@ -2179,7 +2179,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Ξεκινάω το καθάρισμα.
           language: el
     - conditions:
@@ -2194,7 +2194,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Σταμάτησα τη σκούπα.
           language: el
     - conditions:
@@ -2209,7 +2209,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Έκανα παύση.
           language: el
     - conditions:
@@ -2224,7 +2224,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Συνεχίζω από εκεί που σταμάτησα.
           language: el
     - conditions:
@@ -2239,7 +2239,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Επιστρέφω στη βάση μου.
           language: el
     - conditions:
@@ -2251,7 +2251,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: Η μπαταρία της σκούπας είναι στο {{ state_attr('vacuum.home_vacuum',
             'battery_level') | int }} τοις εκατό.
           language: el
@@ -2264,7 +2264,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: "{% set status = state_attr('vacuum.home_vacuum',
             'vacuum.status_desc') %} {% if status == 'Charged' %}\n  Η σκούπα είναι
             φορτισμένη και βρίσκεται στη βάση.\n{% elif status == 'Charging' %}\n
@@ -2283,7 +2283,7 @@
         target:
           entity_id: tts.google_translate_en_com
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: "{% set status = state_attr('vacuum.home_vacuum',
             'vacuum.status_desc') %} {% if status in ['Charged', 'Charging'] %}\n
             \ Ναι, η σκούπα είναι στη βάση.\n{% else %}\n  Όχι, η σκούπα δεν είναι
@@ -2373,7 +2373,7 @@
         target:
           entity_id: tts.home_assistant_cloud
         data:
-          media_player_entity_id: media_player.nefeli_room
+          media_player_entity_id: media_player.home_nefeli_room_speaker
           message: '{{ trigger.slots.message }}'
           language: el-GR
           options:
@@ -2389,7 +2389,7 @@
         target:
           entity_id: tts.home_assistant_cloud
         data:
-          media_player_entity_id: media_player.jbl_nest
+          media_player_entity_id: media_player.home_living_room_speaker
           message: '{{ trigger.slots.message }}'
           language: el-GR
           options:
@@ -2405,7 +2405,7 @@
         target:
           entity_id: tts.home_assistant_cloud
         data:
-          media_player_entity_id: media_player.sarah_room
+          media_player_entity_id: media_player.home_bedroom_speaker
           message: '{{ trigger.slots.message }}'
           language: el-GR
           options:
@@ -2421,7 +2421,7 @@
         target:
           entity_id: tts.home_assistant_cloud
         data:
-          media_player_entity_id: media_player.alex_room
+          media_player_entity_id: media_player.home_alex_room_speaker
           message: '{{ trigger.slots.message }}'
           language: el-GR
           options:
@@ -2438,8 +2438,8 @@
           entity_id: tts.home_assistant_cloud
         data:
           media_player_entity_id:
-          - media_player.nefeli_room
-          - media_player.alex_room
+          - media_player.home_nefeli_room_speaker
+          - media_player.home_alex_room_speaker
           message: '{{ trigger.slots.message }}'
           language: el-GR
           options:
@@ -2456,10 +2456,10 @@
           entity_id: tts.home_assistant_cloud
         data:
           media_player_entity_id:
-          - media_player.jbl_nest
-          - media_player.nefeli_room
-          - media_player.alex_room
-          - media_player.sarah_room
+          - media_player.home_living_room_speaker
+          - media_player.home_nefeli_room_speaker
+          - media_player.home_alex_room_speaker
+          - media_player.home_bedroom_speaker
           message: '{{ trigger.slots.message }}'
           language: el-GR
           options:
@@ -2521,7 +2521,7 @@
       - set_conversation_response: Παίζω {{ trigger.slots.song }} στο JBL.
       - action: music_assistant.play_media
         target:
-          entity_id: media_player.jbl_nest
+          entity_id: media_player.home_living_room_speaker
         data:
           media_id: '{{ trigger.slots.song }}'
     - conditions:
@@ -2532,7 +2532,7 @@
           Νεφέλης.
       - action: music_assistant.play_media
         target:
-          entity_id: media_player.nefeli_room
+          entity_id: media_player.home_nefeli_room_speaker
         data:
           media_id: '{{ trigger.slots.song }}'
     - conditions:
@@ -2543,7 +2543,7 @@
           Σάρας.
       - action: music_assistant.play_media
         target:
-          entity_id: media_player.sarah_room
+          entity_id: media_player.home_bedroom_speaker
         data:
           media_id: '{{ trigger.slots.song }}'
     - conditions:
@@ -2554,7 +2554,7 @@
           Αλεξάνδρας.
       - action: music_assistant.play_media
         target:
-          entity_id: media_player.alex_room
+          entity_id: media_player.home_alex_room_speaker
         data:
           media_id: '{{ trigger.slots.song }}'
     - conditions:
@@ -2697,7 +2697,7 @@
       - set_conversation_response: Παίζω {{ trigger.slots.station }} στο σαλόνι.
       - action: music_assistant.play_media
         target:
-          entity_id: media_player.jbl_nest
+          entity_id: media_player.home_living_room_speaker
         data:
           media_id: '{{ trigger.slots.station }}'
           media_type: radio
@@ -2709,7 +2709,7 @@
           Νεφέλης.
       - action: music_assistant.play_media
         target:
-          entity_id: media_player.nefeli_room
+          entity_id: media_player.home_nefeli_room_speaker
         data:
           media_id: '{{ trigger.slots.station }}'
           media_type: radio
@@ -2720,7 +2720,7 @@
       - set_conversation_response: Παίζω {{ trigger.slots.station }} στην κρεβατοκάμαρα.
       - action: music_assistant.play_media
         target:
-          entity_id: media_player.sarah_room
+          entity_id: media_player.home_bedroom_speaker
         data:
           media_id: '{{ trigger.slots.station }}'
           media_type: radio
@@ -2732,7 +2732,7 @@
           Αλεξάνδρας.
       - action: music_assistant.play_media
         target:
-          entity_id: media_player.alex_room
+          entity_id: media_player.home_alex_room_speaker
         data:
           media_id: '{{ trigger.slots.station }}'
           media_type: radio
@@ -2764,7 +2764,7 @@
       sequence:
       - action: media_player.media_stop
         target:
-          entity_id: media_player.jbl_nest
+          entity_id: media_player.home_living_room_speaker
       - set_conversation_response: Σταμάτησα το σαλόνι.
     - conditions:
       - condition: trigger
@@ -2772,7 +2772,7 @@
       sequence:
       - action: media_player.media_stop
         target:
-          entity_id: media_player.nefeli_room
+          entity_id: media_player.home_nefeli_room_speaker
       - set_conversation_response: Σταμάτησα το δωμάτιο της Νεφέλης.
     - conditions:
       - condition: trigger
@@ -2780,7 +2780,7 @@
       sequence:
       - action: media_player.media_stop
         target:
-          entity_id: media_player.sarah_room
+          entity_id: media_player.home_bedroom_speaker
       - set_conversation_response: Σταμάτησα την κρεβατοκάμαρα.
     - conditions:
       - condition: trigger
@@ -2788,7 +2788,7 @@
       sequence:
       - action: media_player.media_stop
         target:
-          entity_id: media_player.alex_room
+          entity_id: media_player.home_alex_room_speaker
       - set_conversation_response: Σταμάτησα το δωμάτιο της Αλεξάνδρας.
     - conditions:
       - condition: trigger
@@ -2870,7 +2870,7 @@
       sequence:
       - action: switch.turn_on
         target:
-          entity_id: switch.pink_radio_plug8
+          entity_id: switch.pinkradio_guitar_amp
       - set_conversation_response: Άναψα τον ενισχυτή κιθάρας.
     - conditions:
       - condition: trigger
@@ -2878,7 +2878,7 @@
       sequence:
       - action: switch.turn_off
         target:
-          entity_id: switch.pink_radio_plug8
+          entity_id: switch.pinkradio_guitar_amp
       - set_conversation_response: Έκλεισα τον ενισχυτή κιθάρας.
   mode: single
 - id: '1790868096413'
@@ -2913,7 +2913,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
       - set_conversation_response: Άναψα τα LED στο στούντιο.
     - conditions:
       - condition: trigger
@@ -2921,7 +2921,7 @@
       sequence:
       - action: light.turn_off
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
       - set_conversation_response: Έκλεισα τα LED στο στούντιο.
   mode: single
 - id: '1790868615394'
@@ -2947,7 +2947,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 226
@@ -2963,7 +2963,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 255
@@ -2978,7 +2978,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 0
@@ -2994,7 +2994,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 0
@@ -3009,7 +3009,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 128
@@ -3024,7 +3024,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 255
@@ -3040,7 +3040,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 255
@@ -3056,7 +3056,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 255
@@ -3072,7 +3072,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 0
@@ -3088,7 +3088,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 255
@@ -3103,7 +3103,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 0
@@ -3119,7 +3119,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 0
@@ -3135,7 +3135,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 0
@@ -3150,7 +3150,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 180
@@ -3165,7 +3165,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 150
@@ -3180,7 +3180,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 50
@@ -3196,7 +3196,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 255
@@ -3212,7 +3212,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 255
@@ -3254,7 +3254,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 226
@@ -3269,7 +3269,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 255
@@ -3284,7 +3284,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 120
@@ -3300,7 +3300,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           rgbw_color:
           - 255
@@ -3323,7 +3323,7 @@
   actions:
   - action: light.turn_on
     target:
-      entity_id: light.pink_radio_led_main
+      entity_id: light.pinkradio_led_main
     data:
       brightness_pct: '{{ trigger.slots.level | int }}'
   mode: restart
@@ -3353,7 +3353,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           brightness_step_pct: 15
           transition: 1
@@ -3363,7 +3363,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_main
+          entity_id: light.pinkradio_led_main
         data:
           brightness_step_pct: -15
           transition: 1
@@ -3423,7 +3423,7 @@
   actions:
   - action: light.turn_on
     target:
-      entity_id: light.pink_radio_led_drums
+      entity_id: light.pinkradio_led_drums
     data:
       brightness_pct: '{{ trigger.slots.level | int }}'
   mode: restart
@@ -3453,7 +3453,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           brightness_step_pct: 15
           transition: 1
@@ -3463,7 +3463,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           brightness_step_pct: -15
           transition: 1
@@ -3501,7 +3501,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
       - set_conversation_response: Άναψα τα LED στα ντραμς.
     - conditions:
       - condition: trigger
@@ -3509,7 +3509,7 @@
       sequence:
       - action: light.turn_off
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
       - set_conversation_response: Έκλεισα τα LED στα ντραμς.
   mode: single
 - id: '1790962544206'
@@ -3546,8 +3546,8 @@
       - action: light.turn_on
         target:
           entity_id:
-          - light.pink_radio_led_main
-          - light.pink_radio_led_drums
+          - light.pinkradio_led_main
+          - light.pinkradio_led_drums
       - set_conversation_response: Άναψα όλα τα φώτα LED.
     - conditions:
       - condition: trigger
@@ -3556,8 +3556,8 @@
       - action: light.turn_off
         target:
           entity_id:
-          - light.pink_radio_led_main
-          - light.pink_radio_led_drums
+          - light.pinkradio_led_main
+          - light.pinkradio_led_drums
       - set_conversation_response: Έκλεισα όλα τα φώτα LED.
   mode: single
 - id: '1790963495364'
@@ -3589,7 +3589,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 226
@@ -3605,7 +3605,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 255
@@ -3620,7 +3620,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 0
@@ -3636,7 +3636,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 0
@@ -3651,7 +3651,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 128
@@ -3666,7 +3666,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 255
@@ -3682,7 +3682,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 255
@@ -3698,7 +3698,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 255
@@ -3714,7 +3714,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 0
@@ -3730,7 +3730,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 255
@@ -3745,7 +3745,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 0
@@ -3761,7 +3761,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 0
@@ -3777,7 +3777,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 0
@@ -3792,7 +3792,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 180
@@ -3807,7 +3807,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 150
@@ -3822,7 +3822,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 50
@@ -3838,7 +3838,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 255
@@ -3854,7 +3854,7 @@
       sequence:
       - action: light.turn_on
         target:
-          entity_id: light.pink_radio_led_drums
+          entity_id: light.pinkradio_led_drums
         data:
           rgbw_color:
           - 255

@@ -1,0 +1,176 @@
+title: Pink Radio
+views:
+- title: Studio
+  path: studio
+  icon: mdi:radio
+  type: sections
+  max_columns: 3
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: Studio Power
+    - type: tile
+      entity: switch.pinkradio_onyx_console
+      name: Console + KRK
+      icon: mdi:audio-mixer
+      vertical: true
+      tap_action:
+        action: toggle
+    - type: tile
+      entity: switch.pinkradio_krk_speakers
+      name: Studio Device 2
+      icon: mdi:power-socket-eu
+      vertical: true
+      tap_action:
+        action: toggle
+    - type: tile
+      entity: switch.pinkradio_neon_logo
+      name: Guitar Amp
+      icon: mdi:amplifier
+      vertical: true
+      tap_action:
+        action: toggle
+    - type: tile
+      entity: switch.pinkradio_neon_onair
+      name: Neon
+      icon: mdi:led-strip-variant
+      vertical: true
+      tap_action:
+        action: toggle
+  - type: grid
+    cards:
+    - type: heading
+      heading: Studio Lights
+    - type: tile
+      entity: light.pinkradio_led_main
+      name: Studio LED
+      icon: mdi:led-strip-variant
+      vertical: true
+    - type: tile
+      entity: light.pinkradio_led_drums
+      name: Drums LED
+      icon: mdi:led-strip-variant
+      vertical: true
+  - type: grid
+    cards:
+    - type: heading
+      heading: Light Modes
+    - type: button
+      name: Pink Radio
+      icon: mdi:heart
+      show_state: false
+      tap_action:
+        action: call-service
+        service: light.turn_on
+        target:
+          entity_id:
+          - light.pinkradio_led_main
+          - light.pinkradio_led_drums
+        data:
+          rgb_color:
+          - 226
+          - 100
+          - 216
+          brightness: 255
+    - type: button
+      name: ON AIR
+      icon: mdi:radio-tower
+      show_state: false
+      tap_action:
+        action: call-service
+        service: light.turn_on
+        target:
+          entity_id:
+          - light.pinkradio_led_main
+          - light.pinkradio_led_drums
+        data:
+          rgb_color:
+          - 255
+          - 0
+          - 0
+          brightness: 255
+    - type: button
+      name: Rock
+      icon: mdi:guitar-electric
+      show_state: false
+      tap_action:
+        action: call-service
+        service: light.turn_on
+        target:
+          entity_id:
+          - light.pinkradio_led_main
+          - light.pinkradio_led_drums
+        data:
+          rgb_color:
+          - 128
+          - 0
+          - 255
+          brightness: 255
+    - type: button
+      name: LEDs OFF
+      icon: mdi:lightbulb-off-outline
+      show_state: false
+      tap_action:
+        action: call-service
+        service: light.turn_off
+        target:
+          entity_id:
+          - light.pinkradio_led_main
+          - light.pinkradio_led_drums
+  - type: grid
+    cards:
+    - type: heading
+      heading: Master Control
+    - type: button
+      name: STUDIO ON
+      icon: mdi:power
+      show_state: false
+      tap_action:
+        action: call-service
+        service: homeassistant.turn_on
+        target:
+          entity_id:
+          - switch.pinkradio_onyx_console
+          - switch.pinkradio_krk_speakers
+          - switch.pinkradio_spare_plug
+    - type: button
+      name: STUDIO OFF
+      icon: mdi:power-off
+      show_state: false
+      tap_action:
+        action: call-service
+        confirmation:
+          text: Να κλείσω όλο το Pink Radio studio;
+        service: homeassistant.turn_off
+        target:
+          entity_id:
+          - switch.pinkradio_onyx_console
+          - switch.pinkradio_krk_speakers
+          - switch.pinkradio_neon_logo
+          - switch.pinkradio_spare_plug
+          - light.pinkradio_led_main
+          - light.pinkradio_led_drums
+  - type: grid
+    cards:
+    - type: heading
+      heading: Status
+    - type: entities
+      title: Pink Radio Studio
+      show_header_toggle: false
+      entities:
+      - entity: switch.pinkradio_onyx_console
+        name: Console + KRK
+        icon: mdi:audio-mixer
+      - entity: switch.pinkradio_krk_speakers
+        name: Studio Device 2
+      - entity: switch.pinkradio_neon_logo
+        name: Guitar Amp
+        icon: mdi:amplifier
+      - entity: switch.pinkradio_spare_plug
+        name: Neon
+        icon: mdi:led-strip-variant
+      - entity: light.pinkradio_led_main
+        name: Studio LED
+      - entity: light.pinkradio_led_drums
+        name: Drums LED
