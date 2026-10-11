@@ -53,7 +53,7 @@
 | Αρχείο | Περιεχόμενο |
 |---|---|
 | `packages/core/core_voice.yaml` | `script.voice_speak`, χάρτης χώρου → ηχείου |
-| `packages/home/home_vacuum.yaml` | `script.home_vacuum_clean`, «Home Vacuum - Voice Clean» (καθαρισμός ανά δωμάτιο) |
+| `packages/home/home_vacuum.yaml` | `script.home_vacuum_clean`, «Home Vacuum - Voice Clean» (ανά δωμάτιο), helpers και scripts του dashboard (`_clean_selected`, `_clean_all`) |
 | `packages/home/home_announcements.yaml` | Voice - Ανακοινώσεις |
 | `packages/home/home_media.yaml` | Music Assistant, Radio, scripts έντασης |
 | `packages/pinkradio/pinkradio_studio.yaml` | «Pink Radio - Voice Studio» (neon, κονσόλα, KRK, ήχος, ενισχυτής, studio), scripts `pinkradio_neon_control` / `_studio_audio_control` / `_studio_control` |
@@ -167,6 +167,10 @@
 - STT: το pipeline «Home Assistant» (Pink) χρησιμοποιεί **Google AI STT**, γιατί το HA Cloud έκοβε λέξεις (π.χ. «στο»).
   Γνωστά: hallucinations, 503 σε ώρες αιχμής, αργό (13,6 s σε μια εντολή, έναντι ~0,2 s του HA Cloud). Η σύγκριση γίνεται στο βήμα 9.
   Ο Pink έχει δικό του pipeline «Pink Radio» (τοπικός agent, Google AI STT, HA Cloud TTS).
+- **Νέες φράσεις:** μετά από κάθε προσθήκη → `python3 tools/accent_variants.py packages --apply` (το HA Cloud STT γράφει συχνά χωρίς τόνους).
+  Λέξεις-κλειδιά μέσα σε templates: πάνω σε κείμενο χωρίς τόνους (`text`), άρα γράφονται χωρίς τόνο.
+- **Debug φωνής, με τη σειρά:** `python3 tools/voice_debug.py [φίλτρο pipeline]` → τι άκουσε το STT, χρόνοι, αν απάντησε automation
+  («τοπικά») ή agent, σφάλματα. Χωρίς `stt-vad-start` = πρόβλημα μικροφώνου/Voice PE. «άκουσε» σωστό αλλά error = λείπει φράση.
 - Debug Voice PE: `tools/esphome_logs.py "<ESPHome entry>"` (WSL venv `~/ha-venv`, `aioesphomeapi`). Pipeline debug: Settings →
   Voice assistants → pipeline → ⋮ → Debug. Το κλειδί είναι τα events `stt-vad-start`/`stt-vad-end`.
 

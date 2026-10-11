@@ -14,10 +14,10 @@
 | 6 | Ανακοινώσεις: refactor του «Voice - Ανακοινώσεις» | ✅ | 1 automation / 6 triggers μέσω `voice_speak`. Διορθώθηκαν το «πες στον Χρήστο» (bug `tell_δαδ`) και η κενή απάντηση |
 | 7 | Home vacuum: ανά δωμάτιο, Basic default, φωνητικές εντολές | ✅ | `script.home_vacuum_clean` + «Voice Clean» (ανά δωμάτιο, δυνατά/ήσυχα/σφουγγάρισμα). Εκκρεμεί πραγματικός καθαρισμός από το σπίτι |
 | 8 | Pink studio: 3 scripts, σκούπα pinkradio, φωνητικές εντολές με isolation | ✅ | 8α διακόπτες (`pinkradio_voice_studio`), 8β LED (11 → 1 automation), 8γ `shared_vacuum.yaml`: «η σκούπα» = σκούπα του χώρου. Δοκιμές από τον Pink ✅ |
-| 9 | Pipelines: local + Gemini, ελληνικό prompt με φιλικό ύφος, διαδικασία debug για το STT | ⬜ | |
+| 9 | Pipelines: local + Gemini, ελληνικό prompt με φιλικό ύφος, διαδικασία debug για το STT | ✅ | STT: HA Cloud παντού (απόφαση χρήστη). Φράσεις ανθεκτικές: προαιρετική πρόθεση, παραλλαγές χωρίς τόνο (`tools/accent_variants.py`), templates χωρίς τόνους. `tools/voice_debug.py`, `tools/pipelines_dump.py`. Νέο `docs/prompts/home_gemini.txt` (ελληνικό). Εκκρεμεί: επικόλληση prompt, Relaxed στα Voice PE |
 | 10 | Shopping list: πολλαπλά items και ανάγνωση | ⬜ | |
 | 11 | Reminders v2: recurring, πολλαπλοί χρόνοι ειδοποίησης, recipient, αλλαγή υπάρχοντος | ⬜ | |
-| 12 | Dashboards: νέα dashboards για `home` και `pinkradio` (το παλιό Pink Radio έχει σπασμένες κάρτες· γρήγορη διόρθωση: `docs/lovelace_pink_radio.yaml`) | ⬜ | |
+| 12 | Dashboards: νέα dashboards για `home` και `pinkradio` | 🔄 | Προτεραιότητα του χρήστη (πριν από 10/11). Πρώτη έκδοση «Σπίτι»: μόνο σκούπα, για κινητό (`docs/lovelace_home.yaml`, helpers στο `home_vacuum.yaml`) |
 | 13 | Satellite Σάρας (όταν έρθει) | ⬜ | |
 
 ## Ημερολόγιο
@@ -37,3 +37,5 @@
 - 2026-10-11 — Βήμα 6 ολοκληρώθηκε. Οι λίστες του custom_sentences δεν λειτουργούν στα triggers: παραλλαγές inline. `voice_speak` → HA Cloud TTS (Athina).
 - 2026-10-11 — 8α ολοκληρώθηκε: «Pink Radio - Voice Studio» αντικαθιστά τα Studio Control / Guitar Amp. «τον ήχο» θέλει «στο στούντιο». Δοκιμή από τον Pink ✅. Google AI STT: ένα `stt-stream-failed` (πιθανό όριο Gemini), βλ. βήμα 9.
 - 2026-10-11 — Βήματα 7 και 8 ολοκληρώθηκαν. LED: χωρίς προσδιορισμό → και τα δύο σετ. Σκούπες: κοινό «Vacuum - Voice Control», επιλογή ανά χώρο, Pink ✅ (studio εκτελείται, σπίτι απορρίπτεται).
+- 2026-10-11 — Βήμα 9 ολοκληρώθηκε. Το HA Cloud STT γράφει συχνά χωρίς τόνους και χάνει προθέσεις: οι φράσεις το καλύπτουν. Κάθε νέα φράση → `python3 tools/accent_variants.py packages --apply`.
+- 2026-10-11 — Βήμα 12 ξεκίνησε πριν από τα 10/11 (επιλογή χρήστη): dashboard «Σπίτι» με τη σκούπα.

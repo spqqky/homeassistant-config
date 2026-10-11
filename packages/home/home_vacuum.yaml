@@ -93,6 +93,85 @@ script:
                 target:
                   entity_id: vacuum.home_vacuum
 
+  home_vacuum_clean_selected:
+    alias: Home Vacuum - Clean Selected
+    description: Καθαρίζει τα δωμάτια που είναι επιλεγμένα στο dashboard, με τον τρόπο του dashboard. Μετά ξεεπιλέγει.
+    mode: single
+    icon: mdi:play-circle
+    variables:
+      room_map:
+        input_boolean.home_vacuum_room_living_room: 3
+        input_boolean.home_vacuum_room_wc: 4
+        input_boolean.home_vacuum_room_hall: 5
+        input_boolean.home_vacuum_room_nefeli: 7
+        input_boolean.home_vacuum_room_bedroom: 8
+        input_boolean.home_vacuum_room_alex: 9
+        input_boolean.home_vacuum_room_bathroom: 10
+      selected: "{{ room_map.keys() | select('is_state', 'on') | list }}"
+      rooms: "{{ selected | map('extract', room_map) | list }}"
+      mode_map:
+        Κανονικό: normal
+        Δυνατό: strong
+        Ήσυχο: quiet
+        Σκούπισμα + σφουγγάρισμα: mop
+        Σφουγγάρισμα με πολύ νερό: mop_wet
+      clean_mode: "{{ mode_map.get(states('input_select.home_vacuum_dashboard_mode'), 'normal') }}"
+    sequence:
+      - if: "{{ rooms | count == 0 }}"
+        then:
+          - action: persistent_notification.create
+            data:
+              title: Σκούπα
+              message: Δεν διάλεξες δωμάτιο. Για όλο το σπίτι πάτα «Όλο το σπίτι».
+              notification_id: home_vacuum_no_room
+          - stop: Κανένα δωμάτιο
+      - action: script.home_vacuum_clean
+        data:
+          rooms: "{{ rooms }}"
+          mode: "{{ clean_mode }}"
+      - action: input_boolean.turn_off
+        target:
+          entity_id: "{{ selected }}"
+
+  home_vacuum_clean_all:
+    alias: Home Vacuum - Clean All
+    description: Όλο το σπίτι, με τον τρόπο που είναι επιλεγμένος στο dashboard.
+    mode: single
+    icon: mdi:home-floor-g
+    variables:
+      mode_map:
+        Κανονικό: normal
+        Δυνατό: strong
+        Ήσυχο: quiet
+        Σκούπισμα + σφουγγάρισμα: mop
+        Σφουγγάρισμα με πολύ νερό: mop_wet
+    sequence:
+      - action: script.home_vacuum_clean
+        data:
+          rooms: []
+          mode: "{{ mode_map.get(states('input_select.home_vacuum_dashboard_mode'), 'normal') }}"
+
+# ── Dashboard (βήμα 12): επιλογή δωματίων και mode με αγγίγματα από το κινητό ──
+input_boolean:
+  home_vacuum_room_living_room: {name: Σαλόνι, icon: mdi:sofa}
+  home_vacuum_room_hall: {name: Χολ, icon: mdi:door}
+  home_vacuum_room_wc: {name: WC, icon: mdi:toilet}
+  home_vacuum_room_nefeli: {name: Νεφέλη, icon: mdi:teddy-bear}
+  home_vacuum_room_alex: {name: Αλεξάνδρα, icon: mdi:bookshelf}
+  home_vacuum_room_bedroom: {name: Κρεβατοκάμαρα, icon: mdi:bed-king}
+  home_vacuum_room_bathroom: {name: Μπάνιο, icon: mdi:shower}
+
+input_select:
+  home_vacuum_dashboard_mode:
+    name: Τρόπος καθαρισμού
+    icon: mdi:tune-variant
+    options:
+      - Κανονικό
+      - Δυνατό
+      - Ήσυχο
+      - Σκούπισμα + σφουγγάρισμα
+      - Σφουγγάρισμα με πολύ νερό
+
 automation:
   - id: home_vacuum_voice_clean
     alias: Home Vacuum - Voice Clean
@@ -101,8 +180,8 @@ automation:
     triggers:
       - trigger: conversation
         command:
-          - "(σκούπισε|καθάρισε|σφουγγάρισε) {rooms}"
-          - "(σκούπισε|καθάρισε) και σφουγγάρισε {rooms}"
+          - "((σκούπισε|σκουπισε)|(καθάρισε|καθαρισε)|(σφουγγάρισε|σφουγγαρισε)) {rooms}"
+          - "((σκούπισε|σκουπισε)|(καθάρισε|καθαρισε)) και (σφουγγάρισε|σφουγγαρισε) {rooms}"
     conditions: []
     actions:
       - alias: "Guard: μόνο από το floor home"
@@ -116,27 +195,27 @@ automation:
           - set_conversation_response: Αυτό γίνεται μόνο από το σπίτι.
           - stop: Εκτός scope (home)
       - variables:
-          text: "{{ trigger.sentence | lower }}"
+          text: "{{ trigger.sentence | lower | replace('ά','α') | replace('έ','ε') | replace('ή','η') | replace('ί','ι') | replace('ό','ο') | replace('ύ','υ') | replace('ώ','ω') | replace('ϊ','ι') | replace('ΐ','ι') | replace('ϋ','υ') | replace('ΰ','υ') }}"  # χωρίς τόνους: οι λέξεις-κλειδιά παρακάτω γράφονται χωρίς τόνο
           clean_mode: >-
-            {% if 'σφουγγάρ' in text %}{{ 'mop_wet' if 'πολύ νερό' in text else 'mop' }}
+            {% if 'σφουγγαρ' in text %}{{ 'mop_wet' if 'πολυ νερο' in text else 'mop' }}
             {% elif 'δυνατ' in text %}strong
-            {% elif 'ήσυχ' in text or 'απαλ' in text %}quiet
+            {% elif 'ησυχ' in text or 'απαλ' in text %}quiet
             {% else %}normal{% endif %}
           # λέξη-κλειδί → (room IDs, όνομα για την απάντηση)
           room_ids: >-
             {% set ns = namespace(ids=[]) %}
             {% set kw = [
-              ('σαλόν', [3]), ('χολ', [5]), ('χώλ', [5]), ('hall', [5]),
-              ('νεφέλη', [7]), ('αλεξάνδρ', [9]), ('παιδικ', [7, 9]),
-              ('κρεβατοκάμαρ', [8]), ('υπνοδωμάτι', [8]),
-              ('μπάνιο', [10]),
-              ('wc', [4]), ('βε σε', [4]), ('βεσέ', [4]), ('τουαλέτα', [4])
+              ('σαλον', [3]), ('χολ', [5]), ('χωλ', [5]), ('hall', [5]),
+              ('νεφελη', [7]), ('αλεξανδρ', [9]), ('παιδικ', [7, 9]),
+              ('κρεβατοκαμαρ', [8]), ('υπνοδωματι', [8]),
+              ('μπανιο', [10]),
+              ('wc', [4]), ('βε σε', [4]), ('βεσε', [4]), ('τουαλετα', [4])
             ] %}
             {% for k, ids in kw %}{% if k in text %}{% set ns.ids = ns.ids + ids %}{% endif %}{% endfor %}
             {% if text is search('(^|\\s)w(\\s|$)') %}{% set ns.ids = ns.ids + [4] %}{% endif %}
             {{ ns.ids | unique | list }}
-          whole_house: "{{ 'όλο το σπίτι' in text or 'παντού' in text }}"
-          studio: "{{ 'στούντιο' in text or 'studio' in text or 'pink' in text }}"
+          whole_house: "{{ 'ολο το σπιτι' in text or 'παντου' in text }}"
+          studio: "{{ 'στουντιο' in text or 'studio' in text or 'pink' in text }}"
       - if: "{{ studio }}"
         then:
           - set_conversation_response: Για τη σκούπα του studio πες «σκούπισε το στούντιο».

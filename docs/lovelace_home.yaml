@@ -1,0 +1,180 @@
+# Dashboard «Σπίτι» (βήμα 12, πρώτη έκδοση: μόνο σκούπα). Φτιαγμένο για κινητό (sections, 1 στήλη στο κινητό).
+# Εγκατάσταση: Settings → Dashboards → + Add dashboard → «New dashboard from scratch», τίτλος «Σπίτι», icon mdi:home.
+# Άνοιξέ το → ✏️ → ⋮ → Raw configuration editor → επικόλλησε όλο αυτό → Save.
+# Μετά μπορείς να το αλλάζεις από το κινητό με το ✏️, χωρίς YAML.
+title: Σπίτι
+views:
+  - title: Σκούπα
+    path: skoupa
+    icon: mdi:robot-vacuum
+    type: sections
+    max_columns: 2
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Σκούπα
+            icon: mdi:robot-vacuum
+            badges:
+              - type: entity
+                entity: sensor.home_vacuum_battery_level
+                show_state: true
+                show_icon: true
+          - type: tile
+            entity: vacuum.home_vacuum
+            name: Σκούπα σπιτιού
+            state_content:
+              - state
+              - battery_level
+            features:
+              - type: vacuum-commands
+                commands:
+                  - start_pause
+                  - stop
+                  - return_home
+                  - locate
+            features_position: bottom
+            grid_options:
+              columns: 12
+          - type: tile
+            entity: sensor.home_vacuum_status
+            name: Κατάσταση
+            grid_options:
+              columns: 12
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Καθαρισμός
+            icon: mdi:broom
+          - type: tile
+            entity: input_select.home_vacuum_dashboard_mode
+            name: Τρόπος
+            features:
+              - type: select-options
+            features_position: bottom
+            grid_options:
+              columns: 12
+          - type: tile
+            entity: input_boolean.home_vacuum_room_living_room
+            vertical: true
+            hide_state: true
+            tap_action: {action: toggle}
+            icon_tap_action: {action: toggle}
+            grid_options: {columns: 4}
+          - type: tile
+            entity: input_boolean.home_vacuum_room_hall
+            vertical: true
+            hide_state: true
+            tap_action: {action: toggle}
+            icon_tap_action: {action: toggle}
+            grid_options: {columns: 4}
+          - type: tile
+            entity: input_boolean.home_vacuum_room_wc
+            vertical: true
+            hide_state: true
+            tap_action: {action: toggle}
+            icon_tap_action: {action: toggle}
+            grid_options: {columns: 4}
+          - type: tile
+            entity: input_boolean.home_vacuum_room_nefeli
+            vertical: true
+            hide_state: true
+            tap_action: {action: toggle}
+            icon_tap_action: {action: toggle}
+            grid_options: {columns: 4}
+          - type: tile
+            entity: input_boolean.home_vacuum_room_alex
+            vertical: true
+            hide_state: true
+            tap_action: {action: toggle}
+            icon_tap_action: {action: toggle}
+            grid_options: {columns: 4}
+          - type: tile
+            entity: input_boolean.home_vacuum_room_bedroom
+            vertical: true
+            hide_state: true
+            tap_action: {action: toggle}
+            icon_tap_action: {action: toggle}
+            grid_options: {columns: 4}
+          - type: tile
+            entity: input_boolean.home_vacuum_room_bathroom
+            vertical: true
+            hide_state: true
+            tap_action: {action: toggle}
+            icon_tap_action: {action: toggle}
+            grid_options: {columns: 4}
+          - type: button
+            name: Καθάρισε τα επιλεγμένα
+            icon: mdi:play-circle
+            show_state: false
+            tap_action:
+              action: perform-action
+              perform_action: script.home_vacuum_clean_selected
+              confirmation:
+                text: Να ξεκινήσει η σκούπα στα επιλεγμένα δωμάτια;
+            grid_options: {columns: 6, rows: 2}
+          - type: button
+            name: Όλο το σπίτι
+            icon: mdi:home-floor-g
+            show_state: false
+            tap_action:
+              action: perform-action
+              perform_action: script.home_vacuum_clean_all
+              confirmation:
+                text: Να ξεκινήσει η σκούπα σε όλο το σπίτι;
+            grid_options: {columns: 6, rows: 2}
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Γρήγορα
+            icon: mdi:lightning-bolt
+          - type: button
+            name: Παιδικά
+            icon: mdi:human-child
+            show_state: false
+            tap_action:
+              action: perform-action
+              perform_action: script.home_vacuum_clean
+              data: {rooms: [7, 9], mode: normal}
+              confirmation: {text: Σκούπισμα στα παιδικά;}
+            grid_options: {columns: 4, rows: 2}
+          - type: button
+            name: Σαλόνι + χολ
+            icon: mdi:sofa
+            show_state: false
+            tap_action:
+              action: perform-action
+              perform_action: script.home_vacuum_clean
+              data: {rooms: [3, 5], mode: normal}
+              confirmation: {text: Σκούπισμα σε σαλόνι και χολ;}
+            grid_options: {columns: 4, rows: 2}
+          - type: button
+            name: Μπάνια
+            icon: mdi:shower
+            show_state: false
+            tap_action:
+              action: perform-action
+              perform_action: script.home_vacuum_clean
+              data: {rooms: [4, 10], mode: mop}
+              confirmation: {text: Σκούπισμα και σφουγγάρισμα σε WC και μπάνιο;}
+            grid_options: {columns: 4, rows: 2}
+          - type: button
+            name: Συνέχισε
+            icon: mdi:play-pause
+            show_state: false
+            tap_action:
+              action: perform-action
+              perform_action: button.press
+              target: {entity_id: button.home_vacuum_continue_sweep}
+            grid_options: {columns: 6, rows: 2}
+          - type: button
+            name: Στη βάση
+            icon: mdi:home-import-outline
+            show_state: false
+            tap_action:
+              action: perform-action
+              perform_action: vacuum.return_to_base
+              target: {entity_id: vacuum.home_vacuum}
+            grid_options: {columns: 6, rows: 2}

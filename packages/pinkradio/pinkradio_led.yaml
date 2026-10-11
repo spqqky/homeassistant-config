@@ -28,33 +28,33 @@ automation:
   - trigger: conversation
     id: 'on'
     command:
-    - (άναψε|ανάψε|άνοιξε|ανοίξε|ενεργοποίησε) [όλα ](τα led|τα λεντ|τα φώτα led|τον φωτισμό led|τον led φωτισμό|τον φωτισμό) [(στο|στα|του|των) (στούντιο|studio|ντραμς|drums|τύμπανα)]
-    - (άναψε|ανάψε|άνοιξε|ανοίξε|ενεργοποίησε) τα (ντραμς|drums|κύρια|main) led
+    - "((άναψε|αναψε)|(ανάψε|αναψε)|(άνοιξε|ανοιξε)|(ανοίξε|ανοιξε)|(ενεργοποίησε|ενεργοποιησε)) [(όλα|ολα) ](τα led|τα λεντ|τα (φώτα|φωτα) led|τον (φωτισμό|φωτισμο) led|τον led (φωτισμό|φωτισμο)|τον (φωτισμό|φωτισμο)) [(στο|στα|του|των) ((στούντιο|στουντιο)|studio|ντραμς|drums|(τύμπανα|τυμπανα))]"
+    - "((άναψε|αναψε)|(ανάψε|αναψε)|(άνοιξε|ανοιξε)|(ανοίξε|ανοιξε)|(ενεργοποίησε|ενεργοποιησε)) τα (ντραμς|drums|(κύρια|κυρια)|main) led"
   - trigger: conversation
     id: 'off'
     command:
-    - (κλείσε|σβήσε|σβήσαι|σβήστε|απενεργοποίησε) [όλα ](τα led|τα λεντ|τα φώτα led|τον φωτισμό led|τον led φωτισμό|τον φωτισμό) [(στο|στα|του|των) (στούντιο|studio|ντραμς|drums|τύμπανα)]
-    - (κλείσε|σβήσε|σβήσαι|σβήστε|απενεργοποίησε) τα (ντραμς|drums|κύρια|main) led
+    - "((κλείσε|κλεισε)|(σβήσε|σβησε)|(σβήσαι|σβησαι)|(σβήστε|σβηστε)|(απενεργοποίησε|απενεργοποιησε)) [(όλα|ολα) ](τα led|τα λεντ|τα (φώτα|φωτα) led|τον (φωτισμό|φωτισμο) led|τον led (φωτισμό|φωτισμο)|τον (φωτισμό|φωτισμο)) [(στο|στα|του|των) ((στούντιο|στουντιο)|studio|ντραμς|drums|(τύμπανα|τυμπανα))]"
+    - "((κλείσε|κλεισε)|(σβήσε|σβησε)|(σβήσαι|σβησαι)|(σβήστε|σβηστε)|(απενεργοποίησε|απενεργοποιησε)) τα (ντραμς|drums|(κύρια|κυρια)|main) led"
   - trigger: conversation
     id: up
     command:
-    - (δυνάμωσε|ανέβασε|αύξησε) [τη φωτεινότητα ](τα|στα) (led|λεντ) [(στο|στα|του|των) (στούντιο|studio|ντραμς|drums|τύμπανα)]
+    - "((δυνάμωσε|δυναμωσε)|(ανέβασε|ανεβασε)|(αύξησε|αυξησε)) [τη (φωτεινότητα|φωτεινοτητα) ](τα|στα) (led|λεντ) [(στο|στα|του|των) ((στούντιο|στουντιο)|studio|ντραμς|drums|(τύμπανα|τυμπανα))]"
   - trigger: conversation
     id: down
     command:
-    - (χαμήλωσε|μείωσε|κατέβασε) [τη φωτεινότητα ](τα|στα) (led|λεντ) [(στο|στα|του|των) (στούντιο|studio|ντραμς|drums|τύμπανα)]
+    - "((χαμήλωσε|χαμηλωσε)|(μείωσε|μειωσε)|(κατέβασε|κατεβασε)) [τη (φωτεινότητα|φωτεινοτητα) ](τα|στα) (led|λεντ) [(στο|στα|του|των) ((στούντιο|στουντιο)|studio|ντραμς|drums|(τύμπανα|τυμπανα))]"
   - trigger: conversation
     id: disco_start
     command:
-    - (βάλε|ξεκίνα|άνοιξε|άναψε) [το ](disco|ντίσκο) [mode] [(στο|στα|του) (στούντιο|studio|led)]
+    - "((βάλε|βαλε)|(ξεκίνα|ξεκινα)|(άνοιξε|ανοιξε)|(άναψε|αναψε)) [το ](disco|(ντίσκο|ντισκο)) [mode] [(στο|στα|του) ((στούντιο|στουντιο)|studio|led)]"
   - trigger: conversation
     id: disco_stop
     command:
-    - (σταμάτα|κλείσε|σβήσε) [το ](disco|ντίσκο) [mode] [(στο|στα|του) (στούντιο|studio|led)]
+    - "((σταμάτα|σταματα)|(κλείσε|κλεισε)|(σβήσε|σβησε)) [το ](disco|(ντίσκο|ντισκο)) [mode] [(στο|στα|του) ((στούντιο|στουντιο)|studio|led)]"
   - trigger: conversation
     id: set
     command:
-    - (κάνε|βάλε|άλλαξε|γύρνα) [όλα ](τα led|τα λεντ|τα φώτα led|τον φωτισμό|τα (ντραμς|drums|κύρια|main|studio) led) {value}
+    - "((κάνε|κανε)|(βάλε|βαλε)|(άλλαξε|αλλαξε)|(γύρνα|γυρνα)) [(όλα|ολα) ](τα led|τα λεντ|τα (φώτα|φωτα) led|τον (φωτισμό|φωτισμο)|τα (ντραμς|drums|(κύρια|κυρια)|main|studio) led) {value}"
     - (led|λεντ) {value}
   conditions: []
   actions:
@@ -71,38 +71,38 @@ automation:
   - variables:
       main: light.pinkradio_led_main
       drums: light.pinkradio_led_drums
-      text: "{{ trigger.sentence | lower }}"
-      is_drums: "{{ ['ντραμς', 'ντράμς', 'drums', 'τύμπανα'] | select('in', text) | list | count > 0 }}"
-      is_main: "{{ ['κύρια', 'κυρια', 'main', 'ταβάνι', 'ταβανι'] | select('in', text) | list | count > 0 }}"
+      text: "{{ trigger.sentence | lower | replace('ά','α') | replace('έ','ε') | replace('ή','η') | replace('ί','ι') | replace('ό','ο') | replace('ύ','υ') | replace('ώ','ω') | replace('ϊ','ι') | replace('ΐ','ι') | replace('ϋ','υ') | replace('ΰ','υ') }}"  # χωρίς τόνους: οι λέξεις-κλειδιά παρακάτω γράφονται χωρίς τόνο
+      is_drums: "{{ ['ντραμς', 'ντραμς', 'drums', 'τυμπανα'] | select('in', text) | list | count > 0 }}"
+      is_main: "{{ ['κυρια', 'κυρια', 'main', 'ταβανι', 'ταβανι'] | select('in', text) | list | count > 0 }}"
       lights: >-
         {{ [drums] if (is_drums and not is_main) else ([main] if (is_main and not is_drums) else [main, drums]) }}
       where: >-
-        {{ ' στα ντραμς' if lights == [drums] else (' στα κύρια' if lights == [main] else '') }}
+        {{ 'στα ντραμς' if lights == [drums] else ('στα κύρια' if lights == [main] else '') }}
       # Χρώματα: τα σύνθετα πρώτα (ζεστό λευκό πριν από λευκό, σκούρο μπλε πριν από μπλε). Ταίριασμα με ρίζα.
       colors:
-      - {k: ['ζεστό λευκ', 'ζεστο λευκ', 'ζεστά λευκ', 'ζεστα λευκ', 'warm white'], rgbw: [255, 160, 80, 0], n: ζεστό λευκό}
-      - {k: ['σκούρο μπλε', 'σκουρο μπλε', 'deep blue'], rgbw: [0, 30, 255, 0], n: σκούρο μπλε}
-      - {k: ['γαλάζ', 'γαλαζ', 'light blue'], rgbw: [0, 150, 255, 0], n: γαλάζιο}
-      - {k: ['τυρκουάζ', 'τυρκουαζ', 'turquoise'], rgbw: [0, 255, 180, 0], n: τυρκουάζ}
+      - {k: ['ζεστο λευκ', 'ζεστο λευκ', 'ζεστα λευκ', 'ζεστα λευκ', 'warm white'], rgbw: [255, 160, 80, 0], n: ζεστό λευκό}
+      - {k: ['σκουρο μπλε', 'σκουρο μπλε', 'deep blue'], rgbw: [0, 30, 255, 0], n: σκούρο μπλε}
+      - {k: ['γαλαζ', 'γαλαζ', 'light blue'], rgbw: [0, 150, 255, 0], n: γαλάζιο}
+      - {k: ['τυρκουαζ', 'τυρκουαζ', 'turquoise'], rgbw: [0, 255, 180, 0], n: τυρκουάζ}
       - {k: ['θαλασσ', 'κυαν', 'cyan'], rgbw: [0, 255, 255, 0], n: κυανό}
-      - {k: ['ματζέντα', 'ματζεντα', 'φούξια', 'φουξια', 'magenta', 'fuchsia'], rgbw: [255, 0, 255, 0], n: φούξια}
+      - {k: ['ματζεντα', 'ματζεντα', 'φουξια', 'φουξια', 'magenta', 'fuchsia'], rgbw: [255, 0, 255, 0], n: φούξια}
       - {k: ['βιολετ', 'violet'], rgbw: [180, 0, 255, 0], n: βιολετί}
       - {k: ['μωβ', 'μοβ', 'purple'], rgbw: [128, 0, 255, 0], n: μωβ}
       - {k: ['ροζ', 'pink'], rgbw: [226, 100, 216, 0], n: ροζ}
-      - {k: ['κόκκιν', 'κοκκιν', 'red'], rgbw: [255, 0, 0, 0], n: κόκκινο}
+      - {k: ['κοκκιν', 'κοκκιν', 'red'], rgbw: [255, 0, 0, 0], n: κόκκινο}
       - {k: ['πορτοκαλ', 'orange'], rgbw: [255, 80, 0, 0], n: πορτοκαλί}
       - {k: ['χρυσ', 'gold'], rgbw: [255, 150, 0, 0], n: χρυσό}
-      - {k: ['κίτριν', 'κιτριν', 'yellow'], rgbw: [255, 255, 0, 0], n: κίτρινο}
-      - {k: ['λάιμ', 'λαιμ', 'lime'], rgbw: [150, 255, 0, 0], n: λάιμ}
-      - {k: ['μέντα', 'μεντα', 'mint'], rgbw: [50, 255, 150, 0], n: μέντα}
-      - {k: ['πράσιν', 'πρασιν', 'green'], rgbw: [0, 255, 0, 0], n: πράσινο}
+      - {k: ['κιτριν', 'κιτριν', 'yellow'], rgbw: [255, 255, 0, 0], n: κίτρινο}
+      - {k: ['λαιμ', 'λαιμ', 'lime'], rgbw: [150, 255, 0, 0], n: λάιμ}
+      - {k: ['μεντα', 'μεντα', 'mint'], rgbw: [50, 255, 150, 0], n: μέντα}
+      - {k: ['πρασιν', 'πρασιν', 'green'], rgbw: [0, 255, 0, 0], n: πράσινο}
       - {k: ['μπλε', 'blue'], rgbw: [0, 0, 255, 0], n: μπλε}
-      - {k: ['λευκ', 'άσπρ', 'ασπρ', 'white'], rgbw: [255, 255, 255, 0], n: λευκό}
+      - {k: ['λευκ', 'ασπρ', 'ασπρ', 'white'], rgbw: [255, 255, 255, 0], n: λευκό}
       modes:
-      - {k: ['pink radio', 'πινκ ρέιντιο', 'πινκ ράδιο'], rgbw: [226, 100, 216, 0], b: 80, t: 2, n: Pink Radio}
-      - {k: ['on air', 'ον έαρ', 'ον έρ', 'όν έρ'], rgbw: [255, 0, 0, 0], b: 75, t: 2, n: ON AIR}
+      - {k: ['pink radio', 'πινκ ρειντιο', 'πινκ ραδιο'], rgbw: [226, 100, 216, 0], b: 80, t: 2, n: Pink Radio}
+      - {k: ['on air', 'ον εαρ', 'ον ερ', 'ον ερ'], rgbw: [255, 0, 0, 0], b: 75, t: 2, n: ON AIR}
       - {k: ['rock', 'ροκ'], rgbw: [120, 0, 255, 0], b: 65, t: 2, n: Rock}
-      - {k: ['night', 'νυχτ', 'νύχτ'], rgbw: [255, 70, 10, 0], b: 25, t: 3, n: Night}
+      - {k: ['night', 'νυχτ', 'νυχτ'], rgbw: [255, 70, 10, 0], b: 25, t: 3, n: Night}
       value: "{{ trigger.slots.value | default('') }}"
       # Τι ζητήθηκε στην εντολή «set»: mode → disco → step → % → χρώμα
       mode_i: >-
@@ -117,8 +117,8 @@ automation:
       kind: >-
         {%- if trigger.id != 'set' -%}{{ trigger.id }}
         {%- elif mode_i >= 0 -%}mode
-        {%- elif 'disco' in text or 'ντίσκο' in text -%}disco_start
-        {%- elif ['πιο φωτειν', 'πιο δυνατ', 'πιο έντον'] | select('in', text) | list | count > 0 -%}up
+        {%- elif 'disco' in text or 'ντισκο' in text -%}disco_start
+        {%- elif ['πιο φωτειν', 'πιο δυνατ', 'πιο εντον'] | select('in', text) | list | count > 0 -%}up
         {%- elif ['πιο χαμηλ', 'πιο σκοτειν', 'πιο αχν', 'πιο απαλ'] | select('in', text) | list | count > 0 -%}down
         {%- elif level >= 0 -%}brightness
         {%- elif color_i >= 0 -%}color
@@ -137,13 +137,13 @@ automation:
       - action: light.turn_on
         target:
           entity_id: "{{ lights }}"
-      - set_conversation_response: "Άναψα τα LED{{ where }}."
+      - set_conversation_response: "Άναψα τα LED{{ (' ' ~ where) if where else '' }}."
     - conditions: "{{ kind == 'off' }}"
       sequence:
       - action: light.turn_off
         target:
           entity_id: "{{ lights }}"
-      - set_conversation_response: "Έκλεισα τα LED{{ where }}."
+      - set_conversation_response: "Έκλεισα τα LED{{ (' ' ~ where) if where else '' }}."
     - conditions: "{{ kind in ['up', 'down'] }}"
       sequence:
       - action: light.turn_on
@@ -152,7 +152,7 @@ automation:
         data:
           brightness_step_pct: "{{ 15 if kind == 'up' else -15 }}"
           transition: 1
-      - set_conversation_response: "{{ 'Δυνάμωσα' if kind == 'up' else 'Χαμήλωσα' }} τα LED{{ where }}."
+      - set_conversation_response: "{{ 'Δυνάμωσα' if kind == 'up' else 'Χαμήλωσα' }} τα LED{{ (' ' ~ where) if where else '' }}."
     - conditions: "{{ kind == 'brightness' }}"
       sequence:
       - action: light.turn_on
@@ -160,7 +160,7 @@ automation:
           entity_id: "{{ lights }}"
         data:
           brightness_pct: "{{ pct }}"
-      - set_conversation_response: "Έβαλα τα LED{{ where }} στο {{ pct }}%."
+      - set_conversation_response: "Έβαλα τα LED{{ (' ' ~ where) if where else '' }} στο {{ pct }}%."
     - conditions: "{{ kind == 'color' }}"
       sequence:
       - action: light.turn_on
@@ -168,7 +168,7 @@ automation:
           entity_id: "{{ lights }}"
         data:
           rgbw_color: "{{ color_hit.rgbw }}"
-      - set_conversation_response: "Έκανα τα LED{{ where }} {{ color_hit.n }}."
+      - set_conversation_response: "Έκανα τα LED{{ (' ' ~ where) if where else '' }} {{ color_hit.n }}."
     - conditions: "{{ kind == 'mode' }}"
       sequence:
       - action: light.turn_on
@@ -178,7 +178,7 @@ automation:
           rgbw_color: "{{ mode_hit.rgbw }}"
           brightness_pct: "{{ mode_hit.b }}"
           transition: "{{ mode_hit.t }}"
-      - set_conversation_response: "{{ mode_hit.n }} mode στα LED{{ where }}."
+      - set_conversation_response: "{{ mode_hit.n }} mode στα LED{{ (' ' ~ where) if where else '' }}."
     - conditions: "{{ kind == 'disco_start' }}"
       sequence:
       - action: script.turn_on
