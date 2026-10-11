@@ -188,3 +188,23 @@ TTS διαθέσιμα: `tts.google_translate_en_com`, `tts.home_assistant_cloud
 4. ✅ Η Σάρα είναι στην κύρια κρεβατοκάμαρα (area `bedroom`).
 5. ✅ Θέσεις TV/box: Σαλόνι: `[TV]big screen` (Samsung 65"), `a-box` (Xiaomi Mi Box 4), `XboxOne`.
    Νεφέλη: Samsung The Frame 32. Αλεξάνδρα: Samsung 5 Series 32. Κρεβατοκάμαρα: LG webOS 32.
+
+## Ανοιχτά θέματα (μετά το βήμα 3)
+
+### Pink Radio Studio Voice PE (`0ad368`, 192.168.1.124): crashes
+- Firmware Voice PE 26.9.0 / ESPHome 2026.6.0, Wi-Fi `pink-net` -41 dB (σήμα άριστο, δεν φταίει).
+- Σύμπτωμα 1: με **wake sound ON** ο ήχος wake κολλάει (`i2s_audio.speaker: Parent bus is busy`), το μικρόφωνο στέλνει σιωπή,
+  και το STT τρέχει ~36–40 s χωρίς `stt-vad-start` (`stt-stream-failed`). **Workaround: Wake sound OFF.**
+- Σύμπτωμα 2: crash/reboot κατά την αναπαραγωγή της απάντησης TTS (`interrupt watchdog`, `exception/panic`,
+  `Fault - StoreProhibited` core 0, ελεύθερη μνήμη ~41 KB). Η εντολή εκτελείται πριν από το crash.
+- Αποκλείστηκαν: Wi-Fi, μηχανή STT (ίδιο με HA Cloud και Google AI STT), Sendspin/Music Assistant (crash και με το MA σταματημένο).
+- **Λύση (2026-10-11): downgrade σε Voice PE firmware 26.6.0** (τελευταία stable στο GitHub) μέσω USB + web.esphome.io
+  (`home-assistant-voice-esp32s3.factory.bin`, χωρίς erase) και μετά Reconfigure στο ESPHome. Κράτησε entities, IDs και area.
+  Μετά το downgrade δουλεύει. Skip στο update 26.9.0, wake sound OFF.
+- Τα Voice PE του σπιτιού είναι ακόμα σε 26.9.0. Επόμενο: έλεγχος αν κρασάρουν κι αυτά (`tools/esphome_logs.py "Nefeli Assistant"`).
+- Εργαλείο: `tools/esphome_logs.py` (venv `~/ha-venv` στο WSL με `aioesphomeapi`).
+
+### STT και φράσεις (για τα βήματα 8/9)
+- Το HA Cloud STT γράφει «νέον/νέων» για το «neon», «σβήσαι» για το «σβήσε», «Ετοίμασέ» (δεύτερος τόνος) για το «ετοίμασε».
+  Οι φράσεις χρειάζονται lists με παραλλαγές.
+- Το Google AI STT ήταν χειρότερο («Ζωγράφισε τα φώτα…»). Το pipeline «Home Assistant» μένει σε HA Cloud STT.

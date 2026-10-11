@@ -98,6 +98,10 @@
 **Γνωστά προβλήματα integrations**
 - `mic_to_mediaplayer` v1.5.3: διαβάζει μόνο τα `entry.data` και αγνοεί τα options. Για αλλαγή satellite ή ηχείου:
   **διαγραφή και επαναπροσθήκη** του entry, όχι Configure.
+- Voice PE firmware **26.9.0**: crash κατά την αναπαραγωγή TTS (βλ. `docs/INVENTORY.md`). Ο Pink είναι σε **26.6.0**,
+  με skip στο 26.9.0. Μην κάνεις update στα Voice PE χωρίς δοκιμή. Wake sound OFF στον Pink.
+- Debug Voice PE: `tools/esphome_logs.py "<ESPHome entry>"` (WSL venv `~/ha-venv`, `aioesphomeapi`). Pipeline debug: Settings →
+  Voice assistants → pipeline → ⋮ → Debug. Το κλειδί είναι τα events `stt-vad-start`/`stt-vad-end`.
 
 ## Πώς θέλω να λειτουργεί το Voice
 
