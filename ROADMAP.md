@@ -4,9 +4,10 @@
 
 | # | Βήμα | Κατάσταση | Σημειώσεις |
 |---|------|-----------|------------|
-| 0 | Workspace: σύνδεση φακέλου, CLAUDE.md, ROADMAP.md, git tag `baseline` | 🔄 | `baseline` → `a67485b` (Initial Home Assistant configuration backup) |
-| 1 | Inventory: entities, satellites (hardware, έξοδος ήχου), pipelines, automations, scripts | ⬜ | |
+| 0 | Workspace: σύνδεση φακέλου, CLAUDE.md, ROADMAP.md, git tag `baseline` | 🔄 | commit `1e9637a`. Εκκρεμεί: tag `baseline` → `a67485b` και push |
+| 1 | Inventory: entities, satellites (hardware, έξοδος ήχου), pipelines, automations, scripts | 🔄 | `docs/INVENTORY.md`. Εκκρεμούν απαντήσεις χρήστη |
 | 2 | Δομή: floors `home` / `pinkradio`, areas, satellites στα areas τους | ⬜ | |
+| 2β | Οργάνωση αρχείων: `packages/` ανά scope/λειτουργία (`core`, `home`, `pinkradio`, `shared`), `custom_sentences` με lists αντί για copy-paste ανά δωμάτιο. Το `automations.yaml` κρατά μόνο ό,τι φτιάχνεται από το UI | ⬜ | |
 | 3 | Naming cleanup: `pink_radio_*` → `pinkradio_*`, plugs με λειτουργικά ονόματα, grep και διόρθωση σε όλο το YAML | ⬜ | |
 | 4 | Μοντέλο ασφαλείας: exposed entities, pipeline του Pink, guards (και MCP, αν το θέλουμε) | ⬜ | |
 | 5 | Voice routing core: `script.voice_speak`, default έξοδος ανά assistant | ⬜ | |
@@ -21,3 +22,6 @@
 ## Ημερολόγιο
 
 - 2026-10-11 — Βήμα 0 ξεκίνησε. Repo = ζωντανό config (`U:\homeassistant` ≡ `/volume1/docker/homeassistant`).
+- 2026-10-11 — Βήμα 1: inventory στο `docs/INVENTORY.md`. Βρέθηκαν σπασμένα automations σκούπας (παλιά entity IDs).
+- 2026-10-11 — Hotfix: αντικατάσταση παλιών entity IDs στο `automations.yaml` (203 γραμμές: σκούπες, `alex_room`, `sarah_room`). Προσωρινό μέχρι τα βήματα 7/8.
+- 2026-10-11 — Απόφαση: δομή με packages (νέο βήμα 2β). Ό,τι είναι σε package επεξεργάζεται από το αρχείο, όχι από το UI.

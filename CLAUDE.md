@@ -31,13 +31,16 @@
 3. **Isolation του Pink Radio:** από το Pink Assistant επιτρέπεται **μόνο** ο έλεγχος του studio.
    Κανένα `home_*` entity δεν γίνεται exposed ούτε ελέγχεται από εκεί, και τίποτα δεν ακούγεται στο σπίτι.
 4. **Reusable scripts αντί για ένα automation ανά μικρή ενέργεια.** Τα voice automations απλώς καλούν scripts.
-5. **Git:** κάθε βήμα κλείνει με commit. Πριν από αλλαγές που δύσκολα αναιρούνται (renames, μαζικά edits YAML)
+5. **Packages:** η λογική ζει στο `packages/<scope>/<λειτουργία>.yaml` (`core`, `home`, `pinkradio`, `shared`).
+   Το `automations.yaml` / `scripts.yaml` κρατούν μόνο ό,τι φτιάχνεται από το UI. Επαναλαμβανόμενες φράσεις
+   (δωμάτια, modes) γίνονται `lists` στο `custom_sentences/el/`, όχι αντιγραμμένα μπλοκ ανά δωμάτιο.
+6. **Git:** κάθε βήμα κλείνει με commit. Πριν από αλλαγές που δύσκολα αναιρούνται (renames, μαζικά edits YAML)
    γίνεται commit ή tag. Το tag `baseline` είναι η αρχική, ανέγγιχτη κατάσταση.
-6. **Γραμμές YAML σε LF.** Το HA τρέχει σε Linux. Κανένα CRLF στα αρχεία YAML.
-7. **Μετά από αλλαγή YAML:** έλεγχος config (Developer tools → YAML → Check configuration) και reload
+7. **Γραμμές YAML σε LF.** Το HA τρέχει σε Linux. Κανένα CRLF στα αρχεία YAML.
+8. **Μετά από αλλαγή YAML:** έλεγχος config (Developer tools → YAML → Check configuration) και reload
    ή restart. Έλεγχος του `home-assistant.log` για errors.
-8. Μυστικά μόνο στο `secrets.yaml` (ignored), με `!secret`.
-9. Απαντήσεις και σχόλια στα ελληνικά. Τα ονόματα entities/scripts σε λατινικά, snake_case.
+9. Μυστικά μόνο στο `secrets.yaml` (ignored), με `!secret`.
+10. Απαντήσεις και σχόλια στα ελληνικά. Τα ονόματα entities/scripts σε λατινικά, snake_case.
 
 ## Πώς θέλω να λειτουργεί το Voice
 
@@ -58,7 +61,7 @@
 δωματίου. Όχι απάντηση της Νεφέλης από το JBL του σαλονιού. Όχι ήχος στο σπίτι από εντολή στο Pink Radio.
 
 Media players: `media_player.jbl_nest`, `media_player.nefeli_room`, `media_player.sarah_room`,
-`media_player.alexandra_room`. **Δεν υπάρχει** media player για το Pink Radio.
+`media_player.alex_room`. **Δεν υπάρχει** media player για το Pink Radio.
 
 ### TTS
 
