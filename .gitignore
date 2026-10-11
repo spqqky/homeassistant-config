@@ -1,0 +1,35 @@
+# Secrets
+secrets.yaml
+
+# Home Assistant runtime / state
+.storage/
+.cloud/
+.cache/
+.ha_run.lock
+tts/
+
+# Databases / logs
+home-assistant_v2.db
+home-assistant_v2.db-*
+*.log
+*.log.*
+
+# Backups
+backups/
+*.tar
+
+# Cache / temp
+__pycache__/
+*.pyc
+*.tmp
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Home Assistant generated/runtime
+.HA_VERSION
+.shopping_list.json
+
+# Reinstallable HACS component
+custom_components/hacs/

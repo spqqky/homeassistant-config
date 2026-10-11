@@ -1,0 +1,35 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Mic to MediaPlayer einrichten",
+        "description": "Wähle eine Assist-Satellite-Entität als Mikrofon-Quelle, einen Media Player für die TTS-Ausgabe und optional eine Assist-Pipeline (Sprachassistent).",
+        "data": {
+          "satellite_entity_id": "Assist Satellite (Mikrofon-Quelle)",
+          "media_player_entity_id": "Media Player (TTS-Ausgabe)",
+          "pipeline_id": "Sprachassistent / Pipeline"
+        },
+        "data_description": {
+          "satellite_entity_id": "Die Satellite-Entität, deren Spracheingabe überwacht werden soll (z.B. Assist Microphone App, Wyoming Satellite, ESPHome Satellite).",
+          "media_player_entity_id": "Auf diesem Media Player wird die TTS-Antwort des Assistenten abgespielt.",
+          "pipeline_id": "Welche Assist-Pipeline (Sprachassistent) soll verwendet werden. Bestimmt STT-Engine, Konversationsagent und TTS-Engine."
+        }
+      }
+    },
+    "error": {
+      "satellite_not_found": "Die gewählte Satellite-Entität wurde nicht gefunden. Bitte prüfe, ob sie verfügbar ist."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Mic to MediaPlayer Optionen",
+        "data": {
+          "satellite_entity_id": "Assist Satellite (Mikrofon-Quelle)",
+          "media_player_entity_id": "Media Player (TTS-Ausgabe)",
+          "pipeline_id": "Sprachassistent / Pipeline"
+        }
+      }
+    }
+  }
+}

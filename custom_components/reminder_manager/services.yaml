@@ -1,0 +1,19 @@
+delete_reminder:
+  name: Delete reminder
+  description: Find and delete one matching reminder from calendar.reminders.
+  fields:
+    search_text:
+      name: Search text
+      description: Reminder subject to search for.
+      required: true
+      example: "Mailo"
+      selector:
+        text:
+
+    event_date:
+      name: Event date
+      description: Optional appointment date in YYYY-MM-DD format. This refers to the actual event, not the earlier notification.
+      required: false
+      example: "2027-05-18"
+      selector:
+        text:

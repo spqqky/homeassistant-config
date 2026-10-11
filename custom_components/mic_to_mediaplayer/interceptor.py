@@ -1,0 +1,910 @@
+"""Pipeline event interceptor for assist_satellite entities.
+
+Patches the on_pipeline_event method of a specific satellite entity instance
+to capture TTS events and play them on a configured media player.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import logging
+from typing import Any
+
+from homeassistant.components.assist_pipeline import PipelineEvent, PipelineEventType
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.entity_platform import async_get_platforms
+from homeassistant.helpers.event import async_track_state_change_event
+from homeassistant.helpers.network import get_url
+
+from .const import (
+    STATE_ERROR,
+    STATE_IDLE,
+    STATE_LISTENING,
+    STATE_PROCESSING,
+    STATE_RESPONDING,
+)
+
+_LOGGER = logging.getLogger(__name__)
+
+# Suffixes HA appends to an assist_satellite object_id. German installs use
+# "Assist-Satellit" (no trailing e); English uses "Assist satellite".
+_SATELLITE_SUFFIXES = ("_assist_satellit", "_assist_satellite", "_satellite")
+
+
+def _satellite_node_stem(entity_id: str) -> str:
+    """Recover the ESPHome node-name slug embedded in a satellite entity_id.
+
+    Fleet SmartMic firmware builds its announce target from the mac-suffixed
+    ``App.get_name()`` as ``assist_satellite.<node_slug>_assist_satellit`` —
+    which never equals HA's friendly-name-derived object_id. Stripping the
+    domain and the satellite suffix recovers ``<node_slug>`` so announce can
+    route by ESPHome device instead of an exact entity_id match.
+    """
+    object_id = entity_id.split(".", 1)[-1]
+    for suffix in _SATELLITE_SUFFIXES:
+        if object_id.endswith(suffix):
+            return object_id[: -len(suffix)]
+    return object_id
+
+
+class PipelineInterceptor:
+    """Intercept pipeline events from a satellite and play TTS on a media player.
+
+    Works by patching the on_pipeline_event method on the target satellite
+    entity instance. This is non-invasive: it only affects the single entity,
+    does not modify any global functions, and is fully reversible on unload.
+    """
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        satellite_entity_id: str,
+        media_player_entity_id: str,
+        pipeline_id: str | None = None,
+    ) -> None:
+        """Initialize the interceptor."""
+        self.hass = hass
+        self._satellite_entity_id = satellite_entity_id
+        self._media_player_entity_id = media_player_entity_id
+        self._pipeline_id = pipeline_id
+        self._satellite_entity: Any = None
+        self._original_on_pipeline_event: Any = None
+        self._active = False
+        self._is_alexa: bool = False
+        self._unsub_entity_watch: Any = None
+
+        # State tracking
+        self._state = STATE_IDLE
+        self._state_listeners: list = []
+        self._last_text: str | None = None
+        self._last_response: str | None = None
+        self._continue_conversation: bool = False
+
+    # -- Public properties --
+
+    @property
+    def state(self) -> str:
+        """Return current pipeline state."""
+        return self._state
+
+    @property
+    def last_text(self) -> str | None:
+        """Return last recognized speech text."""
+        return self._last_text
+
+    @property
+    def last_response(self) -> str | None:
+        """Return last assistant response text."""
+        return self._last_response
+
+    @property
+    def satellite_entity_id(self) -> str:
+        """Return the monitored satellite entity ID."""
+        return self._satellite_entity_id
+
+    def matches_satellite_id(self, satellite_id: str) -> bool:
+        """Return True if this interceptor serves the given satellite entity_id.
+
+        Exact entity_id wins. Falls back to the ESPHome node-name slug so that
+        fleet firmware — which sends ``assist_satellite.<mac_node>_assist_satellit``
+        derived from ``App.get_name()`` rather than HA's friendly-name object_id
+        — still routes to the correct Mic2MP instance.
+        """
+        if satellite_id == self._satellite_entity_id:
+            return True
+        stem = _satellite_node_stem(satellite_id)
+        if stem and stem in self._esphome_device_name_candidates():
+            _LOGGER.debug(
+                "Routed announce target %s → %s via ESPHome node slug %r",
+                satellite_id,
+                self._satellite_entity_id,
+                stem,
+            )
+            return True
+        return False
+
+    @property
+    def media_player_entity_id(self) -> str:
+        """Return the target media player entity ID."""
+        return self._media_player_entity_id
+
+    @property
+    def pipeline_id(self) -> str | None:
+        """Return the configured pipeline ID."""
+        return self._pipeline_id
+
+    @property
+    def is_active(self) -> bool:
+        """Return True if the interceptor is patched and active."""
+        return self._active
+
+    @property
+    def is_alexa(self) -> bool:
+        """Return True if the media player is an Alexa device."""
+        return self._is_alexa
+
+    # -- State management --
+
+    def add_state_listener(self, listener) -> None:
+        """Add a callback for state changes."""
+        self._state_listeners.append(listener)
+
+    def remove_state_listener(self, listener) -> None:
+        """Remove a state change callback."""
+        if listener in self._state_listeners:
+            self._state_listeners.remove(listener)
+
+    def _set_state(self, state: str) -> None:
+        """Update state and notify listeners."""
+        self._state = state
+        for listener in self._state_listeners:
+            try:
+                listener()
+            except Exception:  # noqa: BLE001
+                _LOGGER.debug("Error in state listener", exc_info=True)
+
+    # -- Lifecycle --
+
+    async def async_start(self) -> bool:
+        """Find the satellite entity and patch its on_pipeline_event.
+
+        Returns True if patching succeeded, False otherwise.
+        """
+        entity = self._find_satellite_entity()
+
+        if entity is None:
+            _LOGGER.debug(
+                "Satellite entity '%s' not found yet",
+                self._satellite_entity_id,
+            )
+            return False
+
+        self._patch_entity(entity)
+
+        self._active = True
+
+        # Detect if media player is from alexa_media integration
+        self._is_alexa = self._detect_alexa_media_player()
+
+        _LOGGER.info(
+            "Interceptor active: %s → %s%s",
+            self._satellite_entity_id,
+            self._media_player_entity_id,
+            " (Alexa TTS mode)" if self._is_alexa else "",
+        )
+
+        # Watch for entity instance replacement (ESPHome reconnect, integration
+        # reload). Keeps the patch attached to the live entity rather than a
+        # stale Python object that no longer receives pipeline events.
+        if self._unsub_entity_watch is None:
+            self._unsub_entity_watch = async_track_state_change_event(
+                self.hass,
+                [self._satellite_entity_id],
+                self._on_satellite_state_change,
+            )
+
+        # Apply pipeline preference to the satellite
+        if self._pipeline_id:
+            await self._apply_pipeline_preference()
+
+        return True
+
+    def _patch_entity(self, entity: Any) -> None:
+        """Install the intercept on the given satellite entity instance."""
+        self._satellite_entity = entity
+        self._original_on_pipeline_event = entity.on_pipeline_event
+        entity.on_pipeline_event = self._intercepted_on_pipeline_event
+
+    @callback
+    def _on_satellite_state_change(self, event) -> None:
+        """Re-patch when the underlying entity instance is replaced.
+
+        ESPHome reconnects (wifi blip, OTA, integration reload) recreate the
+        assist_satellite entity object. The original patch lives on the
+        orphaned instance and silently stops receiving events. Detect drift
+        on every state_changed and re-attach to the live instance.
+        """
+        if not self._active:
+            return
+        current = self._find_satellite_entity()
+        if current is None or current is self._satellite_entity:
+            return
+        _LOGGER.warning(
+            "Satellite entity '%s' replaced — re-patching interceptor",
+            self._satellite_entity_id,
+        )
+        self._patch_entity(current)
+
+    async def async_stop(self) -> None:
+        """Restore the original on_pipeline_event and clean up."""
+        if self._unsub_entity_watch is not None:
+            self._unsub_entity_watch()
+            self._unsub_entity_watch = None
+
+        if self._satellite_entity and self._original_on_pipeline_event:
+            self._satellite_entity.on_pipeline_event = (
+                self._original_on_pipeline_event
+            )
+            _LOGGER.info(
+                "Interceptor removed from %s", self._satellite_entity_id
+            )
+
+        self._satellite_entity = None
+        self._original_on_pipeline_event = None
+        self._active = False
+        self._state_listeners.clear()
+
+    # -- Entity lookup --
+
+    def _find_satellite_entity(self) -> Any:
+        """Find the satellite entity object.
+
+        Uses the entity registry to determine which integration provides the
+        satellite, then searches that integration's entity platforms.
+        """
+        entity_id = self._satellite_entity_id
+
+        # Strategy 1: Use entity registry to find the owning integration,
+        # then look up the entity object in that integration's platforms.
+        entity_reg = er.async_get(self.hass)
+        registry_entry = entity_reg.async_get(entity_id)
+
+        if registry_entry is not None:
+            integration = registry_entry.platform  # e.g. "wyoming", "esphome"
+            platforms = async_get_platforms(self.hass, integration)
+            for platform in platforms:
+                if platform.domain == "assist_satellite":
+                    entity = platform.entities.get(entity_id)
+                    if entity is not None:
+                        _LOGGER.debug(
+                            "Found satellite via integration '%s'", integration
+                        )
+                        return entity
+
+        # Strategy 2: Brute-force search across all known satellite providers.
+        for integration in ("wyoming", "esphome", "voip", "homeassistant"):
+            try:
+                platforms = async_get_platforms(self.hass, integration)
+            except Exception:  # noqa: BLE001
+                continue
+            for platform in platforms:
+                if platform.domain == "assist_satellite":
+                    entity = platform.entities.get(entity_id)
+                    if entity is not None:
+                        _LOGGER.debug(
+                            "Found satellite via fallback search '%s'",
+                            integration,
+                        )
+                        return entity
+
+        return None
+
+    # -- Pipeline preference --
+
+    async def _apply_pipeline_preference(self) -> None:
+        """Set the satellite's pipeline select entity to the configured pipeline."""
+        try:
+            from homeassistant.components.assist_pipeline import async_get_pipeline
+
+            pipeline = async_get_pipeline(self.hass, self._pipeline_id)
+            if pipeline is None:
+                _LOGGER.warning("Pipeline '%s' not found", self._pipeline_id)
+                return
+
+            pipeline_name = pipeline.name
+        except Exception:  # noqa: BLE001
+            _LOGGER.debug("Could not resolve pipeline name", exc_info=True)
+            return
+
+        # Find the satellite device's pipeline select entity
+        pipeline_select_id = self._find_pipeline_select_entity()
+        if pipeline_select_id is None:
+            _LOGGER.debug(
+                "No pipeline select entity found for satellite device"
+            )
+            return
+
+        # Read current options from the select entity
+        select_state = self.hass.states.get(pipeline_select_id)
+        if select_state is None:
+            return
+
+        options = select_state.attributes.get("options", [])
+
+        # Find the matching option (pipeline name or "preferred")
+        target_option = None
+        for option in options:
+            if option.lower() == pipeline_name.lower():
+                target_option = option
+                break
+
+        if target_option is None:
+            _LOGGER.warning(
+                "Pipeline '%s' not found in select options %s",
+                pipeline_name,
+                options,
+            )
+            return
+
+        try:
+            await self.hass.services.async_call(
+                "select",
+                "select_option",
+                {
+                    "entity_id": pipeline_select_id,
+                    "option": target_option,
+                },
+                blocking=True,
+            )
+            _LOGGER.info(
+                "Set satellite pipeline to '%s' via %s",
+                target_option,
+                pipeline_select_id,
+            )
+        except Exception:  # noqa: BLE001
+            _LOGGER.warning(
+                "Could not set pipeline on %s", pipeline_select_id
+            )
+
+    def _find_pipeline_select_entity(self) -> str | None:
+        """Find the pipeline select entity belonging to the satellite's device."""
+        entity_reg = er.async_get(self.hass)
+        satellite_entry = entity_reg.async_get(self._satellite_entity_id)
+
+        if satellite_entry is None or satellite_entry.device_id is None:
+            return None
+
+        # Find all entities for the satellite's device
+        device_entities = er.async_entries_for_device(
+            entity_reg, satellite_entry.device_id
+        )
+
+        for entry in device_entities:
+            if entry.domain == "select" and "pipeline" in (
+                entry.original_name or entry.entity_id
+            ).lower():
+                return entry.entity_id
+
+        return None
+
+    # -- Media player detection --
+
+    def _detect_alexa_media_player(self) -> bool:
+        """Check if the configured media player belongs to alexa_media."""
+        entity_reg = er.async_get(self.hass)
+        entry = entity_reg.async_get(self._media_player_entity_id)
+        if entry is not None and entry.platform == "alexa_media":
+            return True
+        return False
+
+    # -- Pipeline event handling --
+
+    @callback
+    def _intercepted_on_pipeline_event(self, event: PipelineEvent) -> None:
+        """Handle pipeline events: track state and capture TTS for media player."""
+        try:
+            self._process_event(event)
+        except Exception:  # noqa: BLE001
+            _LOGGER.exception("Error processing pipeline event")
+
+        # Always forward the event to the original satellite handler
+        if self._original_on_pipeline_event:
+            self._original_on_pipeline_event(event)
+
+    @callback
+    def _process_event(self, event: PipelineEvent) -> None:
+        """Extract data from pipeline events and trigger TTS playback."""
+        event_type = event.type
+        data = event.data or {}
+
+        if event_type == PipelineEventType.STT_START:
+            self._set_state(STATE_LISTENING)
+
+        elif event_type == PipelineEventType.STT_END:
+            self._set_state(STATE_PROCESSING)
+            stt_output = data.get("stt_output", {})
+            self._last_text = stt_output.get("text")
+            if self._last_text:
+                _LOGGER.debug("Recognized: %s", self._last_text)
+
+        elif event_type == PipelineEventType.INTENT_END:
+            intent_output = data.get("intent_output", {})
+            response = intent_output.get("response", {})
+            speech = response.get("speech", {})
+            plain = speech.get("plain", {})
+            self._last_response = plain.get("speech", "")
+            # Conversation agents set continue_conversation when expecting
+            # a follow-up reply without re-triggering the wake word.
+            self._continue_conversation = bool(
+                intent_output.get("continue_conversation", False)
+            )
+            if self._continue_conversation:
+                _LOGGER.debug("Conversation flagged for follow-up")
+
+        elif event_type == PipelineEventType.TTS_END:
+            self._set_state(STATE_RESPONDING)
+            if self._is_alexa:
+                # Alexa doesn't support direct audio URL streaming.
+                # Use notify.alexa_media with the response text instead.
+                if self._last_response:
+                    _LOGGER.debug(
+                        "Alexa TTS via notify: %s", self._last_response
+                    )
+                    self.hass.async_create_task(
+                        self._speak_tts_via_alexa(self._last_response)
+                    )
+            else:
+                tts_output = data.get("tts_output", {})
+                tts_url = tts_output.get("url")
+                if tts_url:
+                    _LOGGER.debug("TTS URL captured: %s", tts_url)
+                    self.hass.async_create_task(
+                        self._play_tts_on_media_player(tts_url)
+                    )
+
+        elif event_type == PipelineEventType.RUN_END:
+            self._set_state(STATE_IDLE)
+
+        elif event_type == PipelineEventType.ERROR:
+            _LOGGER.error(
+                "Pipeline error: %s - %s",
+                data.get("code", "unknown"),
+                data.get("message", ""),
+            )
+            self._set_state(STATE_ERROR)
+
+    # -- TTS playback --
+
+    async def _speak_tts_via_alexa(self, message: str) -> None:
+        """Send TTS text to an Alexa device via notify.alexa_media."""
+        _LOGGER.debug(
+            "Speaking on Alexa %s: %s",
+            self._media_player_entity_id,
+            message,
+        )
+
+        try:
+            await self.hass.services.async_call(
+                "notify",
+                "alexa_media",
+                {
+                    "target": self._media_player_entity_id,
+                    "message": message,
+                    "data": {"type": "tts"},
+                },
+                blocking=True,
+            )
+        except Exception:  # noqa: BLE001
+            _LOGGER.exception(
+                "Failed to speak TTS on Alexa %s",
+                self._media_player_entity_id,
+            )
+
+    async def _play_tts_on_media_player(self, tts_url: str) -> None:
+        """Play TTS audio on the configured media player.
+
+        After playback finishes, signal the satellite that TTS is done so
+        the assist_satellite entity can transition out of the responding
+        state. Without this signal, the satellite remains stuck at
+        "responding" because play_media's blocking=True only waits for the
+        service call to return (URL queued), not for actual playback to end.
+        """
+        # Make URL absolute if it's a relative path
+        if tts_url.startswith("/"):
+            try:
+                base_url = get_url(self.hass)
+                tts_url = f"{base_url}{tts_url}"
+            except Exception:  # noqa: BLE001
+                _LOGGER.warning(
+                    "Could not determine HA base URL, using relative URL"
+                )
+
+        _LOGGER.debug(
+            "Playing TTS on %s: %s",
+            self._media_player_entity_id,
+            tts_url,
+        )
+
+        try:
+            await self.hass.services.async_call(
+                "media_player",
+                "play_media",
+                {
+                    "entity_id": self._media_player_entity_id,
+                    "media_content_id": tts_url,
+                    "media_content_type": "music",
+                    "announce": True,
+                },
+                blocking=True,
+            )
+        except Exception:  # noqa: BLE001
+            _LOGGER.exception(
+                "Failed to play TTS on %s", self._media_player_entity_id
+            )
+            self._signal_tts_finished()
+            return
+
+        await self._wait_for_media_player_idle()
+        self._signal_tts_finished()
+
+        continue_flag = self._continue_conversation
+        self._continue_conversation = False
+
+        persistent_on = self._persistent_switch_on()
+
+        if persistent_on:
+            if continue_flag:
+                await self._call_esphome_service("start_follow_up")
+            else:
+                await self._call_esphome_service("end_persistent")
+        elif continue_flag:
+            await self._call_esphome_service("start_follow_up")
+
+    async def async_play_announcement(
+        self,
+        message: str | None = None,
+        audio_url: str | None = None,
+        tts_entity_id: str | None = None,
+        language: str | None = None,
+    ) -> None:
+        """Play a one-shot announcement on the configured media_player.
+
+        Used by external triggers (timer-finished, doorbell, etc.) that want to
+        speak on the same speaker that handles assistant TTS, with announce-mode
+        ducking so any music currently playing is interrupted and resumed.
+
+        Either ``message`` (TTS-synthesized) or ``audio_url`` (direct media URL)
+        must be supplied. If both, ``audio_url`` wins.
+
+        For ``message``, ``tts_entity_id`` selects the TTS engine; if omitted,
+        we ask HA to pick the system default. The TTS is rendered through
+        ``tts.speak`` which writes a temp media URL and dispatches play_media
+        with ``announce: true``.
+        """
+        if not (message or audio_url):
+            _LOGGER.warning(
+                "announce on %s called with neither message nor audio_url; ignoring",
+                self._media_player_entity_id,
+            )
+            return
+
+        if audio_url:
+            if audio_url.startswith("/"):
+                try:
+                    base_url = get_url(self.hass)
+                    audio_url = f"{base_url}{audio_url}"
+                except Exception:  # noqa: BLE001
+                    _LOGGER.debug(
+                        "Could not resolve HA base URL for announcement; using relative"
+                    )
+            try:
+                await self.hass.services.async_call(
+                    "media_player",
+                    "play_media",
+                    {
+                        "entity_id": self._media_player_entity_id,
+                        "media_content_id": audio_url,
+                        "media_content_type": "music",
+                        "announce": True,
+                    },
+                    blocking=True,
+                )
+                _LOGGER.debug(
+                    "Played announcement audio on %s: %s",
+                    self._media_player_entity_id,
+                    audio_url,
+                )
+            except Exception:  # noqa: BLE001
+                _LOGGER.exception(
+                    "Failed to play announcement audio on %s",
+                    self._media_player_entity_id,
+                )
+            return
+
+        if not tts_entity_id:
+            tts_entity_id = self._default_tts_entity_id()
+        if not tts_entity_id:
+            _LOGGER.warning(
+                "No TTS entity available for announcement on %s; message=%r",
+                self._media_player_entity_id,
+                message,
+            )
+            return
+
+        # NB: ``announce`` is a media_player.play_media parameter, NOT a tts
+        # option — passing it under ``options`` makes tts.speak raise
+        # "Invalid options found: ['announce']" and nothing is spoken. tts.speak
+        # renders + plays on the media_player directly; announce-mode ducking is
+        # omitted here to stay robust across every media_player type.
+        data: dict[str, Any] = {
+            "entity_id": tts_entity_id,
+            "media_player_entity_id": self._media_player_entity_id,
+            "message": message,
+        }
+        if language:
+            data["language"] = language
+        try:
+            await self.hass.services.async_call(
+                "tts", "speak", data, blocking=True
+            )
+            _LOGGER.debug(
+                "Spoke announcement on %s via %s: %r",
+                self._media_player_entity_id,
+                tts_entity_id,
+                message,
+            )
+        except Exception:  # noqa: BLE001
+            _LOGGER.exception(
+                "Failed to speak announcement on %s via %s",
+                self._media_player_entity_id,
+                tts_entity_id,
+            )
+
+    def _default_tts_entity_id(self) -> str | None:
+        """Pick a sensible TTS entity: first available tts.* entity in HA."""
+        for state in self.hass.states.async_all("tts"):
+            return state.entity_id
+        return None
+
+    async def _wait_for_media_player_idle(
+        self,
+        playing_grace: float = 3.0,
+        timeout: float = 30.0,
+        poll: float = 0.1,
+        stable_idle: float = 1.5,
+    ) -> None:
+        """Wait until media_player has fully finished TTS playback.
+
+        Three phases:
+
+        A. Confirm the player actually entered ``playing`` (or any non-idle
+           state). Bounded by ``playing_grace``. If it never leaves idle the
+           TTS was a no-op and we exit immediately.
+        B. Wait for the player to reach an idle state (bounded by ``timeout``).
+        C. Stable-idle window: keep polling for ``stable_idle`` seconds. If
+           the player flips back to ``playing`` mid-settle (chunked TTS, some
+           DLNA renderers oscillate idle↔playing between segments), jump back
+           to phase B. Return only after the state stays idle for the full
+           window.
+
+        Pattern-B satellites (no speaker, no AEC) re-recognise their own TTS
+        when the mic re-opens too soon, so we err on the side of waiting.
+        """
+        idle_states = {"idle", "paused", "off", "standby", "unknown", "unavailable"}
+
+        def _current() -> str | None:
+            s = self.hass.states.get(self._media_player_entity_id)
+            return s.state if s else None
+
+        # Phase A — confirm playing started
+        elapsed = 0.0
+        saw_playing = False
+        while elapsed < playing_grace:
+            if _current() not in idle_states:
+                saw_playing = True
+                break
+            await asyncio.sleep(poll)
+            elapsed += poll
+
+        if not saw_playing:
+            _LOGGER.debug(
+                "%s never left idle within %.1fs — treating TTS as already complete",
+                self._media_player_entity_id,
+                playing_grace,
+            )
+            return
+
+        # Phases B + C — wait for idle, confirm it stays idle
+        wait_elapsed = 0.0
+        while wait_elapsed < timeout:
+            # Phase B — wait until idle
+            while wait_elapsed < timeout and _current() not in idle_states:
+                await asyncio.sleep(poll)
+                wait_elapsed += poll
+
+            if wait_elapsed >= timeout:
+                break
+
+            # Phase C — confirm idle stays for stable_idle window
+            settle_elapsed = 0.0
+            stayed_idle = True
+            while settle_elapsed < stable_idle:
+                await asyncio.sleep(poll)
+                settle_elapsed += poll
+                wait_elapsed += poll
+                if _current() not in idle_states:
+                    _LOGGER.debug(
+                        "%s flipped back to playing after %.1fs of settle — resuming wait",
+                        self._media_player_entity_id,
+                        settle_elapsed,
+                    )
+                    stayed_idle = False
+                    break
+
+            if stayed_idle:
+                return
+
+        _LOGGER.warning(
+            "Timeout (%.1fs) waiting for %s to reach stable idle (last state %s) — "
+            "follow-up may capture residual TTS audio",
+            timeout,
+            self._media_player_entity_id,
+            _current() or "<missing>",
+        )
+
+    def _signal_tts_finished(self) -> None:
+        """Tell the satellite that TTS playback has completed.
+
+        Tries known assist_satellite hooks first, then falls back to firing
+        a synthetic RUN_END through the original on_pipeline_event handler.
+        """
+        entity = self._satellite_entity
+        if entity is None:
+            return
+
+        for method_name in (
+            "tts_response_finished",
+            "_internal_on_tts_response_finished",
+            "async_on_tts_response_finished",
+        ):
+            method = getattr(entity, method_name, None)
+            if method is None:
+                continue
+            try:
+                result = method()
+                if asyncio.iscoroutine(result):
+                    self.hass.async_create_task(result)
+                _LOGGER.debug(
+                    "Signaled TTS finished via %s on %s",
+                    method_name,
+                    self._satellite_entity_id,
+                )
+                return
+            except Exception:  # noqa: BLE001
+                _LOGGER.debug(
+                    "Calling %s failed; trying next fallback",
+                    method_name,
+                    exc_info=True,
+                )
+
+        # Fallback: synthesize a RUN_END so the satellite's own state machine
+        # closes the pipeline. Only the original handler is invoked, since the
+        # interceptor itself already saw RUN_END from the real pipeline.
+        if self._original_on_pipeline_event:
+            try:
+                synthetic = PipelineEvent(PipelineEventType.RUN_END, {})
+                self._original_on_pipeline_event(synthetic)
+                _LOGGER.debug(
+                    "Signaled TTS finished via synthetic RUN_END on %s",
+                    self._satellite_entity_id,
+                )
+            except Exception:  # noqa: BLE001
+                _LOGGER.debug(
+                    "Synthetic RUN_END dispatch failed", exc_info=True
+                )
+
+    def _esphome_device_name_candidates(self) -> list[str]:
+        """Return possible ESPHome service-name prefixes, in priority order.
+
+        ESPHome registers services as ``esphome.<firmware_name_slug>_<svc>``,
+        where ``firmware_name_slug`` derives from the YAML ``esphome.name``
+        field (not the user-friendly device name). Renaming the device in
+        the HA UI changes ``name_by_user`` but does NOT change the registered
+        service name. To stay correct across renames, try every plausible
+        slug source and let the caller pick one that resolves.
+        """
+        entity_reg = er.async_get(self.hass)
+        registry_entry = entity_reg.async_get(self._satellite_entity_id)
+        if registry_entry is None or registry_entry.platform != "esphome":
+            return []
+
+        candidates: list[str] = []
+
+        def _add(value: str | None) -> None:
+            if not value:
+                return
+            slug = value.strip().lower().replace(" ", "_").replace("-", "_")
+            if slug and slug not in candidates:
+                candidates.append(slug)
+
+        # Strategy 1: derive from the satellite entity_id stem. ESPHome creates
+        # entities as `<firmware_name>_<object_id>`, so stripping the known
+        # assist_satellite suffixes recovers the firmware name slug. This
+        # matches the actual service registration regardless of UI renames.
+        object_id = self._satellite_entity_id.split(".", 1)[-1]
+        for suffix in _SATELLITE_SUFFIXES:
+            if object_id.endswith(suffix):
+                _add(object_id[: -len(suffix)])
+                break
+
+        # Strategy 2: device registry — try firmware name first, then user override.
+        device_id = registry_entry.device_id
+        if device_id is not None:
+            from homeassistant.helpers import device_registry as dr
+
+            device = dr.async_get(self.hass).async_get(device_id)
+            if device is not None:
+                _add(device.name)
+                _add(device.name_by_user)
+
+        return candidates
+
+    def _persistent_switch_on(self) -> bool:
+        """Read state of the satellite's persistent_conversation switch.
+
+        Returns False if switch missing (legacy firmware) — preserves old
+        behavior so older satellites keep working unchanged.
+        """
+        entity_reg = er.async_get(self.hass)
+        registry_entry = entity_reg.async_get(self._satellite_entity_id)
+        if registry_entry is None or registry_entry.device_id is None:
+            return False
+
+        for entry in er.async_entries_for_device(
+            entity_reg, registry_entry.device_id
+        ):
+            if entry.domain != "switch":
+                continue
+            if "persistent_conversation" not in entry.entity_id:
+                continue
+            state = self.hass.states.get(entry.entity_id)
+            if state is None:
+                return False
+            return state.state == "on"
+        return False
+
+    async def _call_esphome_service(self, service_suffix: str) -> None:
+        """Call esphome.<device>_<service_suffix> if registered."""
+        candidates = self._esphome_device_name_candidates()
+        if not candidates:
+            _LOGGER.debug(
+                "Skipping esphome service: %s is not an ESPHome satellite",
+                self._satellite_entity_id,
+            )
+            return
+
+        service_name: str | None = None
+        for prefix in candidates:
+            name = f"{prefix}_{service_suffix}"
+            if self.hass.services.has_service("esphome", name):
+                service_name = name
+                break
+
+        if service_name is None:
+            _LOGGER.debug(
+                "ESPHome service esphome.<%s>_%s not found (tried %s) — "
+                "add it to device YAML",
+                "|".join(candidates),
+                service_suffix,
+                candidates,
+            )
+            return
+
+        try:
+            await self.hass.services.async_call(
+                "esphome", service_name, {}, blocking=False
+            )
+            _LOGGER.debug("Triggered esphome.%s", service_name)
+        except Exception:  # noqa: BLE001
+            _LOGGER.exception("Failed to call esphome.%s", service_name)

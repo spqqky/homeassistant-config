@@ -1,0 +1,24 @@
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: ghcr.io/home-assistant/home-assistant:stable
+
+    network_mode: host
+
+    volumes:
+      - /volume1/docker/homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+
+    environment:
+      TZ: Europe/Athens
+
+    restart: unless-stopped
+    stop_grace_period: 60s
+
+    init: true
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
