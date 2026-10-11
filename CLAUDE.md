@@ -45,6 +45,54 @@
 10. Μυστικά μόνο στο `secrets.yaml` (ignored), με `!secret`.
 11. Απαντήσεις και σχόλια στα ελληνικά. Τα ονόματα entities/scripts σε λατινικά, snake_case.
 
+## Δομή και naming convention
+
+**Floors / areas** (βήμα 2):
+
+| Floor | Area (εμφάνιση) | area_id | Aliases |
+|---|---|---|---|
+| `home` | Σαλόνι | `living_room` | σαλόνι, καθιστικό |
+| `home` | Δωμάτιο Νεφέλης | `nefeli_room` | δωμάτιο της Νεφέλης, Νεφέλη |
+| `home` | Δωμάτιο Αλεξάνδρας | `alex_room` | δωμάτιο της Αλεξάνδρας, Αλεξάνδρα |
+| `home` | Κύρια κρεβατοκάμαρα | `bedroom` | κρεβατοκάμαρα, υπνοδωμάτιο, δωμάτιο της Σάρας |
+| `pinkradio` | Pink Radio Studio | `pinkradio_studio` | Pink Radio, στούντιο, studio |
+| `home` | Office | `office` | — (εκτυπωτής Brother, HACS) |
+
+Το area_id / floor_id βγαίνει από το όνομα κατά τη δημιουργία και δεν αλλάζει μετά.
+
+**Ονόματα:** με βάση το δωμάτιο και τον ρόλο, όχι τη μάρκα. Ο player του Music Assistant έχει το ίδιο όνομα με
+`(MA)` στο device και `_ma` στο entity. Το Cast entity χρησιμοποιείται για TTS, το `_ma` για μουσική.
+
+| Device name | Entity ID (στόχος βήματος 3) | Σημερινό entity ID |
+|---|---|---|
+| Living Room Speaker | `media_player.home_living_room_speaker` | `media_player.jbl_nest` |
+| Living Room Speaker (MA) | `media_player.home_living_room_speaker_ma` | `media_player.jbl_nest_music` |
+| Nefeli Room Speaker | `media_player.home_nefeli_room_speaker` | `media_player.nefeli_room` |
+| Nefeli Room Speaker (MA) | `media_player.home_nefeli_room_speaker_ma` | `media_player.nefeli_room_music` |
+| Alex Room Speaker | `media_player.home_alex_room_speaker` | `media_player.alex_room` |
+| Alex Room Speaker (MA) | `media_player.home_alex_room_speaker_ma` | `media_player.alex_room_music` |
+| Bedroom Speaker | `media_player.home_bedroom_speaker` | `media_player.sarah_room` |
+| Bedroom Speaker (MA) | `media_player.home_bedroom_speaker_ma` | `media_player.sarah_room_music` |
+| Living Room Assistant | `assist_satellite.home_living_room_satellite` | `assist_satellite.home_satellite` |
+| Nefeli Room Assistant | `assist_satellite.home_nefeli_room_satellite` | `assist_satellite.nefeli_satellite` |
+| Alex Room Assistant | `assist_satellite.home_alex_room_satellite` | `assist_satellite.alex_satellite` |
+| Pink Radio Studio Assistant | `assist_satellite.pinkradio_studio_satellite` | `assist_satellite.pink_satellite` |
+| Studio Spare Plug | `switch.pinkradio_spare_plug` | `switch.pink_radio_plug1` |
+| Studio Neon ON AIR | `switch.pinkradio_neon_onair` | `switch.pink_radio_plug2` |
+| Studio Neon Anarchy | `switch.pinkradio_neon_anarchy` | `switch.pink_radio_plug3` |
+| Studio Neon Thunder | `switch.pinkradio_neon_thunder` | `switch.pink_radio_plug4` |
+| Studio Neon Pink Radio | `switch.pinkradio_neon_logo` | `switch.pink_radio_plug5` |
+| Studio Onyx Console | `switch.pinkradio_onyx_console` | `switch.pink_radio_plug6` |
+| Studio KRK Speakers | `switch.pinkradio_krk_speakers` | `switch.pink_radio_plug7` |
+| Studio Guitar Amp | `switch.pinkradio_guitar_amp` | `switch.pink_radio_plug8` |
+| Studio LED Main | `light.pinkradio_led_main` | `light.pink_radio_led_main` |
+| Studio LED Drums | `light.pinkradio_led_drums` | `light.pink_radio_led_drums` |
+| Home Vacuum | `vacuum.home_vacuum` | (ίδιο) |
+| Pink Radio Vacuum | `vacuum.pinkradio_vacuum` | (ίδιο) |
+
+Μέχρι το βήμα 3 τα YAML χρησιμοποιούν τα **σημερινά** entity IDs. Τα device names αλλάζουν ελεύθερα,
+τα entity IDs μόνο μαζί με grep και διόρθωση (κανόνας 6).
+
 ## Πώς θέλω να λειτουργεί το Voice
 
 ### Assistants και satellites
