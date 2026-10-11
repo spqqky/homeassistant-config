@@ -11,7 +11,7 @@
 | 3 | Naming cleanup: `pink_radio_*` → `pinkradio_*`, plugs με λειτουργικά ονόματα, grep και διόρθωση σε όλο το YAML | ✅ | 278 entities (`docs/step3_*.csv`), YAML 175 αντικαταστάσεις, γέφυρες ξαναστήθηκαν. Εκκρεμεί: prompt Home Gemini (`docs/prompts/`) |
 | 4 | Μοντέλο ασφαλείας: exposed entities, pipeline του Pink, guards (και MCP, αν το θέλουμε) | ✅ | exposure 50→12 (`config/assist_exposed.txt`), guards σε 23 automations, pipeline «Pink Radio» τοπικό. MCP: όχι. Εκκρεμεί δοκιμή από Νεφέλη/σαλόνι |
 | 5 | Voice routing core: `script.voice_speak`, default έξοδος ανά assistant | ✅ | `packages/core/core_voice.yaml`, κανόνας «απάντηση = μόνο set_conversation_response». Δοκιμή studio ✅, εκκρεμεί σαλόνι |
-| 6 | Ανακοινώσεις: refactor του «Voice - Ανακοινώσεις» | ⬜ | |
+| 6 | Ανακοινώσεις: refactor του «Voice - Ανακοινώσεις» | ✅ | 1 automation / 6 triggers μέσω `voice_speak`. Διορθώθηκαν το «πες στον Χρήστο» (bug `tell_δαδ`) και η κενή απάντηση |
 | 7 | Home vacuum: ανά δωμάτιο, Basic default, φωνητικές εντολές | ⬜ | |
 | 8 | Pink studio: 3 scripts, σκούπα pinkradio, φωνητικές εντολές με isolation | ⬜ | |
 | 9 | Pipelines: local + Gemini, ελληνικό prompt με φιλικό ύφος, διαδικασία debug για το STT | ⬜ | |
@@ -34,3 +34,4 @@
 - 2026-10-11 — Βήμα 2β ολοκληρώθηκε. `homeassistant: packages: !include_dir_named packages`. Pipeline «Home Assistant»: STT → Google AI STT (επιλογή χρήστη, το HA Cloud έκοβε λέξεις).
 - 2026-10-11 — Βήμα 4 ολοκληρώθηκε. Studio: Pink + σαλόνι. Σπίτι: μόνο floor home. Δοκιμή από τον Pink ✅ (studio εκτελείται, σπίτι απορρίπτεται).
 - 2026-10-11 — Βήμα 5 ολοκληρώθηκε. Το `voice_speak` δεν χρησιμοποιείται ακόμα. Συνδέεται στα βήματα 6 (ανακοινώσεις) και 7 (σκούπα, διπλή εκφώνηση).
+- 2026-10-11 — Βήμα 6 ολοκληρώθηκε. Οι λίστες του custom_sentences δεν λειτουργούν στα triggers: παραλλαγές inline. `voice_speak` → HA Cloud TTS (Athina).

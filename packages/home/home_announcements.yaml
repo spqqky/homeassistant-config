@@ -1,192 +1,79 @@
-# packages/home/home_announcements.yaml (scope: home)
-# Μεταφέρθηκε αυτούσιο από automations.yaml/scripts.yaml στο βήμα 2β. Επεξεργασία μόνο εδώ, όχι από το UI.
+# packages/home/home_announcements.yaml (scope: home, βήμα 6)
+#
+# «πες στη Νεφέλη να έρθει για φαγητό» → μιλάει στο δωμάτιο της Νεφέλης.
+# Παραλήπτες: ένα trigger ανά παραλήπτη (id = area_id ή ομάδα kids/all). Οι λίστες του custom_sentences ΔΕΝ
+# λειτουργούν στα triggers (εκεί κάθε {όνομα} είναι wildcard), γι' αυτό οι παραλλαγές γράφονται inline.
+# Έξοδος ήχου: script.voice_speak (packages/core/core_voice.yaml). Απάντηση στον χώρο της εντολής: set_conversation_response.
 
 automation:
   - id: '1790276166517'
     alias: Voice - Ανακοινώσεις
-    description: 'Στέλνει φωνητικά μηνύματα σε συγκεκριμένα δωμάτια μέσω των αντίστοιχων
-      Google Cast ηχείων, χωρίς χρήση Gemini.
-
-      '
-    triggers:
-    - trigger: conversation
-      command:
-      - πες στη Νεφέλη {message}
-      - πες στην Νεφέλη {message}
-      - στη Νεφέλη {message}
-      - στην Νεφέλη {message}
-      - πες στη μικρή {message}
-      - πες στην μικρή {message}
-      - στη μικρή {message}
-      - στην μικρή {message}
-      - πες στο δωμάτιο της Νεφέλης {message}
-      id: tell_nefeli
-    - trigger: conversation
-      command:
-      - πες στο Χρήστο {message}
-      - πες στον Χρήστο {message}
-      - πες στο μπαμπά {message}
-      - πες στον μπαμπά {message}
-      - πες στο σαλόνι {message}
-      - στο Χρήστο {message}
-      - στον Χρήστο {message}
-      - στο μπαμπά {message}
-      - στον μπαμπά {message}
-      - στο σαλόνι {message}
-      id: tell_δαδ
-    - trigger: conversation
-      command:
-      - πες στη Σάρα {message}
-      - πες στην Σάρα {message}
-      - πες στη μαμά {message}
-      - πες στην μαμά {message}
-      - στη Σάρα {message}
-      - στην Σάρα {message}
-      - στη μαμά {message}
-      - στην μαμά {message}
-      - πες στην κρεβατοκάμαρα {message}
-      id: tell_sarah
-    - trigger: conversation
-      command:
-      - πες στην Αλεξάνδρα {message}
-      - πες στη Αλεξάνδρα {message}
-      - στην Αλεξάνδρα {message}
-      - στη Αλεξάνδρα {message}
-      - πες στην μεγάλη {message}
-      - πες στη μεγάλη {message}
-      - στην μεγάλη {message}
-      - στη μεγάλη {message}
-      - πες στο δωμάτιο της Αλεξάνδρας {message}
-      id: tell_alexandra
-    - trigger: conversation
-      command:
-      - πες στα παιδιά {message}
-      - πες στα παιδικά δωμάτια {message}
-      - στα παιδιά {message}
-      - στα παιδικά δωμάτια {message}
-      id: tell_kids
-    - trigger: conversation
-      command:
-      - πες σε όλους {message}
-      - σε όλους {message}
-      - ανακοίνωσε σε όλους {message}
-      - πες σε όλα τα ηχεία {message}
-      - σε όλα τα ηχεία {message}
-      id: tell_all
-    conditions: []
-    actions:
-    - alias: "Guard: μόνο από το floor home"
-      if:
-        - condition: template
-          value_template: >-
-            {% set d = trigger.device_id | default(none) %}
-            {% set a = area_id(d) if d else none %}
-            {{ d is not none and not (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or floor_id(d) == 'home') }}
-      then:
-        - set_conversation_response: Αυτό γίνεται μόνο από το σπίτι.
-        - stop: Εκτός scope (home)
-    - choose:
-      - conditions:
-        - condition: trigger
-          id: tell_nefeli
-        sequence:
-        - set_conversation_response: ''
-        - action: tts.speak
-          target:
-            entity_id: tts.home_assistant_cloud
-          data:
-            media_player_entity_id: media_player.home_nefeli_room_speaker
-            message: '{{ trigger.slots.message }}'
-            language: el-GR
-            options:
-              preferred_format: mp3
-              preferred_sample_rate: 22050
-              preferred_bitrate: 48
-      - conditions:
-        - condition: trigger
-          id: tell_dad
-        sequence:
-        - set_conversation_response: ''
-        - action: tts.speak
-          target:
-            entity_id: tts.home_assistant_cloud
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: '{{ trigger.slots.message }}'
-            language: el-GR
-            options:
-              preferred_format: mp3
-              preferred_sample_rate: 22050
-              preferred_bitrate: 48
-      - conditions:
-        - condition: trigger
-          id: tell_sarah
-        sequence:
-        - set_conversation_response: ''
-        - action: tts.speak
-          target:
-            entity_id: tts.home_assistant_cloud
-          data:
-            media_player_entity_id: media_player.home_bedroom_speaker
-            message: '{{ trigger.slots.message }}'
-            language: el-GR
-            options:
-              preferred_format: mp3
-              preferred_sample_rate: 22050
-              preferred_bitrate: 48
-      - conditions:
-        - condition: trigger
-          id: tell_alexandra
-        sequence:
-        - set_conversation_response: ''
-        - action: tts.speak
-          target:
-            entity_id: tts.home_assistant_cloud
-          data:
-            media_player_entity_id: media_player.home_alex_room_speaker
-            message: '{{ trigger.slots.message }}'
-            language: el-GR
-            options:
-              preferred_format: mp3
-              preferred_sample_rate: 22050
-              preferred_bitrate: 48
-      - conditions:
-        - condition: trigger
-          id: tell_kids
-        sequence:
-        - set_conversation_response: ''
-        - action: tts.speak
-          target:
-            entity_id: tts.home_assistant_cloud
-          data:
-            media_player_entity_id:
-            - media_player.home_nefeli_room_speaker
-            - media_player.home_alex_room_speaker
-            message: '{{ trigger.slots.message }}'
-            language: el-GR
-            options:
-              preferred_format: mp3
-              preferred_sample_rate: 22050
-              preferred_bitrate: 48
-      - conditions:
-        - condition: trigger
-          id: tell_all
-        sequence:
-        - set_conversation_response: ''
-        - action: tts.speak
-          target:
-            entity_id: tts.home_assistant_cloud
-          data:
-            media_player_entity_id:
-            - media_player.home_living_room_speaker
-            - media_player.home_nefeli_room_speaker
-            - media_player.home_alex_room_speaker
-            - media_player.home_bedroom_speaker
-            message: '{{ trigger.slots.message }}'
-            language: el-GR
-            options:
-              preferred_format: mp3
-              preferred_sample_rate: 22050
-              preferred_bitrate: 48
+    description: Φωνητικό μήνυμα σε δωμάτιο, ομάδα δωματίων ή σε όλο το σπίτι, μέσω script.voice_speak.
     mode: queued
     max: 10
+    triggers:
+      - trigger: conversation
+        id: nefeli_room
+        command:
+          - "[πες ](στη|στην|στο|στον|στα|σε) (Νεφέλη|μικρή|δωμάτιο της Νεφέλης) {message}"
+          - "ανακοίνωσε [(στη|στην|στο|στον|στα|σε) ](Νεφέλη|μικρή|δωμάτιο της Νεφέλης) {message}"
+      - trigger: conversation
+        id: alex_room
+        command:
+          - "[πες ](στη|στην|στο|στον|στα|σε) (Αλεξάνδρα|μεγάλη|δωμάτιο της Αλεξάνδρας) {message}"
+          - "ανακοίνωσε [(στη|στην|στο|στον|στα|σε) ](Αλεξάνδρα|μεγάλη|δωμάτιο της Αλεξάνδρας) {message}"
+      - trigger: conversation
+        id: living_room
+        command:
+          - "[πες ](στη|στην|στο|στον|στα|σε) (Χρήστο|μπαμπά|σαλόνι) {message}"
+          - "ανακοίνωσε [(στη|στην|στο|στον|στα|σε) ](Χρήστο|μπαμπά|σαλόνι) {message}"
+      - trigger: conversation
+        id: bedroom
+        command:
+          - "[πες ](στη|στην|στο|στον|στα|σε) (Σάρα|μαμά|κρεβατοκάμαρα) {message}"
+          - "ανακοίνωσε [(στη|στην|στο|στον|στα|σε) ](Σάρα|μαμά|κρεβατοκάμαρα) {message}"
+      - trigger: conversation
+        id: kids
+        command:
+          - "[πες ](στη|στην|στο|στον|στα|σε) (παιδιά|παιδικά δωμάτια) {message}"
+          - "ανακοίνωσε [(στη|στην|στο|στον|στα|σε) ](παιδιά|παιδικά δωμάτια) {message}"
+      - trigger: conversation
+        id: all
+        command:
+          - "[πες ](στη|στην|στο|στον|στα|σε) (όλους|όλα τα ηχεία|όλο το σπίτι) {message}"
+          - "ανακοίνωσε [(στη|στην|στο|στον|στα|σε) ](όλους|όλα τα ηχεία|όλο το σπίτι) {message}"
+    conditions: []
+    actions:
+      - alias: "Guard: μόνο από το floor home"
+        if:
+          - condition: template
+            value_template: >-
+              {% set d = trigger.device_id | default(none) %}
+              {% set a = area_id(d) if d else none %}
+              {{ d is not none and not (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or floor_id(d) == 'home') }}
+        then:
+          - set_conversation_response: Αυτό γίνεται μόνο από το σπίτι.
+          - stop: Εκτός scope (home)
+      - variables:
+          groups:
+            kids: [nefeli_room, alex_room]
+            all: [living_room, nefeli_room, alex_room, bedroom]
+          target_key: "{{ trigger.id }}"
+          target_areas: "{{ groups.get(target_key, [target_key]) }}"
+          message: "{{ trigger.slots.message | trim }}"
+      - repeat:
+          for_each: "{{ target_areas }}"
+          sequence:
+            - action: script.voice_speak
+              data:
+                area: "{{ repeat.item }}"
+                message: "{{ message }}"
+      - variables:
+          said_to:
+            nefeli_room: στη Νεφέλη
+            alex_room: στην Αλεξάνδρα
+            living_room: στο σαλόνι
+            bedroom: στην κρεβατοκάμαρα
+            kids: στα παιδιά
+            all: σε όλο το σπίτι
+      - set_conversation_response: "Το είπα {{ said_to.get(target_key, target_key) }}."

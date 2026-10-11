@@ -99,6 +99,8 @@
    του scope του. **Νέο δωμάτιο ή satellite → προσθήκη της area στη λίστα των guards** (`home`: living_room, nefeli_room,
    alex_room, bedroom, office · `pinkradio`: pinkradio_studio, living_room).
    Σημ.: το `floor_id(area_id(device))` δεν δούλεψε στην πράξη, γι' αυτό ελέγχεται πρώτα η area.
+   **Λίστες του `custom_sentences` ΔΕΝ λειτουργούν στα conversation triggers** (κάθε `{όνομα}` εκεί είναι wildcard).
+   Παραλλαγές → εναλλακτικές inline `(α|β|γ)` + ένα trigger id ανά στόχο, ή custom intent + `intent_script`.
 3. **Pipeline Pink Radio:** μόνο τοπικός conversation agent (Home Assistant), χωρίς LLM.
 4. **Όριο:** οι ενσωματωμένες εντολές του HA (HassTurnOn, λίστα αγορών, ένταση) δουλεύουν για τα exposed entities από
    οποιονδήποτε assistant, χωρίς guard. Γι' αυτό η λίστα exposure μένει μικρή και ακίνδυνη.
@@ -188,7 +190,9 @@ Media players: `media_player.jbl_nest`, `media_player.nefeli_room`, `media_playe
 
 ### TTS
 
-- `tts.google_translate_en_com` με `language: el` δουλεύει καλά για direct TTS σε Google Cast / Nest.
+- `tts.google_translate_en_com` με `language: el` δουλεύει για direct TTS σε Google Cast / Nest.
+- Το `script.voice_speak` χρησιμοποιεί **`tts.home_assistant_cloud`, el-GR, AthinaNeural**, για να είναι η ίδια φωνή με τις
+  απαντήσεις των assistants. Δουλεύει και στο Cast entity και στο `_ma`.
   Σε ορισμένα pipelines έχει χρησιμοποιηθεί και το Home Assistant Cloud TTS.
 - Για ανακοινώσεις είναι πιο αξιόπιστο το explicit `tts.speak` από το να βασιζόμαστε στο output routing του Assist:
 
