@@ -52,6 +52,7 @@
 
 | Αρχείο | Περιεχόμενο |
 |---|---|
+| `packages/core/core_voice.yaml` | `script.voice_speak`, χάρτης χώρου → ηχείου |
 | `packages/home/home_vacuum.yaml` | φωνητικά της σκούπας σπιτιού |
 | `packages/home/home_announcements.yaml` | Voice - Ανακοινώσεις |
 | `packages/home/home_media.yaml` | Music Assistant, Radio, scripts έντασης |
@@ -63,6 +64,22 @@
 
 Το `automations.yaml` / `scripts.yaml` κρατούν μόνο ό,τι φτιάχνεται από το UI. Ό,τι φτιαχτεί εκεί μεταφέρεται στο σωστό package
 στο επόμενο βήμα που αγγίζει τη λειτουργία.
+
+## Voice routing (βήμα 5)
+
+| Χώρος (area) | Satellite | Απάντηση σε εντολή | `script.voice_speak` |
+|---|---|---|---|
+| `living_room` | `home_living_room_satellite` | γέφυρα → `media_player.home_living_room_speaker` (JBL) | tts.speak → JBL |
+| `nefeli_room` | `home_nefeli_room_satellite` | γέφυρα → `media_player.home_nefeli_room_speaker` | tts.speak → Nest Νεφέλης |
+| `alex_room` | `home_alex_room_satellite` | γέφυρα → `media_player.home_alex_room_speaker` | tts.speak → Nest Αλεξάνδρας |
+| `bedroom` | (Σάρα, μελλοντικά) | (θα στηθεί) | tts.speak → `media_player.home_bedroom_speaker` |
+| `pinkradio_studio` | `pinkradio_studio_satellite` | ηχείο του Voice PE | `assist_satellite.announce` |
+
+1. **Απάντηση σε φωνητική εντολή → μόνο `set_conversation_response`**, ποτέ δικό της `tts.speak` (αλλιώς ακούγεται
+   διπλή εκφώνηση). Η απάντηση δεν μένει ποτέ κενή.
+2. **Μήνυμα σε άλλο χώρο ή χωρίς εντολή → `script.voice_speak`** (`packages/core/core_voice.yaml`) με `area:` ή
+   `source_device: "{{ trigger.device_id }}"`. Ο χάρτης χώρου → ηχείου υπάρχει μόνο εκεί.
+3. Νέο ηχείο ή satellite → ενημέρωση του χάρτη στο `core_voice.yaml` και του πίνακα εδώ.
 
 ## Μοντέλο ασφαλείας (βήμα 4)
 

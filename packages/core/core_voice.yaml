@@ -1,0 +1,92 @@
+# packages/core/core_voice.yaml (core: κοινή υποδομή φωνής, βήμα 5)
+#
+# Κανόνες (βλ. CLAUDE.md «Voice routing»):
+# 1. Απάντηση σε φωνητική εντολή → ΜΟΝΟ set_conversation_response. Ακούγεται αυτόματα στο σωστό ηχείο
+#    (σπίτι: μέσω των γεφυρών mic_to_mediaplayer, studio: από το ηχείο του Pink Voice PE).
+# 2. Μήνυμα σε άλλο χώρο ή χωρίς εντολή (ανακοινώσεις, ειδοποιήσεις) → script.voice_speak.
+#
+# Χάρτης χώρος → έξοδος ήχου: εδώ και μόνο εδώ.
+
+script:
+  voice_speak:
+    alias: Voice - Speak
+    description: >-
+      Λέει ένα μήνυμα από το ηχείο ενός χώρου. Ο χώρος δίνεται με area (π.χ. nefeli_room) ή με
+      source_device (το trigger.device_id του satellite). Χωρίς κανένα από τα δύο, μιλάει στο σαλόνι.
+    mode: queued
+    max: 10
+    icon: mdi:account-voice
+    fields:
+      message:
+        name: Μήνυμα
+        required: true
+        selector:
+          text:
+            multiline: true
+      area:
+        name: Χώρος (area_id)
+        example: nefeli_room
+        selector:
+          area:
+            multiple: false
+      source_device:
+        name: Device πηγής
+        description: trigger.device_id του satellite. Το μήνυμα ακούγεται στον χώρο του.
+        selector:
+          device:
+            multiple: false
+      volume:
+        name: Ένταση (%)
+        description: Προαιρετικό. Αλλάζει την ένταση του ηχείου πριν από το μήνυμα.
+        selector:
+          number:
+            min: 0
+            max: 100
+            unit_of_measurement: "%"
+    variables:
+      # Χώρος → ηχείο Cast (tts.speak)
+      speakers:
+        living_room: media_player.home_living_room_speaker
+        nefeli_room: media_player.home_nefeli_room_speaker
+        alex_room: media_player.home_alex_room_speaker
+        bedroom: media_player.home_bedroom_speaker
+      # Χώρος → satellite που μιλάει από το δικό του ηχείο (assist_satellite.announce)
+      satellites:
+        pinkradio_studio: assist_satellite.pinkradio_studio_satellite
+      target_area: >-
+        {{ area if (area is defined and area)
+           else (area_id(source_device) if (source_device is defined and source_device) else 'living_room') }}
+      player: "{{ speakers.get(target_area) }}"
+      satellite: "{{ satellites.get(target_area) }}"
+    sequence:
+      - choose:
+          - conditions: "{{ player is not none }}"
+            sequence:
+              - if: "{{ volume is defined and volume is number }}"
+                then:
+                  - action: media_player.volume_set
+                    target:
+                      entity_id: "{{ player }}"
+                    data:
+                      volume_level: "{{ (volume | float(0)) / 100 }}"
+              - action: tts.speak
+                target:
+                  entity_id: tts.google_translate_en_com
+                data:
+                  media_player_entity_id: "{{ player }}"
+                  message: "{{ message }}"
+                  language: el
+          - conditions: "{{ satellite is not none }}"
+            sequence:
+              - action: assist_satellite.announce
+                target:
+                  entity_id: "{{ satellite }}"
+                data:
+                  message: "{{ message }}"
+                  preannounce: false
+        default:
+          - action: system_log.write
+            data:
+              level: warning
+              logger: voice_speak
+              message: "voice_speak: δεν υπάρχει έξοδος ήχου για την area '{{ target_area }}'"

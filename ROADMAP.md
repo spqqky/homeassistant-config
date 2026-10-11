@@ -10,7 +10,7 @@
 | 2β | Οργάνωση αρχείων: `packages/` ανά scope/λειτουργία (`core`, `home`, `pinkradio`, `shared`), `custom_sentences` με lists αντί για copy-paste ανά δωμάτιο. Το `automations.yaml` κρατά μόνο ό,τι φτιάχνεται από το UI | ✅ | 8 packages (`home`, `pinkradio`, `shared`), 24 automations + 13 scripts αυτούσια, ίδια ids. Τα lists στα `custom_sentences` γίνονται στα βήματα 7/8 |
 | 3 | Naming cleanup: `pink_radio_*` → `pinkradio_*`, plugs με λειτουργικά ονόματα, grep και διόρθωση σε όλο το YAML | ✅ | 278 entities (`docs/step3_*.csv`), YAML 175 αντικαταστάσεις, γέφυρες ξαναστήθηκαν. Εκκρεμεί: prompt Home Gemini (`docs/prompts/`) |
 | 4 | Μοντέλο ασφαλείας: exposed entities, pipeline του Pink, guards (και MCP, αν το θέλουμε) | ✅ | exposure 50→12 (`config/assist_exposed.txt`), guards σε 23 automations, pipeline «Pink Radio» τοπικό. MCP: όχι. Εκκρεμεί δοκιμή από Νεφέλη/σαλόνι |
-| 5 | Voice routing core: `script.voice_speak`, default έξοδος ανά assistant | ⬜ | |
+| 5 | Voice routing core: `script.voice_speak`, default έξοδος ανά assistant | ✅ | `packages/core/core_voice.yaml`, κανόνας «απάντηση = μόνο set_conversation_response». Δοκιμή studio ✅, εκκρεμεί σαλόνι |
 | 6 | Ανακοινώσεις: refactor του «Voice - Ανακοινώσεις» | ⬜ | |
 | 7 | Home vacuum: ανά δωμάτιο, Basic default, φωνητικές εντολές | ⬜ | |
 | 8 | Pink studio: 3 scripts, σκούπα pinkradio, φωνητικές εντολές με isolation | ⬜ | |
@@ -33,3 +33,4 @@
 - 2026-10-11 — Pink Voice PE: downgrade σε 26.6.0 (crash στο 26.9.0). plug1 = KRK αριστερό, plug7 = KRK δεξί. Νέο dashboard Pink Radio (`docs/lovelace_pink_radio.yaml`).
 - 2026-10-11 — Βήμα 2β ολοκληρώθηκε. `homeassistant: packages: !include_dir_named packages`. Pipeline «Home Assistant»: STT → Google AI STT (επιλογή χρήστη, το HA Cloud έκοβε λέξεις).
 - 2026-10-11 — Βήμα 4 ολοκληρώθηκε. Studio: Pink + σαλόνι. Σπίτι: μόνο floor home. Δοκιμή από τον Pink ✅ (studio εκτελείται, σπίτι απορρίπτεται).
+- 2026-10-11 — Βήμα 5 ολοκληρώθηκε. Το `voice_speak` δεν χρησιμοποιείται ακόμα. Συνδέεται στα βήματα 6 (ανακοινώσεις) και 7 (σκούπα, διπλή εκφώνηση).
