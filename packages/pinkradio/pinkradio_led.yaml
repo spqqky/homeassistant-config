@@ -27,6 +27,16 @@ automation:
       - σβήσε τον φωτισμό led στο στούντιο
       id: led_οff
     actions:
+    - alias: "Guard: μόνο από το studio ή το σαλόνι"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
+        - stop: Εκτός scope (pinkradio)
     - choose:
       - conditions:
         - condition: trigger
@@ -57,6 +67,16 @@ automation:
       - κάνε τα studio led {color} χρώμα
       - βάλε τα studio led {color} χρώμα
     actions:
+    - alias: "Guard: μόνο από το studio ή το σαλόνι"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
+        - stop: Εκτός scope (pinkradio)
     - variables:
         color: '{{ trigger.slots.color | lower }}'
     - choose:
@@ -368,6 +388,16 @@ automation:
       - βάλε νυχτερινό φωτισμό στα led στο στούντιο
       id: night
     actions:
+    - alias: "Guard: μόνο από το studio ή το σαλόνι"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
+        - stop: Εκτός scope (pinkradio)
     - choose:
       - conditions:
         - condition: trigger
@@ -442,6 +472,16 @@ automation:
       - βάλε τα led στο στούντιο  {level} τοις εκατό
       - led στο στούντιο  {level} τοις εκατό
     actions:
+    - alias: "Guard: μόνο από το studio ή το σαλόνι"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
+        - stop: Εκτός scope (pinkradio)
     - action: light.turn_on
       target:
         entity_id: light.pinkradio_led_main
@@ -467,6 +507,16 @@ automation:
       - μείωσε τα led στο στούντιο
       id: down
     actions:
+    - alias: "Guard: μόνο από το studio ή το σαλόνι"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
+        - stop: Εκτός scope (pinkradio)
     - choose:
       - conditions:
         - condition: trigger
@@ -515,6 +565,16 @@ automation:
       - σταμάτα το disco mode στα led στο στούντιο
       id: stop
     actions:
+    - alias: "Guard: μόνο από το studio ή το σαλόνι"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
+        - stop: Εκτός scope (pinkradio)
     - choose:
       - conditions:
         - condition: trigger
@@ -542,6 +602,16 @@ automation:
       - βάλε τα led στα ντραμς  {level} τοις εκατό
       - led στα ντραμς  {level} τοις εκατό
     actions:
+    - alias: "Guard: μόνο από το studio ή το σαλόνι"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
+        - stop: Εκτός scope (pinkradio)
     - action: light.turn_on
       target:
         entity_id: light.pinkradio_led_drums
@@ -567,6 +637,16 @@ automation:
       - μείωσε τα led στα ντραμς
       id: down
     actions:
+    - alias: "Guard: μόνο από το studio ή το σαλόνι"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
+        - stop: Εκτός scope (pinkradio)
     - choose:
       - conditions:
         - condition: trigger
@@ -615,6 +695,16 @@ automation:
       id: led_οff
     conditions: []
     actions:
+    - alias: "Guard: μόνο από το studio ή το σαλόνι"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
+        - stop: Εκτός scope (pinkradio)
     - choose:
       - conditions:
         - condition: trigger
@@ -659,6 +749,16 @@ automation:
       id: led_οff
     conditions: []
     actions:
+    - alias: "Guard: μόνο από το studio ή το σαλόνι"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
+        - stop: Εκτός scope (pinkradio)
     - choose:
       - conditions:
         - condition: trigger
@@ -699,6 +799,16 @@ automation:
       - βάλε τα ντραμς led {color} χρώμα
     conditions: []
     actions:
+    - alias: "Guard: μόνο από το studio ή το σαλόνι"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
+        - stop: Εκτός scope (pinkradio)
     - variables:
         color: '{{ trigger.slots.color | lower }}'
     - choose:

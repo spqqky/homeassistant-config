@@ -63,6 +63,14 @@ automation:
       - άνοιξε την κονσόλα και τα ηχεία
       - άνοιξε κονσόλα και ηχεία
       - άνοιξε το studio audio
+      - άναψε τα ηχεία στο στούντιο
+      - άναψε τα ηχεία στο studio
+      - άναψε τα ηχεία στο pink radio
+      - άναψε τα ηχεία του στούντιο
+      - άνοιξε τα ηχεία στο στούντιο
+      - άνοιξε τα ηχεία στο studio
+      - άνοιξε τα ηχεία στο pink radio
+      - άνοιξε τα ηχεία του στούντιο
       id: audio_on
     - trigger: conversation
       command:
@@ -76,6 +84,14 @@ automation:
       - σβήσε την κονσόλα και τα ηχεία
       - σβήσε κονσόλα και ηχεία
       - σβήσε το studio audio
+      - κλείσε τα ηχεία στο στούντιο
+      - κλείσε τα ηχεία στο studio
+      - κλείσε τα ηχεία στο pink radio
+      - κλείσε τα ηχεία του στούντιο
+      - σβήσε τα ηχεία στο στούντιο
+      - σβήσε τα ηχεία στο studio
+      - σβήσε τα ηχεία στο pink radio
+      - σβήσε τα ηχεία του στούντιο
       id: audio_off
     - trigger: conversation
       command:
@@ -110,6 +126,16 @@ automation:
       id: studio_off
     conditions: []
     actions:
+    - alias: "Guard: μόνο από το studio ή το σαλόνι"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
+        - stop: Εκτός scope (pinkradio)
     - choose:
       - conditions:
         - condition: trigger
@@ -199,6 +225,16 @@ automation:
       - σβήστε την κιθάρα
       id: amp_off
     actions:
+    - alias: "Guard: μόνο από το studio ή το σαλόνι"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
+        - stop: Εκτός scope (pinkradio)
     - choose:
       - conditions:
         - condition: trigger

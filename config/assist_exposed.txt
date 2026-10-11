@@ -1,0 +1,29 @@
+# Entities exposed στο Assist (κοινή λίστα για ΟΛΟΥΣ τους assistants: home και pink).
+# Εφαρμογή: python3 tools/set_exposure.py config/assist_exposed.txt --apply
+#
+# Κανόνες (βήμα 4):
+# - ΤΙΠΟΤΑ από το studio (pinkradio_*) και καμία σκούπα. Αυτά ελέγχονται από τα φωνητικά automations
+#   στα packages, που έχουν guards ανά floor και δεν χρειάζονται exposure.
+# - Μόνο ό,τι χρειάζεται στο Gemini του σπιτιού: ηχεία Cast (όχι MA, TV ή Voice PE), scripts έντασης,
+#   reminders, shopping list.
+# - Νέο entity μπαίνει εδώ μόνο αν το χρειάζεται το LLM. Αλλιώς φτιάχνουμε φωνητικό automation.
+
+# Ηχεία σπιτιού (Cast)
+media_player.home_living_room_speaker
+media_player.home_nefeli_room_speaker
+media_player.home_alex_room_speaker
+media_player.home_bedroom_speaker
+
+# Ένταση
+script.voice_pe_volume_control
+script.jbl_volume_control
+script.nefeli_nest_volume_control
+script.sarah_nest_volume_control
+
+# Reminders
+script.reminder_create_chris
+script.reminder_find_chris
+script.reminder_delete_chris
+
+# Λίστα αγορών
+todo.shopping_list

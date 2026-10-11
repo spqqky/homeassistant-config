@@ -47,6 +47,16 @@ automation:
       id: all
     conditions: []
     actions:
+    - alias: "Guard: μόνο από το floor home"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or floor_id(d) == 'home') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το σπίτι.
+        - stop: Εκτός scope (home)
     - choose:
       - conditions:
         - condition: trigger
@@ -223,6 +233,16 @@ automation:
       id: stop_all
     conditions: []
     actions:
+    - alias: "Guard: μόνο από το floor home"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or floor_id(d) == 'home') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το σπίτι.
+        - stop: Εκτός scope (home)
     - choose:
       - conditions:
         - condition: trigger

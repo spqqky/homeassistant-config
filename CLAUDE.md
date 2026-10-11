@@ -64,6 +64,29 @@
 Το `automations.yaml` / `scripts.yaml` κρατούν μόνο ό,τι φτιάχνεται από το UI. Ό,τι φτιαχτεί εκεί μεταφέρεται στο σωστό package
 στο επόμενο βήμα που αγγίζει τη λειτουργία.
 
+## Μοντέλο ασφαλείας (βήμα 4)
+
+| Από → προς | Σπίτι (`home_*`) | Studio (`pinkradio_*`) |
+|---|---|---|
+| Pink (floor `pinkradio`) | ⛔ | ✅ |
+| Σαλόνι (`living_room`) | ✅ | ✅ |
+| Νεφέλη / Αλεξάνδρα / άλλα δωμάτια `home` | ✅ | ⛔ |
+| Γραπτό Assist (χωρίς device) | ✅ | ✅ |
+
+1. **Exposure:** κοινή λίστα για όλους τους assistants. Η πηγή αλήθειας είναι το `config/assist_exposed.txt` και η εφαρμογή
+   γίνεται με `tools/set_exposure.py config/assist_exposed.txt --apply`. Μόνο ό,τι χρειάζεται το LLM του σπιτιού.
+   **Ποτέ** `pinkradio_*` ή σκούπες.
+2. **Guards:** κάθε φωνητικό automation σε `packages/home/*` ή `packages/pinkradio/*` ξεκινά με guard
+   (`alias: "Guard: …"`) που ελέγχει την area του `trigger.device_id` απέναντι σε λίστα και, ως εναλλακτική, το `floor_id(device)`.
+   Αν ο χώρος δεν επιτρέπεται, σταματά με `set_conversation_response`. Κάθε νέο φωνητικό automation **πρέπει** να έχει το guard
+   του scope του. **Νέο δωμάτιο ή satellite → προσθήκη της area στη λίστα των guards** (`home`: living_room, nefeli_room,
+   alex_room, bedroom, office · `pinkradio`: pinkradio_studio, living_room).
+   Σημ.: το `floor_id(area_id(device))` δεν δούλεψε στην πράξη, γι' αυτό ελέγχεται πρώτα η area.
+3. **Pipeline Pink Radio:** μόνο τοπικός conversation agent (Home Assistant), χωρίς LLM.
+4. **Όριο:** οι ενσωματωμένες εντολές του HA (HassTurnOn, λίστα αγορών, ένταση) δουλεύουν για τα exposed entities από
+   οποιονδήποτε assistant, χωρίς guard. Γι' αυτό η λίστα exposure μένει μικρή και ακίνδυνη.
+5. MCP: όχι προς το παρόν.
+
 ## Δομή και naming convention
 
 **Floors / areas** (βήμα 2):
@@ -120,7 +143,8 @@
 - Voice PE firmware **26.9.0**: crash κατά την αναπαραγωγή TTS (βλ. `docs/INVENTORY.md`). Ο Pink είναι σε **26.6.0**,
   με skip στο 26.9.0. Μην κάνεις update στα Voice PE χωρίς δοκιμή. Wake sound OFF στον Pink.
 - STT: το pipeline «Home Assistant» (Pink) χρησιμοποιεί **Google AI STT**, γιατί το HA Cloud έκοβε λέξεις (π.χ. «στο»).
-  Γνωστά: hallucinations, 503 σε ώρες αιχμής. Η σύγκριση γίνεται στο βήμα 9.
+  Γνωστά: hallucinations, 503 σε ώρες αιχμής, αργό (13,6 s σε μια εντολή, έναντι ~0,2 s του HA Cloud). Η σύγκριση γίνεται στο βήμα 9.
+  Ο Pink έχει δικό του pipeline «Pink Radio» (τοπικός agent, Google AI STT, HA Cloud TTS).
 - Debug Voice PE: `tools/esphome_logs.py "<ESPHome entry>"` (WSL venv `~/ha-venv`, `aioesphomeapi`). Pipeline debug: Settings →
   Voice assistants → pipeline → ⋮ → Debug. Το κλειδί είναι τα events `stt-vad-start`/`stt-vad-end`.
 

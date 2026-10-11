@@ -107,6 +107,16 @@ automation:
       id: dock_status
     conditions: []
     actions:
+    - alias: "Guard: μόνο από το studio ή το σαλόνι"
+      if:
+        - condition: template
+          value_template: >-
+            {% set d = trigger.device_id | default(none) %}
+            {% set a = area_id(d) if d else none %}
+            {{ d is not none and not (a in ['pinkradio_studio', 'living_room'] or floor_id(d) == 'pinkradio') }}
+      then:
+        - set_conversation_response: Αυτό γίνεται μόνο από το studio ή το σαλόνι.
+        - stop: Εκτός scope (pinkradio)
     - choose:
       - conditions:
         - condition: trigger
