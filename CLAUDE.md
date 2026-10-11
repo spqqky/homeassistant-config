@@ -53,14 +53,15 @@
 | Αρχείο | Περιεχόμενο |
 |---|---|
 | `packages/core/core_voice.yaml` | `script.voice_speak`, χάρτης χώρου → ηχείου |
-| `packages/home/home_vacuum.yaml` | φωνητικά της σκούπας σπιτιού |
+| `packages/home/home_vacuum.yaml` | `script.home_vacuum_clean`, «Home Vacuum - Voice Clean» (καθαρισμός ανά δωμάτιο) |
 | `packages/home/home_announcements.yaml` | Voice - Ανακοινώσεις |
 | `packages/home/home_media.yaml` | Music Assistant, Radio, scripts έντασης |
 | `packages/pinkradio/pinkradio_studio.yaml` | «Pink Radio - Voice Studio» (neon, κονσόλα, KRK, ήχος, ενισχυτής, studio), scripts `pinkradio_neon_control` / `_studio_audio_control` / `_studio_control` |
-| `packages/pinkradio/pinkradio_led.yaml` | φωνητικά των LED, disco script |
-| `packages/pinkradio/pinkradio_vacuum.yaml` | φωνητικά της σκούπας Pink |
+| `packages/pinkradio/pinkradio_led.yaml` | «Pink Radio - Voice LED» (on/off, %, χρώματα, modes, disco), `script.pinkradio_led_disco_mode` |
+| `packages/pinkradio/pinkradio_vacuum.yaml` | `script.pinkradio_vacuum_clean` |
 | `packages/shared/shared_reminders.yaml` | reminders (scripts + notifications) |
 | `packages/shared/shared_shopping.yaml` | shopping list scripts |
+| `packages/shared/shared_vacuum.yaml` | «Vacuum - Voice Control»: κοινές εντολές και για τις δύο σκούπες, επιλογή σκούπας ανά χώρο |
 
 Το `automations.yaml` / `scripts.yaml` κρατούν μόνο ό,τι φτιάχνεται από το UI. Ό,τι φτιαχτεί εκεί μεταφέρεται στο σωστό package
 στο επόμενο βήμα που αγγίζει τη λειτουργία.
@@ -264,8 +265,10 @@ Media players: `media_player.jbl_nest`, `media_player.nefeli_room`, `media_playe
   - `button.pinkradio_vacuum_start_only_sweep`, `_start_sweep`, `_start_mop`, `_start_sweep_mop`, `_stop`, `_start_charge`
   - `select.pinkradio_vacuum_mode`, `_suction_level`, `_sweep_type`
   - `number.pinkradio_vacuum_volume`, `switch.pinkradio_vacuum_alarm`
-- Το Pink Assistant ελέγχει **αυτή** τη σκούπα όταν η εντολή αφορά «στούντιο» / «studio» / «Pink Radio»,
-  ώστε να μην υπάρχει πιθανότητα να ξεκινήσει η home vacuum.
+- **Ποια σκούπα** (`shared_vacuum.yaml`): «στούντιο/studio/pink radio» → studio · «σπίτι/σπιτιού» → σπίτι ·
+  σκέτο «η σκούπα» → η σκούπα του χώρου του satellite (browser → σπίτι). Studio σκούπα: studio + σαλόνι.
+  Σκούπα σπιτιού: μόνο floor home. «σκούπισε εδώ» → δωμάτιο του satellite.
+- LED (`pinkradio_led.yaml`): χωρίς προσδιορισμό → και τα δύο σετ· «ντραμς» ή «κύρια» για ένα.
 
 ### Pink Radio studio
 

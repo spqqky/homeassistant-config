@@ -1,0 +1,171 @@
+# packages/shared/shared_vacuum.yaml (scope: shared, βήμα 8γ)
+#
+# Κοινός φωνητικός έλεγχος για τις δύο σκούπες. Ποια σκούπα:
+#   1. «στούντιο / studio / pink radio» στη φράση → σκούπα studio (vacuum.pinkradio_vacuum)
+#   2. «σπίτι / σπιτιού» στη φράση               → σκούπα σπιτιού (vacuum.home_vacuum)
+#   3. τίποτα («η σκούπα»)                      → η σκούπα του χώρου του satellite:
+#      studio → studio, όλο το σπίτι (και σαλόνι) → σπίτι, Assist από browser → σπίτι.
+# Δικαιώματα: studio σκούπα από studio + σαλόνι (+ browser). Σκούπα σπιτιού μόνο από το floor home (+ browser).
+#
+# Καθαρισμός ανά δωμάτιο του σπιτιού («σκούπισε το σαλόνι»): home_vacuum.yaml.
+# Εδώ: γενικά (ξεκίνα, σκούπισε, σκούπισε εδώ, σφουγγάρισε, σταμάτα, παύση, συνέχισε, βάση, μπαταρία, κατάσταση).
+# «σκούπισε εδώ» στο σπίτι → μόνο το δωμάτιο του satellite.
+
+automation:
+- id: shared_vacuum_voice_control
+  alias: Vacuum - Voice Control
+  description: Έλεγχος σκούπας σπιτιού και studio. Χωρίς προσδιορισμό, η σκούπα του χώρου.
+  mode: single
+  triggers:
+  - trigger: conversation
+    id: clean
+    command:
+    - ξεκίνα (τη σκούπα|το καθάρισμα|το σκούπισμα|το σφουγγάρισμα) [(στο|του) (στούντιο|studio|pink radio|σπίτι|σπιτιού)]
+    - (σκούπισε|καθάρισε|σφουγγάρισε) [και σφουγγάρισε ][(δυνατά|ήσυχα|απαλά|με πολύ νερό) ][(εδώ|(το|στο) (στούντιο|studio|pink radio)|[όλο ]το σπίτι)]
+    - κάνε (σκούπισμα|σφουγγάρισμα|σκούπισμα και σφουγγάρισμα) [(εδώ|στο (στούντιο|studio|pink radio|σπίτι))]
+  - trigger: conversation
+    id: stop
+    command:
+    - σταμάτα (τη σκούπα|το καθάρισμα|το σκούπισμα) [(στο|του) (στούντιο|studio|pink radio|σπίτι|σπιτιού)]
+  - trigger: conversation
+    id: pause
+    command:
+    - (κάνε παύση|βάλε σε παύση) [(στη|τη) σκούπα] [(στο|του) (στούντιο|studio|pink radio|σπίτι|σπιτιού)]
+    - (πάγωσε|σταμάτα προσωρινά) τη σκούπα [(στο|του) (στούντιο|studio|pink radio|σπίτι|σπιτιού)]
+    - παύση καθαρισμού [(στο|του) (στούντιο|studio|pink radio|σπίτι|σπιτιού)]
+  - trigger: conversation
+    id: resume
+    command:
+    - συνέχισε (τη σκούπα|το καθάρισμα|το σκούπισμα) [(στο|του) (στούντιο|studio|pink radio|σπίτι|σπιτιού)]
+    - συνέχισε από εκεί που σταμάτησες
+  - trigger: conversation
+    id: dock
+    command:
+    - (γύρνα|στείλε|πήγαινε) τη σκούπα [(στο|του) (στούντιο|studio|pink radio|σπίτι|σπιτιού)] (στη βάση|στη θέση της)
+    - (γύρνα|πήγαινε) στη (βάση|θέση σου)
+  - trigger: conversation
+    id: battery
+    command:
+    - (πόση|τι) μπαταρία έχει η σκούπα [(στο|του) (στούντιο|studio|pink radio|σπίτι|σπιτιού)]
+    - πόσο φορτισμένη είναι η σκούπα [(στο|του) (στούντιο|studio|pink radio|σπίτι|σπιτιού)]
+  - trigger: conversation
+    id: status
+    command:
+    - τι κάνει [τώρα] η σκούπα [(στο|του) (στούντιο|studio|pink radio|σπίτι|σπιτιού)]
+    - (ποια|πώς) είναι η κατάσταση της σκούπας [(στο|του) (στούντιο|studio|pink radio|σπίτι|σπιτιού)]
+    - "[είναι ]η σκούπα [(στο|του) (στούντιο|studio|pink radio|σπίτι|σπιτιού)] [είναι ]στη βάση"
+  conditions: []
+  actions:
+  - variables:
+      text: "{{ trigger.sentence | lower }}"
+      d: "{{ trigger.device_id | default(none) }}"
+      a: "{{ area_id(d) if d else none }}"
+      f: "{{ floor_id(d) if d else none }}"
+      in_studio: "{{ d is not none and (a == 'pinkradio_studio' or f == 'pinkradio') }}"
+      in_home: "{{ d is not none and (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or f == 'home') }}"
+      says_studio: "{{ ['στούντιο', 'studio', 'pink'] | select('in', text) | list | count > 0 }}"
+      says_home: "{{ 'σπίτ' in text or 'σπιτ' in text }}"
+      which: >-
+        {{ 'pinkradio' if says_studio else ('home' if says_home else ('pinkradio' if in_studio else 'home')) }}
+      allowed: >-
+        {{ d is none
+           or (which == 'pinkradio' and (in_studio or a == 'living_room'))
+           or (which == 'home' and in_home) }}
+  - if: "{{ not allowed }}"
+    then:
+    - set_conversation_response: >-
+        {{ 'Από το studio ελέγχεται μόνο η σκούπα του studio.' if which == 'home'
+           else 'Η σκούπα του studio ελέγχεται μόνο από το studio ή το σαλόνι.' }}
+    - stop: Εκτός scope (vacuum)
+  - variables:
+      vac: "{{ 'vacuum.pinkradio_vacuum' if which == 'pinkradio' else 'vacuum.home_vacuum' }}"
+      label: "{{ 'Η σκούπα του studio' if which == 'pinkradio' else 'Η σκούπα του σπιτιού' }}"
+      battery: "{{ state_attr(vac, 'battery_level') | int(0) }}"
+      st: "{{ states(vac) }}"
+      desc: "{{ state_attr(vac, 'vacuum.status_desc') }}"
+      status_text: >-
+        {%- if st == 'cleaning' or desc == 'Cleaning' -%}καθαρίζει
+        {%- elif st == 'paused' or desc == 'Paused' -%}είναι σε παύση
+        {%- elif st == 'returning' or desc == 'Returning' -%}επιστρέφει στη βάση
+        {%- elif desc == 'Charging' -%}φορτίζει στη βάση
+        {%- elif st == 'docked' or desc == 'Charged' -%}είναι στη βάση
+        {%- elif st == 'error' -%}έχει σφάλμα
+        {%- else -%}είναι σε κατάσταση {{ desc or st }}{%- endif -%}
+      # Τύπος καθαρισμού από τη φράση
+      mop: "{{ 'σφουγγάρ' in text }}"
+      sweep_too: "{{ 'σκούπ' in text or 'καθάρ' in text }}"
+      clean_mode: >-
+        {%- if mop and which == 'pinkradio' -%}{{ 'sweep_mop' if sweep_too else 'mop' }}
+        {%- elif mop -%}{{ 'mop_wet' if 'πολύ νερό' in text else 'mop' }}
+        {%- elif 'δυνατ' in text -%}strong
+        {%- elif 'ήσυχ' in text or 'απαλ' in text -%}quiet
+        {%- else -%}normal{%- endif -%}
+      # «εδώ» στο σπίτι → το δωμάτιο του satellite (room IDs του χάρτη της σκούπας)
+      here_rooms: "{{ {'living_room': [3], 'nefeli_room': [7], 'alex_room': [9], 'bedroom': [8]}.get(a, []) if 'εδώ' in text else [] }}"
+      mode_text:
+        normal: σκούπισμα
+        strong: δυνατό σκούπισμα
+        quiet: ήσυχο σκούπισμα
+        mop: "{{ 'σφουγγάρισμα' if which == 'pinkradio' else 'σκούπισμα και σφουγγάρισμα' }}"
+        mop_wet: σκούπισμα και σφουγγάρισμα με πολύ νερό
+        sweep_mop: σκούπισμα και σφουγγάρισμα
+  - choose:
+    - conditions: "{{ trigger.id == 'clean' }}"
+      sequence:
+      - if: "{{ battery < 20 }}"
+        then:
+        - set_conversation_response: "{{ label }} έχει {{ battery }}% μπαταρία. Άφησέ τη να φορτίσει λίγο πρώτα."
+        - stop: Χαμηλή μπαταρία
+      - if: "{{ which == 'pinkradio' }}"
+        then:
+        - action: script.pinkradio_vacuum_clean
+          data:
+            mode: "{{ clean_mode }}"
+        - set_conversation_response: "Ξεκινάω {{ mode_text[clean_mode] }} στο studio."
+        else:
+        - if: "{{ 'εδώ' in text and here_rooms | count == 0 }}"
+          then:
+          - set_conversation_response: Δεν ξέρω σε ποιο δωμάτιο είσαι. Πες μου ποιο, π.χ. «σκούπισε το σαλόνι».
+          - stop: Άγνωστο δωμάτιο
+        - action: script.home_vacuum_clean
+          data:
+            rooms: "{{ here_rooms }}"
+            mode: "{{ clean_mode }}"
+        - set_conversation_response: >-
+            Ξεκινάω {{ mode_text[clean_mode] }} {{ 'εδώ' if here_rooms | count > 0 else 'σε όλο το σπίτι' }}.
+    - conditions: "{{ trigger.id == 'stop' }}"
+      sequence:
+      - action: vacuum.stop
+        target:
+          entity_id: "{{ vac }}"
+      - set_conversation_response: "{{ label }} σταμάτησε."
+    - conditions: "{{ trigger.id == 'pause' }}"
+      sequence:
+      - action: vacuum.pause
+        target:
+          entity_id: "{{ vac }}"
+      - set_conversation_response: "{{ label }} είναι σε παύση."
+    - conditions: "{{ trigger.id == 'resume' }}"
+      sequence:
+      - if: "{{ which == 'home' }}"
+        then:
+        - action: button.press
+          target:
+            entity_id: button.home_vacuum_continue_sweep
+        else:
+        - action: vacuum.start
+          target:
+            entity_id: "{{ vac }}"
+      - set_conversation_response: "{{ label }} συνεχίζει από εκεί που σταμάτησε."
+    - conditions: "{{ trigger.id == 'dock' }}"
+      sequence:
+      - action: vacuum.return_to_base
+        target:
+          entity_id: "{{ vac }}"
+      - set_conversation_response: "{{ label }} επιστρέφει στη βάση."
+    - conditions: "{{ trigger.id == 'battery' }}"
+      sequence:
+      - set_conversation_response: "{{ label }} έχει {{ battery }}% μπαταρία."
+    - conditions: "{{ trigger.id == 'status' }}"
+      sequence:
+      - set_conversation_response: "{{ label }} {{ status_text }}. Μπαταρία {{ battery }}%."

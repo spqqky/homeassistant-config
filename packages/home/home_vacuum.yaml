@@ -5,7 +5,7 @@
 # - script.home_vacuum_clean(rooms, mode): ΟΛΗ η λογική καθαρισμού, σε ένα σημείο.
 # - automation «Home Vacuum - Voice Clean»: «σκούπισε / καθάρισε / σφουγγάρισε <δωμάτια>».
 #   Mode από λέξεις-κλειδιά της φράσης, δωμάτια από λέξεις-κλειδιά (οποιοσδήποτε συνδυασμός).
-# - automation «Home Vacuum - Voice Control»: start/stop/παύση/βάση/μπαταρία/κατάσταση.
+# - Γενικές εντολές (ξεκίνα, σταμάτα, παύση, βάση, μπαταρία, κατάσταση, «σκούπισε εδώ»): shared/shared_vacuum.yaml (βήμα 8γ).
 # - Απαντήσεις ΜΟΝΟ με set_conversation_response (ακούγονται στο ηχείο του δωματίου της εντολής).
 #
 # Room IDs (χάρτης της σκούπας): 3 σαλόνι · 4 WC · 5 χολ · 7 Νεφέλη · 8 κρεβατοκάμαρα · 9 Αλεξάνδρα · 10 μπάνιο
@@ -177,91 +177,3 @@ automation:
             {% if n.out | count == 1 %}{{ n.out[0] }}{% else %}{{ n.out[:-1] | join(', ') }} και {{ n.out[-1] }}{% endif %}{% endif %}
       - set_conversation_response: "{{ mode_text[clean_mode | trim] }} {{ where | trim }}."
 
-  - id: home_vacuum_voice_control
-    alias: Home Vacuum - Voice Control
-    description: Εκκίνηση, στάση, παύση, συνέχεια, βάση, μπαταρία και κατάσταση της σκούπας σπιτιού.
-    mode: single
-    triggers:
-      - trigger: conversation
-        id: start
-        command: ["ξεκίνα τη σκούπα", "ξεκίνα το καθάρισμα"]
-      - trigger: conversation
-        id: stop
-        command: ["σταμάτα τη σκούπα", "σταμάτα το καθάρισμα"]
-      - trigger: conversation
-        id: pause
-        command: ["κάνε παύση [στη σκούπα]", "παύση καθαρισμού", "πάγωσε τη σκούπα"]
-      - trigger: conversation
-        id: resume
-        command: ["συνέχισε τη σκούπα", "συνέχισε το καθάρισμα", "συνέχισε από εκεί που σταμάτησες"]
-      - trigger: conversation
-        id: dock
-        command: ["(γύρνα|πήγαινε) στη (βάση|θέση σου)", "γύρνα τη σκούπα στη βάση", "στείλε τη σκούπα στη βάση"]
-      - trigger: conversation
-        id: battery
-        command: ["(πόση|τι) μπαταρία έχει η σκούπα", "πόσο φορτισμένη είναι η σκούπα"]
-      - trigger: conversation
-        id: status
-        command: ["τι κάνει [τώρα] η σκούπα", "ποια είναι η κατάσταση της σκούπας", "[είναι ]η σκούπα [είναι ]στη βάση"]
-    conditions: []
-    actions:
-      - alias: "Guard: μόνο από το floor home"
-        if:
-          - condition: template
-            value_template: >-
-              {% set d = trigger.device_id | default(none) %}
-              {% set a = area_id(d) if d else none %}
-              {{ d is not none and not (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or floor_id(d) == 'home') }}
-        then:
-          - set_conversation_response: Αυτό γίνεται μόνο από το σπίτι.
-          - stop: Εκτός scope (home)
-      - variables:
-          battery: "{{ state_attr('vacuum.home_vacuum', 'battery_level') | int(0) }}"
-          status: "{{ state_attr('vacuum.home_vacuum', 'vacuum.status_desc') }}"
-          status_text: >-
-            {{ {'Charged': 'είναι φορτισμένη και βρίσκεται στη βάση',
-                'Charging': 'φορτίζει στη βάση',
-                'Cleaning': 'καθαρίζει',
-                'Paused': 'είναι σε παύση',
-                'Returning': 'επιστρέφει στη βάση'}.get(status, 'είναι σε κατάσταση ' ~ status) }}
-      - choose:
-          - conditions: "{{ trigger.id == 'start' }}"
-            sequence:
-              - if: "{{ battery < 20 }}"
-                then:
-                  - set_conversation_response: Η μπαταρία είναι στο {{ battery }}%. Άφησέ τη να φορτίσει λίγο πρώτα.
-                else:
-                  - action: script.home_vacuum_clean
-                    data:
-                      mode: normal
-                  - set_conversation_response: Ξεκινάω σκούπισμα σε όλο το σπίτι.
-          - conditions: "{{ trigger.id == 'stop' }}"
-            sequence:
-              - action: vacuum.stop
-                target:
-                  entity_id: vacuum.home_vacuum
-              - set_conversation_response: Σταμάτησα τη σκούπα.
-          - conditions: "{{ trigger.id == 'pause' }}"
-            sequence:
-              - action: vacuum.pause
-                target:
-                  entity_id: vacuum.home_vacuum
-              - set_conversation_response: Έκανα παύση στη σκούπα.
-          - conditions: "{{ trigger.id == 'resume' }}"
-            sequence:
-              - action: button.press
-                target:
-                  entity_id: button.home_vacuum_continue_sweep
-              - set_conversation_response: Η σκούπα συνεχίζει από εκεί που σταμάτησε.
-          - conditions: "{{ trigger.id == 'dock' }}"
-            sequence:
-              - action: vacuum.return_to_base
-                target:
-                  entity_id: vacuum.home_vacuum
-              - set_conversation_response: Η σκούπα επιστρέφει στη βάση.
-          - conditions: "{{ trigger.id == 'battery' }}"
-            sequence:
-              - set_conversation_response: Η μπαταρία της σκούπας είναι στο {{ battery }}%.
-          - conditions: "{{ trigger.id == 'status' }}"
-            sequence:
-              - set_conversation_response: Η σκούπα {{ status_text }}. Μπαταρία {{ battery }}%.
