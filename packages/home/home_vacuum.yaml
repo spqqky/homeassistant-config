@@ -1,2355 +1,267 @@
-# packages/home/home_vacuum.yaml (scope: home)
-# Μεταφέρθηκε αυτούσιο από automations.yaml/scripts.yaml στο βήμα 2β. Επεξεργασία μόνο εδώ, όχι από το UI.
+# packages/home/home_vacuum.yaml (scope: home, βήμα 7)
+#
+# Σκούπα σπιτιού (Xiaomi S20+, xiaomi.vacuum.b108gl) → vacuum.home_vacuum
+#
+# - script.home_vacuum_clean(rooms, mode): ΟΛΗ η λογική καθαρισμού, σε ένα σημείο.
+# - automation «Home Vacuum - Voice Clean»: «σκούπισε / καθάρισε / σφουγγάρισε <δωμάτια>».
+#   Mode από λέξεις-κλειδιά της φράσης, δωμάτια από λέξεις-κλειδιά (οποιοσδήποτε συνδυασμός).
+# - automation «Home Vacuum - Voice Control»: start/stop/παύση/βάση/μπαταρία/κατάσταση.
+# - Απαντήσεις ΜΟΝΟ με set_conversation_response (ακούγονται στο ηχείο του δωματίου της εντολής).
+#
+# Room IDs (χάρτης της σκούπας): 3 σαλόνι · 4 WC · 5 χολ · 7 Νεφέλη · 8 κρεβατοκάμαρα · 9 Αλεξάνδρα · 10 μπάνιο
+
+script:
+  home_vacuum_clean:
+    alias: Home Vacuum - Clean
+    description: >-
+      Καθαρισμός με τη σκούπα του σπιτιού. rooms = λίστα room IDs (κενή = όλο το σπίτι).
+      mode = normal (Basic) | strong | quiet | mop (σκούπισμα+σφουγγάρισμα, νερό Level2) | mop_wet (νερό Level3).
+    mode: single
+    icon: mdi:robot-vacuum
+    fields:
+      rooms:
+        name: Δωμάτια (room IDs)
+        description: "3 σαλόνι, 4 WC, 5 χολ, 7 Νεφέλη, 8 κρεβατοκάμαρα, 9 Αλεξάνδρα, 10 μπάνιο. Κενό = όλο το σπίτι."
+        example: "[3, 5]"
+        selector:
+          object:
+      mode:
+        name: Mode
+        default: normal
+        selector:
+          select:
+            options:
+              - normal
+              - strong
+              - quiet
+              - mop
+              - mop_wet
+    variables:
+      clean_mode: "{{ mode if (mode is defined and mode) else 'normal' }}"
+      room_ids: "{{ rooms if (rooms is defined and rooms) else [] }}"
+      fan: >-
+        {{ {'strong': 'Strong', 'quiet': 'Silent'}.get(clean_mode, 'Basic') }}
+      mopping: "{{ clean_mode in ['mop', 'mop_wet'] }}"
+      water: "{{ 'Level3' if clean_mode == 'mop_wet' else 'Level2' }}"
+    sequence:
+      # 1. Τύπος καθαρισμού (σκούπισμα ή σκούπισμα+σφουγγάρισμα)
+      - if: "{{ mopping }}"
+        then:
+          - action: xiaomi_miot.set_miot_property
+            data:
+              entity_id: vacuum.home_vacuum
+              siid: 2
+              piid: 3
+              value: 3
+          - action: select.select_option
+            target:
+              entity_id: select.home_vacuum_mop_water_output_level
+            data:
+              option: "{{ water }}"
+        else:
+          - action: select.select_option
+            continue_on_error: true
+            target:
+              entity_id: select.home_vacuum_sweep_mop_type
+            data:
+              option: Sweep
+      # 2. Ισχύς
+      - action: vacuum.set_fan_speed
+        continue_on_error: true
+        target:
+          entity_id: vacuum.home_vacuum
+        data:
+          fan_speed: "{{ fan }}"
+      # 3. Εκκίνηση: δωμάτια ή όλο το σπίτι
+      - if: "{{ room_ids | count > 0 }}"
+        then:
+          - action: xiaomi_miot.call_action
+            data:
+              entity_id: vacuum.home_vacuum
+              siid: 2
+              aiid: 13
+              # λίστα με ΕΝΑ string JSON, π.χ. ['{"room": [3, 5]}'] (όχι dict, το xiaomi_miot θέλει κείμενο)
+              params: "{{ [ {'room': room_ids | map('int') | list} | to_json ] }}"
+        else:
+          - if: "{{ mopping }}"
+            then:
+              - action: button.press
+                target:
+                  entity_id: button.home_vacuum_start_sweep_mop
+            else:
+              - action: vacuum.start
+                target:
+                  entity_id: vacuum.home_vacuum
 
 automation:
-  - id: '1790272677385'
-    alias: Voice - Home Κανονικό σκούπισμα
-    description: ''
-    triggers:
-    - trigger: conversation
-      command:
-      - σκούπισε το σαλόνι
-      - καθάρισε το σαλόνι
-      id: living_room
-    - trigger: conversation
-      command:
-      - σκούπισε το δωμάτιο της Νεφέλης
-      - σκούπισε της Νεφέλης
-      - καθάρισε το δωμάτιο της Νεφέλης
-      id: nefeli
-    - trigger: conversation
-      command:
-      - σκούπισε το δωμάτιο της Αλεξάνδρας
-      - σκούπισε της Αλεξάνδρας
-      - καθάρισε το δωμάτιο της Αλεξάνδρας
-      id: alexandra
-    - trigger: conversation
-      command:
-      - σκούπισε την κρεβατοκάμαρα
-      - καθάρισε την κρεβατοκάμαρα
-      id: bedroom
-    - trigger: conversation
-      command:
-      - σκούπισε το μπάνιο
-      - καθάρισε το μπάνιο
-      id: bathroom
-    - trigger: conversation
-      command:
-      - σκούπισε το W
-      - καθάρισε το W
-      - σκούπισε το WC
-      - καθάρισε το WC
-      - σκούπισε το βε σε
-      - καθάρισε το βε σε
-      - σκούπισε το βεσέ
-      - καθάρισε το βεσέ
-      id: wc
-    - trigger: conversation
-      command:
-      - σκούπισε το χώλ
-      - καθάρισε το χώλ
-      id: hall
-    - trigger: conversation
-      command:
-      - σκούπισε το σαλόνι και το χώλ
-      - καθάρισε το σαλόνι και το χώλ
-      id: living_hall
-    - trigger: conversation
-      command:
-      - σκούπισε τα παιδικά δωμάτια
-      - καθάρισε τα παιδικά δωμάτια
-      - σκούπισε της Νεφέλης και της Αλεξάνδρας
-      id: kids
-    - trigger: conversation
-      command:
-      - σκούπισε την κρεβατοκάμαρα και το μπάνιο
-      - καθάρισε την κρεβατοκάμαρα και το μπάνιο
-      id: bedroom_bathroom
-    - trigger: conversation
-      command:
-      - σκούπισε το σαλόνι το χώλ και το μπάνιο
-      - σκούπισε σαλόνι χώλ και μπάνιο
-      - καθάρισε σαλόνι χώλ και μπάνιο
-      id: living_hall_bathroom
-    - trigger: conversation
-      command:
-      - σκούπισε όλο το σπίτι
-      - καθάρισε όλο το σπίτι
-      id: whole_house
-    conditions: []
-    actions:
-    - alias: "Guard: μόνο από το floor home"
-      if:
-        - condition: template
-          value_template: >-
-            {% set d = trigger.device_id | default(none) %}
-            {% set a = area_id(d) if d else none %}
-            {{ d is not none and not (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or floor_id(d) == 'home') }}
-      then:
-        - set_conversation_response: Αυτό γίνεται μόνο από το σπίτι.
-        - stop: Εκτός scope (home)
-    - choose:
-      - conditions:
-        - condition: trigger
-          id: living_room
-        sequence:
-        - action: vacuum.set_fan_speed
-          continue_on_error: true
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[3]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Πάω να καθαρίσω το σαλόνι.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: nefeli
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[7]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Πάω να καθαρίσω το δωμάτιο της Νεφέλης.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: alexandra
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[9]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Πάω να καθαρίσω το δωμάτιο της Αλεξάνδρας.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: bedroom
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[8]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω την κρεβατοκάμαρα.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: bathroom
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[10]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Πάω να καθαρίσω το μπάνιο.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: wc
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[4]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω το βε σε.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: hall
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[5]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Πάω να καθαρίσω το χώλ.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: living_hall
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[3,5]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σαλόνι και χώλ.
-      - conditions:
-        - condition: trigger
-          id: kids
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[7,9]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω τα παιδικά δωμάτια.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: bedroom_bathroom
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[8,10]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω κρεβατοκάμαρα και μπάνιο.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: living_hall_bathroom
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[3,5,10]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σαλόνι, χώλ και μπάνιο.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: whole_house
-        sequence:
-        - choose:
-          - conditions:
-            - condition: template
-              value_template: '{{ state_attr(''vacuum.home_vacuum'', ''battery_level'')
-                | int >= 20 }}'
-            sequence:
-            - action: vacuum.set_fan_speed
-              target:
-                entity_id: vacuum.home_vacuum
-              data:
-                fan_speed: Basic
-            - action: vacuum.start
-              target:
-                entity_id: vacuum.home_vacuum
-            - action: tts.speak
-              target:
-                entity_id: tts.google_translate_en_com
-              data:
-                media_player_entity_id: media_player.home_living_room_speaker
-                message: Ξεκινάω για όλο το σπίτι.
-                language: el
-          default:
-          - set_conversation_response: Έγινε.
-          - action: tts.speak
-            target:
-              entity_id: tts.google_translate_en_com
-            data:
-              media_player_entity_id: media_player.home_living_room_speaker
-              message: Η μπαταρία είναι χαμηλή. Άφησέ με να φορτίσω λίγο πρώτα.
-              language: el
+  - id: home_vacuum_voice_clean
+    alias: Home Vacuum - Voice Clean
+    description: «σκούπισε / καθάρισε / σφουγγάρισε <δωμάτια>», με δυνατά / ήσυχα / με πολύ νερό.
     mode: single
-  - id: '1790272809384'
-    alias: Voice - Home Δυνατό σκούπισμα
-    description: ''
     triggers:
-    - trigger: conversation
-      command:
-      - σκούπισε δυνατά το σαλόνι
-      - καθάρισε δυνατά το σαλόνι
-      id: living_room
-    - trigger: conversation
-      command:
-      - σκούπισε δυνατά το δωμάτιο της Νεφέλης
-      - σκούπισε δυνατά της Νεφέλης
-      id: nefeli
-    - trigger: conversation
-      command:
-      - σκούπισε δυνατά το δωμάτιο της Αλεξάνδρας
-      - σκούπισε δυνατά της Αλεξάνδρας
-      id: alexandra
-    - trigger: conversation
-      command:
-      - σκούπισε δυνατά την κρεβατοκάμαρα
-      id: bedroom
-    - trigger: conversation
-      command:
-      - σκούπισε δυνατά το μπάνιο
-      id: bathroom
-    - trigger: conversation
-      command:
-      - σκούπισε δυνατά το W
-      - σκούπισε δυνατά το WC
-      - σκούπισε δυνατά το βε σε
-      - σκούπισε δυνατά το βεσέ
-      id: wc
-    - trigger: conversation
-      command:
-      - σκούπισε δυνατά το χώλ
-      id: hall
-    - trigger: conversation
-      command:
-      - σκούπισε δυνατά το σαλόνι και το χώλ
-      id: living_hall
-    - trigger: conversation
-      command:
-      - σκούπισε δυνατά τα παιδικά δωμάτια
-      - σκούπισε δυνατά της Νεφέλης και της Αλεξάνδρας
-      id: kids
-    - trigger: conversation
-      command:
-      - σκούπισε δυνατά την κρεβατοκάμαρα και το μπάνιο
-      id: bedroom_bathroom
-    - trigger: conversation
-      command:
-      - σκούπισε δυνατά σαλόνι χώλ και μπάνιο
-      - σκούπισε δυνατά το σαλόνι το χώλ και το μπάνιο
-      id: living_hall_bathroom
-    - trigger: conversation
-      command:
-      - σκούπισε δυνατά όλο το σπίτι
-      - καθάρισε δυνατά όλο το σπίτι
-      id: whole_house
+      - trigger: conversation
+        command:
+          - "(σκούπισε|καθάρισε|σφουγγάρισε) {rooms}"
+          - "(σκούπισε|καθάρισε) και σφουγγάρισε {rooms}"
     conditions: []
     actions:
-    - alias: "Guard: μόνο από το floor home"
-      if:
-        - condition: template
-          value_template: >-
-            {% set d = trigger.device_id | default(none) %}
-            {% set a = area_id(d) if d else none %}
-            {{ d is not none and not (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or floor_id(d) == 'home') }}
-      then:
-        - set_conversation_response: Αυτό γίνεται μόνο από το σπίτι.
-        - stop: Εκτός scope (home)
-    - choose:
-      - conditions:
-        - condition: trigger
-          id: living_room
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Strong
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[3]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω δυνατό καθάρισμα στο σαλόνι.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: nefeli
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Strong
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[7]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω δυνατό καθάρισμα στο δωμάτιο της Νεφέλης.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: alexandra
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Strong
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[9]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω δυνατό καθάρισμα στο δωμάτιο της Αλεξάνδρας.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: bedroom
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Strong
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[8]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω δυνατό καθάρισμα στην κρεβατοκάμαρα.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: bathroom
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Strong
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[10]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω δυνατό καθάρισμα στο μπάνιο.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: wc
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Strong
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[4]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω δυνατό καθάρισμα στο βε σε.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: hall
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Strong
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[5]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω δυνατό καθάρισμα στο χώλ.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: living_hall
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Strong
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[3,5]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω δυνατό καθάρισμα σε σαλόνι και χώλ.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: kids
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Strong
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[7,9]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω δυνατό καθάρισμα στα παιδικά δωμάτια.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: bedroom_bathroom
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Strong
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[8,10]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω δυνατό καθάρισμα σε κρεβατοκάμαρα και μπάνιο.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: living_hall_bathroom
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Strong
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[3,5,10]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω δυνατό καθάρισμα σε σαλόνι, χώλ και μπάνιο.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: whole_house
-        sequence:
-        - choose:
-          - conditions:
-            - condition: template
-              value_template: '{{ state_attr(''vacuum.home_vacuum'', ''battery_level'')
-                | int >= 20 }}
+      - alias: "Guard: μόνο από το floor home"
+        if:
+          - condition: template
+            value_template: >-
+              {% set d = trigger.device_id | default(none) %}
+              {% set a = area_id(d) if d else none %}
+              {{ d is not none and not (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or floor_id(d) == 'home') }}
+        then:
+          - set_conversation_response: Αυτό γίνεται μόνο από το σπίτι.
+          - stop: Εκτός scope (home)
+      - variables:
+          text: "{{ trigger.sentence | lower }}"
+          clean_mode: >-
+            {% if 'σφουγγάρ' in text %}{{ 'mop_wet' if 'πολύ νερό' in text else 'mop' }}
+            {% elif 'δυνατ' in text %}strong
+            {% elif 'ήσυχ' in text or 'απαλ' in text %}quiet
+            {% else %}normal{% endif %}
+          # λέξη-κλειδί → (room IDs, όνομα για την απάντηση)
+          room_ids: >-
+            {% set ns = namespace(ids=[]) %}
+            {% set kw = [
+              ('σαλόν', [3]), ('χολ', [5]), ('χώλ', [5]), ('hall', [5]),
+              ('νεφέλη', [7]), ('αλεξάνδρ', [9]), ('παιδικ', [7, 9]),
+              ('κρεβατοκάμαρ', [8]), ('υπνοδωμάτι', [8]),
+              ('μπάνιο', [10]),
+              ('wc', [4]), ('βε σε', [4]), ('βεσέ', [4]), ('τουαλέτα', [4])
+            ] %}
+            {% for k, ids in kw %}{% if k in text %}{% set ns.ids = ns.ids + ids %}{% endif %}{% endfor %}
+            {% if text is search('(^|\\s)w(\\s|$)') %}{% set ns.ids = ns.ids + [4] %}{% endif %}
+            {{ ns.ids | unique | list }}
+          whole_house: "{{ 'όλο το σπίτι' in text or 'παντού' in text }}"
+          studio: "{{ 'στούντιο' in text or 'studio' in text or 'pink' in text }}"
+      - if: "{{ studio }}"
+        then:
+          - set_conversation_response: Για τη σκούπα του studio πες «σκούπισε το στούντιο».
+          - stop: Studio
+      - if: "{{ not whole_house and room_ids | count == 0 }}"
+        then:
+          - set_conversation_response: >-
+              Δεν κατάλαβα ποιο δωμάτιο. Πες για παράδειγμα «σκούπισε το σαλόνι» ή «σκούπισε όλο το σπίτι».
+          - stop: Άγνωστο δωμάτιο
+      - if: "{{ state_attr('vacuum.home_vacuum', 'battery_level') | int(0) < 20 }}"
+        then:
+          - set_conversation_response: >-
+              Η μπαταρία της σκούπας είναι στο {{ state_attr('vacuum.home_vacuum', 'battery_level') | int(0) }}%.
+              Άφησέ τη να φορτίσει λίγο πρώτα.
+          - stop: Χαμηλή μπαταρία
+      - action: script.home_vacuum_clean
+        data:
+          rooms: "{{ [] if whole_house else room_ids }}"
+          mode: "{{ clean_mode | trim }}"
+      - variables:
+          names:
+            3: στο σαλόνι
+            4: στο WC
+            5: στο χολ
+            7: στο δωμάτιο της Νεφέλης
+            8: στην κρεβατοκάμαρα
+            9: στο δωμάτιο της Αλεξάνδρας
+            10: στο μπάνιο
+          mode_text:
+            normal: Ξεκινάω σκούπισμα
+            strong: Ξεκινάω δυνατό σκούπισμα
+            quiet: Ξεκινάω ήσυχο σκούπισμα
+            mop: Ξεκινάω σκούπισμα και σφουγγάρισμα
+            mop_wet: Ξεκινάω σφουγγάρισμα με πολύ νερό
+          where: >-
+            {% if whole_house %}σε όλο το σπίτι
+            {% else %}{% set n = namespace(out=[]) %}{% for i in room_ids %}{% set n.out = n.out + [names[i | int]] %}{% endfor %}
+            {% if n.out | count == 1 %}{{ n.out[0] }}{% else %}{{ n.out[:-1] | join(', ') }} και {{ n.out[-1] }}{% endif %}{% endif %}
+      - set_conversation_response: "{{ mode_text[clean_mode | trim] }} {{ where | trim }}."
 
-                '
-            sequence:
-            - action: vacuum.set_fan_speed
-              target:
-                entity_id: vacuum.home_vacuum
-              data:
-                fan_speed: Strong
-            - action: vacuum.start
-              target:
-                entity_id: vacuum.home_vacuum
-            - set_conversation_response: Έγινε.
-            - action: tts.speak
-              target:
-                entity_id: tts.google_translate_en_com
-              data:
-                media_player_entity_id: media_player.home_living_room_speaker
-                message: Ξεκινάω δυνατό καθάρισμα σε όλο το σπίτι.
-                language: el
-          default:
-          - set_conversation_response: Έγινε.
-          - action: tts.speak
-            target:
-              entity_id: tts.google_translate_en_com
-            data:
-              media_player_entity_id: media_player.home_living_room_speaker
-              message: Η μπαταρία είναι χαμηλή. Άφησέ με να φορτίσω λίγο πρώτα.
-              language: el
+  - id: home_vacuum_voice_control
+    alias: Home Vacuum - Voice Control
+    description: Εκκίνηση, στάση, παύση, συνέχεια, βάση, μπαταρία και κατάσταση της σκούπας σπιτιού.
     mode: single
-  - id: '1790272883318'
-    alias: Voice - Home Ήσυχο σκούπισμα
-    description: ''
     triggers:
-    - trigger: conversation
-      command:
-      - σκούπισε ήσυχα το σαλόνι
-      - καθάρισε ήσυχα το σαλόνι
-      id: living_room
-    - trigger: conversation
-      command:
-      - σκούπισε ήσυχα το δωμάτιο της Νεφέλης
-      - σκούπισε ήσυχα της Νεφέλης
-      id: nefeli
-    - trigger: conversation
-      command:
-      - σκούπισε ήσυχα το δωμάτιο της Αλεξάνδρας
-      - σκούπισε ήσυχα της Αλεξάνδρας
-      id: alexandra
-    - trigger: conversation
-      command:
-      - σκούπισε ήσυχα την κρεβατοκάμαρα
-      id: bedroom
-    - trigger: conversation
-      command:
-      - σκούπισε ήσυχα το μπάνιο
-      id: bathroom
-    - trigger: conversation
-      command:
-      - σκούπισε ήσυχα το W
-      - σκούπισε ήσυχα το WC
-      - σκούπισε ήσυχα το βε σε
-      - σκούπισε ήσυχα το βεσέ
-      id: wc
-    - trigger: conversation
-      command:
-      - σκούπισε ήσυχα το χώλ
-      id: hall
-    - trigger: conversation
-      command:
-      - σκούπισε ήσυχα το σαλόνι και το χώλ
-      id: living_hall
-    - trigger: conversation
-      command:
-      - σκούπισε ήσυχα τα παιδικά δωμάτια
-      - σκούπισε ήσυχα της Νεφέλης και της Αλεξάνδρας
-      id: kids
-    - trigger: conversation
-      command:
-      - σκούπισε ήσυχα την κρεβατοκάμαρα και το μπάνιο
-      id: bedroom_bathroom
-    - trigger: conversation
-      command:
-      - σκούπισε ήσυχα σαλόνι χώλ και μπάνιο
-      - σκούπισε ήσυχα το σαλόνι το χώλ και το μπάνιο
-      id: living_hall_bathroom
-    - trigger: conversation
-      command:
-      - σκούπισε ήσυχα όλο το σπίτι
-      - καθάρισε ήσυχα όλο το σπίτι
-      id: whole_house
+      - trigger: conversation
+        id: start
+        command: ["ξεκίνα τη σκούπα", "ξεκίνα το καθάρισμα"]
+      - trigger: conversation
+        id: stop
+        command: ["σταμάτα τη σκούπα", "σταμάτα το καθάρισμα"]
+      - trigger: conversation
+        id: pause
+        command: ["κάνε παύση [στη σκούπα]", "παύση καθαρισμού", "πάγωσε τη σκούπα"]
+      - trigger: conversation
+        id: resume
+        command: ["συνέχισε τη σκούπα", "συνέχισε το καθάρισμα", "συνέχισε από εκεί που σταμάτησες"]
+      - trigger: conversation
+        id: dock
+        command: ["(γύρνα|πήγαινε) στη (βάση|θέση σου)", "γύρνα τη σκούπα στη βάση", "στείλε τη σκούπα στη βάση"]
+      - trigger: conversation
+        id: battery
+        command: ["(πόση|τι) μπαταρία έχει η σκούπα", "πόσο φορτισμένη είναι η σκούπα"]
+      - trigger: conversation
+        id: status
+        command: ["τι κάνει [τώρα] η σκούπα", "ποια είναι η κατάσταση της σκούπας", "[είναι ]η σκούπα [είναι ]στη βάση"]
     conditions: []
     actions:
-    - alias: "Guard: μόνο από το floor home"
-      if:
-        - condition: template
-          value_template: >-
-            {% set d = trigger.device_id | default(none) %}
-            {% set a = area_id(d) if d else none %}
-            {{ d is not none and not (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or floor_id(d) == 'home') }}
-      then:
-        - set_conversation_response: Αυτό γίνεται μόνο από το σπίτι.
-        - stop: Εκτός scope (home)
-    - choose:
-      - conditions:
-        - condition: trigger
-          id: living_room
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Silent
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[3]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω ήσυχο καθάρισμα στο σαλόνι.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: nefeli
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Silent
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[7]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω ήσυχο καθάρισμα στο δωμάτιο της Νεφέλης.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: alexandra
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Silent
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[9]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω ήσυχο καθάρισμα στο δωμάτιο της Αλεξάνδρας.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: bedroom
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Silent
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[8]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω ήσυχο καθάρισμα στην κρεβατοκάμαρα.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: bathroom
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Silent
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[10]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω ήσυχο καθάρισμα στο μπάνιο.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: wc
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Silent
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[4]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω ήσυχο καθάρισμα στο βε σε.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: hall
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Silent
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[5]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω ήσυχο καθάρισμα στο χώλ.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: living_hall
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Silent
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[3,5]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω ήσυχο καθάρισμα σε σαλόνι και χώλ.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: kids
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Silent
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[7,9]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω ήσυχο καθάρισμα στα παιδικά δωμάτια.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: bedroom_bathroom
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Silent
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[8,10]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω ήσυχο καθάρισμα σε κρεβατοκάμαρα και μπάνιο.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: living_hall_bathroom
-        sequence:
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Silent
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[3,5,10]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω ήσυχο καθάρισμα σε σαλόνι, χώλ και μπάνιο.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: whole_house
-        sequence:
-        - choose:
-          - conditions:
-            - condition: template
-              value_template: '{{ state_attr(''vacuum.home_vacuum'', ''battery_level'')
-                | int >= 20 }}
-
-                '
+      - alias: "Guard: μόνο από το floor home"
+        if:
+          - condition: template
+            value_template: >-
+              {% set d = trigger.device_id | default(none) %}
+              {% set a = area_id(d) if d else none %}
+              {{ d is not none and not (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or floor_id(d) == 'home') }}
+        then:
+          - set_conversation_response: Αυτό γίνεται μόνο από το σπίτι.
+          - stop: Εκτός scope (home)
+      - variables:
+          battery: "{{ state_attr('vacuum.home_vacuum', 'battery_level') | int(0) }}"
+          status: "{{ state_attr('vacuum.home_vacuum', 'vacuum.status_desc') }}"
+          status_text: >-
+            {{ {'Charged': 'είναι φορτισμένη και βρίσκεται στη βάση',
+                'Charging': 'φορτίζει στη βάση',
+                'Cleaning': 'καθαρίζει',
+                'Paused': 'είναι σε παύση',
+                'Returning': 'επιστρέφει στη βάση'}.get(status, 'είναι σε κατάσταση ' ~ status) }}
+      - choose:
+          - conditions: "{{ trigger.id == 'start' }}"
             sequence:
-            - action: vacuum.set_fan_speed
-              target:
-                entity_id: vacuum.home_vacuum
-              data:
-                fan_speed: Silent
-            - action: vacuum.start
-              target:
-                entity_id: vacuum.home_vacuum
-            - set_conversation_response: Έγινε.
-            - action: tts.speak
-              target:
-                entity_id: tts.google_translate_en_com
-              data:
-                media_player_entity_id: media_player.home_living_room_speaker
-                message: Ξεκινάω ήσυχο καθάρισμα σε όλο το σπίτι.
-                language: el
-          default:
-          - set_conversation_response: Έγινε.
-          - action: tts.speak
-            target:
-              entity_id: tts.google_translate_en_com
-            data:
-              media_player_entity_id: media_player.home_living_room_speaker
-              message: Η μπαταρία είναι χαμηλή. Άφησέ με να φορτίσω λίγο πρώτα.
-              language: el
-    mode: single
-  - id: '1790272950623'
-    alias: Voice - Home Σκούπισμα και σφουγγάρισμα
-    description: ''
-    triggers:
-    - trigger: conversation
-      command:
-      - σκούπισε και σφουγγάρισε το σαλόνι
-      - καθάρισε και σφουγγάρισε το σαλόνι
-      id: living_room
-    - trigger: conversation
-      command:
-      - σκούπισε και σφουγγάρισε το δωμάτιο της Νεφέλης
-      - σκούπισε και σφουγγάρισε της Νεφέλης
-      id: nefeli
-    - trigger: conversation
-      command:
-      - σκούπισε και σφουγγάρισε το δωμάτιο της Αλεξάνδρας
-      - σκούπισε και σφουγγάρισε της Αλεξάνδρας
-      id: alexandra
-    - trigger: conversation
-      command:
-      - σκούπισε και σφουγγάρισε την κρεβατοκάμαρα
-      id: bedroom
-    - trigger: conversation
-      command:
-      - σκούπισε και σφουγγάρισε το μπάνιο
-      id: bathroom
-    - trigger: conversation
-      command:
-      - σκούπισε και σφουγγάρισε το W
-      - σκούπισε και σφουγγάρισε το WC
-      - σκούπισε και σφουγγάρισε το βε σε
-      - σκούπισε και σφουγγάρισε το βεσέ
-      id: wc
-    - trigger: conversation
-      command:
-      - σκούπισε και σφουγγάρισε το χώλ
-      id: hall
-    - trigger: conversation
-      command:
-      - σκούπισε και σφουγγάρισε το σαλόνι και το χώλ
-      id: living_hall
-    - trigger: conversation
-      command:
-      - σκούπισε και σφουγγάρισε τα παιδικά δωμάτια
-      - σκούπισε και σφουγγάρισε της Νεφέλης και της Αλεξάνδρας
-      id: kids
-    - trigger: conversation
-      command:
-      - σκούπισε και σφουγγάρισε την κρεβατοκάμαρα και το μπάνιο
-      id: bedroom_bathroom
-    - trigger: conversation
-      command:
-      - σκούπισε και σφουγγάρισε σαλόνι χώλ και μπάνιο
-      - σκούπισε και σφουγγάρισε το σαλόνι το χώλ και το μπάνιο
-      id: living_hall_bathroom
-    - trigger: conversation
-      command:
-      - σκούπισε και σφουγγάρισε όλο το σπίτι
-      - καθάρισε και σφουγγάρισε όλο το σπίτι
-      id: whole_house
-    conditions: []
-    actions:
-    - alias: "Guard: μόνο από το floor home"
-      if:
-        - condition: template
-          value_template: >-
-            {% set d = trigger.device_id | default(none) %}
-            {% set a = area_id(d) if d else none %}
-            {{ d is not none and not (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or floor_id(d) == 'home') }}
-      then:
-        - set_conversation_response: Αυτό γίνεται μόνο από το σπίτι.
-        - stop: Εκτός scope (home)
-    - choose:
-      - conditions:
-        - condition: trigger
-          id: living_room
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level2
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[3]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σκούπισμα και σφουγγάρισμα στο σαλόνι.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: nefeli
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level2
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[7]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σκούπισμα και σφουγγάρισμα στο δωμάτιο της Νεφέλης.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: alexandra
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level2
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[9]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σκούπισμα και σφουγγάρισμα στο δωμάτιο της Αλεξάνδρας.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: bedroom
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level2
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[8]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σκούπισμα και σφουγγάρισμα στην κρεβατοκάμαρα.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: bathroom
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level2
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[10]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σκούπισμα και σφουγγάρισμα στο μπάνιο.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: wc
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level2
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[4]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σκούπισμα και σφουγγάρισμα στο βε σε.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: hall
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level2
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[5]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σκούπισμα και σφουγγάρισμα στο χώλ.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: living_hall
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level2
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[3,5]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σκούπισμα και σφουγγάρισμα σε σαλόνι και χώλ.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: kids
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level2
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[7,9]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σκούπισμα και σφουγγάρισμα στα παιδικά δωμάτια.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: bedroom_bathroom
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level2
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[8,10]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σκούπισμα και σφουγγάρισμα σε κρεβατοκάμαρα και μπάνιο.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: living_hall_bathroom
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level2
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[3,5,10]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σκούπισμα και σφουγγάρισμα σε σαλόνι, χώλ και μπάνιο.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: whole_house
-        sequence:
-        - choose:
-          - conditions:
-            - condition: template
-              value_template: '{{ state_attr(''vacuum.home_vacuum'', ''battery_level'')
-                | int >= 20 }}
-
-                '
+              - if: "{{ battery < 20 }}"
+                then:
+                  - set_conversation_response: Η μπαταρία είναι στο {{ battery }}%. Άφησέ τη να φορτίσει λίγο πρώτα.
+                else:
+                  - action: script.home_vacuum_clean
+                    data:
+                      mode: normal
+                  - set_conversation_response: Ξεκινάω σκούπισμα σε όλο το σπίτι.
+          - conditions: "{{ trigger.id == 'stop' }}"
             sequence:
-            - action: xiaomi_miot.set_miot_property
-              data:
-                entity_id: vacuum.home_vacuum
-                siid: 2
-                piid: 3
-                value: 3
-            - action: vacuum.set_fan_speed
-              target:
-                entity_id: vacuum.home_vacuum
-              data:
-                fan_speed: Basic
-            - action: select.select_option
-              target:
-                entity_id: select.home_vacuum_mop_water_output_level
-              data:
-                option: Level2
-            - action: button.press
-              target:
-                entity_id: button.home_vacuum_start_sweep_mop
-            - set_conversation_response: Έγινε.
-            - action: tts.speak
-              target:
-                entity_id: tts.google_translate_en_com
-              data:
-                media_player_entity_id: media_player.home_living_room_speaker
-                message: Ξεκινάω σκούπισμα και σφουγγάρισμα σε όλο το σπίτι.
-                language: el
-          default:
-          - set_conversation_response: Έγινε.
-          - action: tts.speak
-            target:
-              entity_id: tts.google_translate_en_com
-            data:
-              media_player_entity_id: media_player.home_living_room_speaker
-              message: Η μπαταρία είναι χαμηλή. Άφησέ με να φορτίσω λίγο πρώτα.
-              language: el
-    mode: single
-  - id: '1790273028653'
-    alias: Voice - Home Πολύ νερό
-    description: ''
-    triggers:
-    - trigger: conversation
-      command:
-      - σφουγγάρισε το σαλόνι με πολύ νερό
-      - σκούπισε και σφουγγάρισε το σαλόνι με πολύ νερό
-      id: living_room
-    - trigger: conversation
-      command:
-      - σφουγγάρισε το δωμάτιο της Νεφέλης με πολύ νερό
-      - σφουγγάρισε της Νεφέλης με πολύ νερό
-      id: nefeli
-    - trigger: conversation
-      command:
-      - σφουγγάρισε το δωμάτιο της Αλεξάνδρας με πολύ νερό
-      - σφουγγάρισε της Αλεξάνδρας με πολύ νερό
-      id: alexandra
-    - trigger: conversation
-      command:
-      - σφουγγάρισε την κρεβατοκάμαρα με πολύ νερό
-      id: bedroom
-    - trigger: conversation
-      command:
-      - σφουγγάρισε το μπάνιο με πολύ νερό
-      id: bathroom
-    - trigger: conversation
-      command:
-      - σφουγγάρισε το W με πολύ νερό
-      - σφουγγάρισε το WC με πολύ νερό
-      - σφουγγάρισε το βε σε με πολύ νερό
-      - σφουγγάρισε το βεσέ με πολύ νερό
-      - σκούπισε και σφουγγάρισε το W με πολύ νερό
-      - σκούπισε και σφουγγάρισε το WC με πολύ νερό
-      - σκούπισε και σφουγγάρισε το βε σε με πολύ νερό
-      - σκούπισε και σφουγγάρισε το βεσέ με πολύ νερό
-      id: wc
-    - trigger: conversation
-      command:
-      - σφουγγάρισε το χώλ με πολύ νερό
-      - σκούπισε και σφουγγάρισε το χώλ με πολύ νερό
-      id: hall
-    - trigger: conversation
-      command:
-      - σφουγγάρισε το σαλόνι και το χώλ με πολύ νερό
-      - σκούπισε και σφουγγάρισε το σαλόνι και το χώλ με πολύ νερό
-      id: living_hall
-    - trigger: conversation
-      command:
-      - σφουγγάρισε τα παιδικά δωμάτια με πολύ νερό
-      - σφουγγάρισε της Νεφέλης και της Αλεξάνδρας με πολύ νερό
-      id: kids
-    - trigger: conversation
-      command:
-      - σφουγγάρισε την κρεβατοκάμαρα και το μπάνιο με πολύ νερό
-      id: bedroom_bathroom
-    - trigger: conversation
-      command:
-      - σφουγγάρισε σαλόνι χώλ και μπάνιο με πολύ νερό
-      - σκούπισε και σφουγγάρισε σαλόνι χώλ και μπάνιο με πολύ νερό
-      id: living_hall_bathroom
-    - trigger: conversation
-      command:
-      - σφουγγάρισε όλο το σπίτι με πολύ νερό
-      - σκούπισε και σφουγγάρισε όλο το σπίτι με πολύ νερό
-      id: whole_house
-    conditions: []
-    actions:
-    - alias: "Guard: μόνο από το floor home"
-      if:
-        - condition: template
-          value_template: >-
-            {% set d = trigger.device_id | default(none) %}
-            {% set a = area_id(d) if d else none %}
-            {{ d is not none and not (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or floor_id(d) == 'home') }}
-      then:
-        - set_conversation_response: Αυτό γίνεται μόνο από το σπίτι.
-        - stop: Εκτός scope (home)
-    - choose:
-      - conditions:
-        - condition: trigger
-          id: living_room
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level3
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[3]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σαλόνι με πολύ νερό.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: nefeli
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level3
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[7]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω το δωμάτιο της Νεφέλης με πολύ νερό.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: alexandra
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level3
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[9]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω το δωμάτιο της Αλεξάνδρας με πολύ νερό.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: bedroom
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level3
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[8]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω την κρεβατοκάμαρα με πολύ νερό.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: bathroom
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level3
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[10]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω το μπάνιο με πολύ νερό.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: wc
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level3
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[4]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω το βε σε με πολύ νερό.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: hall
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level3
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[5]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω το χώλ με πολύ νερό.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: living_hall
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level3
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[3,5]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σαλόνι και χώλ με πολύ νερό.
-            language: elω
-      - conditions:
-        - condition: trigger
-          id: kids
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level3
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[7,9]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω τα παιδικά δωμάτια με πολύ νερό.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: bedroom_bathroom
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level3
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[8,10]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω κρεβατοκάμαρα και μπάνιο με πολύ νερό.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: living_hall_bathroom
-        sequence:
-        - action: xiaomi_miot.set_miot_property
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            piid: 3
-            value: 3
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: select.select_option
-          target:
-            entity_id: select.home_vacuum_mop_water_output_level
-          data:
-            option: Level3
-        - action: xiaomi_miot.call_action
-          data:
-            entity_id: vacuum.home_vacuum
-            siid: 2
-            aiid: 13
-            params:
-            - '{"room":[3,5,10]}'
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω σαλόνι, χώλ και μπάνιο με πολύ νερό.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: whole_house
-        sequence:
-        - choose:
-          - conditions:
-            - condition: template
-              value_template: '{{ state_attr(''vacuum.home_vacuum'', ''battery_level'')
-                | int >= 20 }}
-
-                '
+              - action: vacuum.stop
+                target:
+                  entity_id: vacuum.home_vacuum
+              - set_conversation_response: Σταμάτησα τη σκούπα.
+          - conditions: "{{ trigger.id == 'pause' }}"
             sequence:
-            - action: xiaomi_miot.set_miot_property
-              data:
-                entity_id: vacuum.home_vacuum
-                siid: 2
-                piid: 3
-                value: 3
-            - action: vacuum.set_fan_speed
-              target:
-                entity_id: vacuum.home_vacuum
-              data:
-                fan_speed: Basic
-            - action: select.select_option
-              target:
-                entity_id: select.home_vacuum_mop_water_output_level
-              data:
-                option: Level3
-            - action: button.press
-              target:
-                entity_id: button.home_vacuum_start_sweep_mop
-            - set_conversation_response: Έγινε.
-            - action: tts.speak
-              target:
-                entity_id: tts.google_translate_en_com
-              data:
-                media_player_entity_id: media_player.home_living_room_speaker
-                message: Ξεκινάω όλο το σπίτι με πολύ νερό.
-                language: el
-          default:
-          - set_conversation_response: Έγινε.
-          - action: tts.speak
-            target:
-              entity_id: tts.google_translate_en_com
-            data:
-              media_player_entity_id: media_player.home_living_room_speaker
-              message: Η μπαταρία είναι χαμηλή. Άφησέ με να φορτίσω λίγο πρώτα.
-              language: el
-    mode: single
-  - id: '1790273083943'
-    alias: Voice - Home Έλεγχος και κατάσταση σκούπας
-    description: ''
-    triggers:
-    - trigger: conversation
-      command:
-      - ξεκίνα τη σκούπα
-      - ξεκίνα το καθάρισμα
-      id: start
-    - trigger: conversation
-      command:
-      - σταμάτα τη σκούπα
-      - σταμάτα το καθάρισμα
-      id: stop
-    - trigger: conversation
-      command:
-      - κάνε παύση
-      - κάνε παύση στη σκούπα
-      - παύση καθαρισμού
-      id: pause
-    - trigger: conversation
-      command:
-      - συνέχισε τη σκούπα
-      - συνέχισε το καθάρισμα
-      - συνέχισε από εκεί που σταμάτησες
-      id: resume
-    - trigger: conversation
-      command:
-      - γύρνα στη βάση
-      - γύρνα στη θέση σου
-      - πήγαινε στη βάση
-      - πήγαινε στη θέση σου
-      - γύρνα τη σκούπα στη βάση
-      id: dock
-    - trigger: conversation
-      command:
-      - πόση μπαταρία έχει η σκούπα
-      - τι μπαταρία έχει η σκούπα
-      - πόσο φορτισμένη είναι η σκούπα
-      id: battery
-    - trigger: conversation
-      command:
-      - τι κάνει η σκούπα
-      - τι κάνει τώρα η σκούπα
-      - ποια είναι η κατάσταση της σκούπας
-      id: status
-    - trigger: conversation
-      command:
-      - είναι η σκούπα στη βάση
-      - η σκούπα είναι στη βάση
-      id: dock_status
-    conditions: []
-    actions:
-    - alias: "Guard: μόνο από το floor home"
-      if:
-        - condition: template
-          value_template: >-
-            {% set d = trigger.device_id | default(none) %}
-            {% set a = area_id(d) if d else none %}
-            {{ d is not none and not (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or floor_id(d) == 'home') }}
-      then:
-        - set_conversation_response: Αυτό γίνεται μόνο από το σπίτι.
-        - stop: Εκτός scope (home)
-    - choose:
-      - conditions:
-        - condition: trigger
-          id: start
-        sequence:
-        - set_conversation_response: Έγινε.
-        - action: vacuum.set_fan_speed
-          target:
-            entity_id: vacuum.home_vacuum
-          data:
-            fan_speed: Basic
-        - action: vacuum.start
-          target:
-            entity_id: vacuum.home_vacuum
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Ξεκινάω το καθάρισμα.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: stop
-        sequence:
-        - set_conversation_response: Έγινε.
-        - action: vacuum.stop
-          target:
-            entity_id: vacuum.home_vacuum
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Σταμάτησα τη σκούπα.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: pause
-        sequence:
-        - set_conversation_response: Έγινε.
-        - action: vacuum.pause
-          target:
-            entity_id: vacuum.home_vacuum
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Έκανα παύση.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: resume
-        sequence:
-        - set_conversation_response: Έγινε.
-        - action: button.press
-          target:
-            entity_id: button.home_vacuum_continue_sweep
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Συνεχίζω από εκεί που σταμάτησα.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: dock
-        sequence:
-        - set_conversation_response: Έγινε.
-        - action: vacuum.return_to_base
-          target:
-            entity_id: vacuum.home_vacuum
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Επιστρέφω στη βάση μου.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: battery
-        sequence:
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: Η μπαταρία της σκούπας είναι στο {{ state_attr('vacuum.home_vacuum',
-              'battery_level') | int }} τοις εκατό.
-            language: el
-      - conditions:
-        - condition: trigger
-          id: status
-        sequence:
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: "{% set status = state_attr('vacuum.home_vacuum', 'vacuum.status_desc')
-              %} {% if status == 'Charged' %}\n  Η σκούπα είναι φορτισμένη και βρίσκεται
-              στη βάση.\n{% elif status == 'Charging' %}\n  Η σκούπα φορτίζει αυτή τη
-              στιγμή.\n{% elif status == 'Cleaning' %}\n  Η σκούπα καθαρίζει αυτή τη
-              στιγμή.\n{% elif status == 'Paused' %}\n  Η σκούπα είναι σε παύση.\n{%
-              elif status == 'Returning' %}\n  Η σκούπα επιστρέφει στη βάση.\n{% else
-              %}\n  Η κατάσταση της σκούπας είναι {{ status }}.\n{% endif %}"
-            language: el
-      - conditions:
-        - condition: trigger
-          id: dock_status
-        sequence:
-        - set_conversation_response: Έγινε.
-        - action: tts.speak
-          target:
-            entity_id: tts.google_translate_en_com
-          data:
-            media_player_entity_id: media_player.home_living_room_speaker
-            message: "{% set status = state_attr('vacuum.home_vacuum', 'vacuum.status_desc')
-              %} {% if status in ['Charged', 'Charging'] %}\n  Ναι, η σκούπα είναι στη
-              βάση.\n{% else %}\n  Όχι, η σκούπα δεν είναι αυτή τη στιγμή στη βάση.\n{%
-              endif %}"
-            language: el
-    mode: single
+              - action: vacuum.pause
+                target:
+                  entity_id: vacuum.home_vacuum
+              - set_conversation_response: Έκανα παύση στη σκούπα.
+          - conditions: "{{ trigger.id == 'resume' }}"
+            sequence:
+              - action: button.press
+                target:
+                  entity_id: button.home_vacuum_continue_sweep
+              - set_conversation_response: Η σκούπα συνεχίζει από εκεί που σταμάτησε.
+          - conditions: "{{ trigger.id == 'dock' }}"
+            sequence:
+              - action: vacuum.return_to_base
+                target:
+                  entity_id: vacuum.home_vacuum
+              - set_conversation_response: Η σκούπα επιστρέφει στη βάση.
+          - conditions: "{{ trigger.id == 'battery' }}"
+            sequence:
+              - set_conversation_response: Η μπαταρία της σκούπας είναι στο {{ battery }}%.
+          - conditions: "{{ trigger.id == 'status' }}"
+            sequence:
+              - set_conversation_response: Η σκούπα {{ status_text }}. Μπαταρία {{ battery }}%.

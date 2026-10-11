@@ -161,6 +161,8 @@
   **διαγραφή και επαναπροσθήκη** του entry, όχι Configure.
 - Voice PE firmware **26.9.0**: crash κατά την αναπαραγωγή TTS (βλ. `docs/INVENTORY.md`). Ο Pink είναι σε **26.6.0**,
   με skip στο 26.9.0. Μην κάνεις update στα Voice PE χωρίς δοκιμή. Wake sound OFF στον Pink.
+- **Selectors σε script fields:** ποτέ κενό `{}` (π.χ. `area: {}`, `object: {}`). Το HA το απορρίπτει
+  («Only one type can be specified») και απενεργοποιεί το script. Γράφεται `object:` (χωρίς τιμή) ή `area:` + `multiple: false`.
 - STT: το pipeline «Home Assistant» (Pink) χρησιμοποιεί **Google AI STT**, γιατί το HA Cloud έκοβε λέξεις (π.χ. «στο»).
   Γνωστά: hallucinations, 503 σε ώρες αιχμής, αργό (13,6 s σε μια εντολή, έναντι ~0,2 s του HA Cloud). Η σύγκριση γίνεται στο βήμα 9.
   Ο Pink έχει δικό του pipeline «Pink Radio» (τοπικός agent, Google AI STT, HA Cloud TTS).
