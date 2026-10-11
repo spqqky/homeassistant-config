@@ -1,0 +1,63 @@
+# packages/shared/shared_shopping.yaml (κοινό και για τους δύο χώρους)
+# Μεταφέρθηκε αυτούσιο από automations.yaml/scripts.yaml στο βήμα 2β. Επεξεργασία μόνο εδώ, όχι από το UI.
+
+script:
+  shopping_list_add_items:
+    alias: Shopping List - Add Items
+    description: 'Προσθέτει ένα ή περισσότερα προϊόντα στη λίστα αγορών. Χρησιμοποιείται
+      από το Assist/Gemini για φωνητικές εντολές.
+
+      '
+    fields:
+      products:
+        name: Προϊόντα
+        description: 'Προϊόντα χωρισμένα με κόμμα ή με τη λέξη "και". Παράδειγμα: γάλα,
+          βούτυρο και τυρί
+
+          '
+        required: true
+        selector:
+          text:
+    sequence:
+    - variables:
+        items: "{{ (products\n  | regex_replace('(?i)\\s+και\\s+', ','))\n  .split(',')
+          }}\n"
+    - repeat:
+        for_each: '{{ items }}'
+        sequence:
+        - variables:
+            product_name: '{{ repeat.item | trim }}'
+        - condition: template
+          value_template: '{{ product_name | length > 0 }}'
+        - action: shopping_list.add_item
+          data:
+            name: '{{ product_name }}'
+    mode: queued
+    max: 10
+  shopping_list_read_items:
+    alias: Shopping List - Read Items
+    description: 'Επιστρέφει τα προϊόντα που υπάρχουν αυτή τη στιγμή στη λίστα αγορών.
+      Χρησιμοποίησε αυτό το script όταν ο χρήστης ρωτά τι έχει στη λίστα για ψώνια,
+      τι χρειάζεται να αγοράσει ή τι υπάρχει στη shopping list.
+
+      '
+    sequence:
+    - action: todo.get_items
+      target:
+        entity_id: todo.shopping_list
+      data:
+        status: needs_action
+      response_variable: shopping_items
+    - variables:
+        item_names: "{{ shopping_items['todo.shopping_list']['items']\n   | map(attribute='summary')\n
+          \  | list }}\n"
+        result:
+          items: "{{ shopping_items['todo.shopping_list']['items']\n   | map(attribute='summary')\n
+            \  | list }}\n"
+          text: "{% set names = shopping_items['todo.shopping_list']['items']\n   |
+            map(attribute='summary')\n   | list %}\n{% if names | length == 0 %}\n  Η
+            λίστα για ψώνια είναι άδεια.\n{% else %}\n  Στη λίστα για ψώνια έχεις {{
+            names | join(', ') }}.\n{% endif %}\n"
+    - stop: Shopping list returned
+      response_variable: result
+    mode: single

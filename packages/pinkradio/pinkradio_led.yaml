@@ -1,0 +1,1070 @@
+# packages/pinkradio/pinkradio_led.yaml (scope: pinkradio)
+# Μεταφέρθηκε αυτούσιο από automations.yaml/scripts.yaml στο βήμα 2β. Επεξεργασία μόνο εδώ, όχι από το UI.
+
+automation:
+  - id: '1790868096413'
+    alias: Voice - LED ON/OFF Studio
+    description: Άνοιγμα/Σβήσιμο των LED στο studio με φωνητική εντολή
+    triggers:
+    - trigger: conversation
+      command:
+      - άναψε τα led στο στούντιο
+      - άνοιξε τα led στο στούντιο
+      - άναψε τα φώτα led στο στούντιο
+      - άνοιξε τα φώτα led στο στούντιο
+      - άναψε τον φωτισμό led στο στούντιο
+      - άνοιξε τον φωτισμό led στο στούντιο
+      - άναψε τον led φωτισμό στο στούντιο
+      - άνοιξε τον led φωτισμό στο στούντιο
+      id: led_on
+    - trigger: conversation
+      command:
+      - κλείσε τα led στο στούντιο
+      - σβήσε τα led στο στούντιο
+      - κλείσε τα φώτα led στο στούντιο
+      - σβήσε τα φώτα led στο στούντιο
+      - κλείσε τον φωτισμό led στο στούντιο
+      - σβήσε τον φωτισμό led στο στούντιο
+      id: led_οff
+    actions:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: led_on
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+        - set_conversation_response: Άναψα τα LED στο στούντιο.
+      - conditions:
+        - condition: trigger
+          id: led_οff
+        sequence:
+        - action: light.turn_off
+          target:
+            entity_id: light.pinkradio_led_main
+        - set_conversation_response: Έκλεισα τα LED στο στούντιο.
+    mode: single
+  - id: '1790868615394'
+    alias: Voice - LED Colors Studio
+    description: Αλλαγή χρώματος των LED στο studio
+    triggers:
+    - trigger: conversation
+      command:
+      - κάνε τα led στο στούντιο {color} χρώμα
+      - βάλε τα led στο στούντιο {color} χρώμα
+      - άλλαξε τα led στο στούντιο σε {color} χρώμα
+      - κάνε τα studio led {color} χρώμα
+      - βάλε τα studio led {color} χρώμα
+    actions:
+    - variables:
+        color: '{{ trigger.slots.color | lower }}'
+    - choose:
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''ροζ'', ''ροζέ'', ''pink''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 226
+            - 100
+            - 216
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''κόκκινο'', ''κόκκινα'', ''κοκκινο'', ''κοκκινα'',
+            ''red''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 255
+            - 0
+            - 0
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''μπλε'', ''blue''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 0
+            - 0
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''πράσινο'', ''πράσινα'', ''πρασινο'', ''πρασινα'',
+            ''green''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 0
+            - 255
+            - 0
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''μωβ'', ''μοβ'', ''purple''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 128
+            - 0
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''πορτοκαλί'', ''πορτοκαλι'', ''orange''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 255
+            - 80
+            - 0
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''κίτρινο'', ''κίτρινα'', ''κιτρινο'', ''κιτρινα'',
+            ''yellow''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 255
+            - 255
+            - 0
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''λευκό'', ''λευκά'', ''λευκο'', ''λευκα'',
+            ''άσπρο'', ''ασπρο'', ''white''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 255
+            - 255
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''θαλασσί'', ''θαλασσι'', ''κυανό'', ''κυανο'',
+            ''cyan''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 0
+            - 255
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''magenta'', ''ματζέντα'', ''ματζεντα'', ''φούξια'',
+            ''φουξια'', ''fuchsia''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 255
+            - 0
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''τυρκουάζ'', ''τυρκουαζ'', ''turquoise''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 0
+            - 255
+            - 180
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''γαλάζιο'', ''γαλαζιο'', ''γαλάζια'', ''γαλαζια'',
+            ''light blue''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 0
+            - 150
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''σκούρο μπλε'', ''σκουρο μπλε'', ''deep blue'']
+            }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 0
+            - 30
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''βιολετί'', ''βιολετι'', ''violet''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 180
+            - 0
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''λάιμ'', ''λαιμ'', ''lime''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 150
+            - 255
+            - 0
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''μέντα'', ''μεντα'', ''mint''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 50
+            - 255
+            - 150
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''χρυσό'', ''χρυσο'', ''χρυσά'', ''χρυσα'',
+            ''gold''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 255
+            - 150
+            - 0
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''ζεστό λευκό'', ''ζεστο λευκο'', ''ζεστά λευκά'',
+            ''ζεστα λευκα'', ''warm white''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 255
+            - 160
+            - 80
+            - 0
+    - set_conversation_response: Έκανα τα LED στο studio {{ color }}.
+    mode: single
+  - id: '1790868698494'
+    alias: Voice - Studio LED Modes
+    description: Φωτιστικά modes για τα LED του Pink Radio studio
+    triggers:
+    - trigger: conversation
+      command:
+      - βάλε τα led στο στούντιο σε pink radio mode
+      - βάλε σε pink radio mode στα led στο στούντιο
+      id: pink
+    - trigger: conversation
+      command:
+      - βάλε τα led στο στούντιο σε on air mode
+      - βάλε on air mode στα led στο στούντιο
+      id: on_air
+    - trigger: conversation
+      command:
+      - βάλε τα led στο στούντιο σε rock mode
+      - βάλε rock mode στα led στο στούντιο
+      id: rock
+    - trigger: conversation
+      command:
+      - βάλε τα led στο στούντιο night mode
+      - βάλε night mode στα led στο στούντιο
+      - βάλε νυχτερινό φωτισμό στα led στο στούντιο
+      id: night
+    actions:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: pink
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 226
+            - 100
+            - 216
+            - 0
+            brightness_pct: 80
+            transition: 2
+      - conditions:
+        - condition: trigger
+          id: on_air
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 255
+            - 0
+            - 0
+            - 0
+            brightness_pct: 75
+            transition: 2
+      - conditions:
+        - condition: trigger
+          id: rock
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 120
+            - 0
+            - 255
+            - 0
+            brightness_pct: 65
+            transition: 2
+        - set_conversation_response: ROCK MODE TEST ενεργοποιήθηκε.
+      - conditions:
+        - condition: trigger
+          id: night
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 255
+            - 70
+            - 10
+            - 0
+            brightness_pct: 25
+            transition: 3
+    mode: single
+  - id: '1790868768072'
+    alias: Voice - LED Brightness Studio
+    description: Ρύθμιση φωτεινότητας των LED στο studio
+    triggers:
+    - trigger: conversation
+      command:
+      - βάλε τα led στο στούντιο {level}%
+      - led στο στούντιο {level}%
+      - βάλε τα led στο στούντιο  {level} τοις εκατό
+      - led στο στούντιο  {level} τοις εκατό
+    actions:
+    - action: light.turn_on
+      target:
+        entity_id: light.pinkradio_led_main
+      data:
+        brightness_pct: '{{ trigger.slots.level | int }}'
+    mode: restart
+  - id: '1790868815268'
+    alias: Voice - LED Brightness Up/Down Studio
+    description: Αυξομείωση φωτεινότητας των LED στο studio
+    triggers:
+    - trigger: conversation
+      command:
+      - κάνε τα led στο στούντιο πιο φωτεινά
+      - πιο φωτεινά τα led στο στούντιο
+      - ανέβασε τα led στο στούντιο
+      - δυνάμωσε τα led στο στούντιο
+      id: up
+    - trigger: conversation
+      command:
+      - κάνε τα led στο στούντιο πιο χαμηλά
+      - χαμήλωσε τα led στο στούντιο
+      - πιο χαμηλά τα led στο στούντιο
+      - μείωσε τα led στο στούντιο
+      id: down
+    actions:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: up
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            brightness_step_pct: 15
+            transition: 1
+      - conditions:
+        - condition: trigger
+          id: down
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            brightness_step_pct: -15
+            transition: 1
+    mode: restart
+  - id: '1790869368164'
+    alias: Voice - Studio Disco Mode
+    description: Φωνητικός έλεγχος Disco Mode στο studio
+    triggers:
+    - trigger: conversation
+      command:
+      - βάλε disco mode στο στούντιο
+      - άνοιξε disco mode στο στούντιο
+      - ξεκίνα το disco mode στο στούντιο
+      - βάλε disco στα led του στούντιο
+      - βάλε disco στα led στο στούντιο
+      - ξεκίνα disco στα led στο στούντιο
+      - ξεκίνα το disco στο στούντιο
+      - βάλε τα led στο στούντιο σε disco mode
+      id: start
+    - trigger: conversation
+      command:
+      - σταμάτα το disco mode στο στούντιο
+      - κλείσε το disco mode στο στούντιο
+      - σταμάτα το disco στο στούντιο
+      - κλείσε το disco στο στούντιο
+      - σταμάτα το disco στα led στο στούντιο
+      - κλείσε το disco στα led στο στούντιο
+      - σταμάτα το disco mode στα led στο στούντιο
+      id: stop
+    actions:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: start
+        sequence:
+        - action: script.turn_on
+          target:
+            entity_id: script.studio_led_disco_mode
+      - conditions:
+        - condition: trigger
+          id: stop
+        sequence:
+        - action: script.turn_off
+          target:
+            entity_id: script.studio_led_disco_mode
+    mode: restart
+  - id: '1790874877573'
+    alias: Voice - LED Brightness Drums
+    description: Ρύθμιση φωτεινότητας των LED στα drums
+    triggers:
+    - trigger: conversation
+      command:
+      - βάλε τα led στα ντραμς {level}%
+      - led στα ντραμς {level}%
+      - βάλε τα led στα ντραμς  {level} τοις εκατό
+      - led στα ντραμς  {level} τοις εκατό
+    actions:
+    - action: light.turn_on
+      target:
+        entity_id: light.pinkradio_led_drums
+      data:
+        brightness_pct: '{{ trigger.slots.level | int }}'
+    mode: restart
+  - id: '1790875031563'
+    alias: Voice - LED Brightness Up/Down Drums
+    description: Αυξομείωση φωτεινότητας των LED στα drums
+    triggers:
+    - trigger: conversation
+      command:
+      - κάνε τα led στα ντραμς πιο φωτεινά
+      - πιο φωτεινά τα led στα ντραμς
+      - ανέβασε τα led στα ντραμς
+      - δυνάμωσε τα led στα ντραμς
+      id: up
+    - trigger: conversation
+      command:
+      - κάνε τα led στα ντραμς πιο χαμηλά
+      - χαμήλωσε τα led στα ντραμς
+      - πιο χαμηλά τα led στα ντραμς
+      - μείωσε τα led στα ντραμς
+      id: down
+    actions:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: up
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            brightness_step_pct: 15
+            transition: 1
+      - conditions:
+        - condition: trigger
+          id: down
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            brightness_step_pct: -15
+            transition: 1
+    mode: restart
+  - id: '1790875611077'
+    alias: Voice - LED ON/OFF drums
+    description: Άνοιγμα/Σβήσιμο των LED στα drums με φωνητική εντολή
+    triggers:
+    - trigger: conversation
+      command:
+      - άναψε τα led στα ντραμς
+      - άνοιξε τα led στα ντραμς
+      - άναψε τα φώτα led στα ντραμς
+      - άνοιξε τα φώτα led στα ντραμς
+      - άναψε τον φωτισμό led στα ντραμς
+      - άνοιξε τον φωτισμό led στα ντραμς
+      - άναψε τον led φωτισμό στα ντραμς
+      - άνοιξε τον led φωτισμό στα ντραμς
+      id: led_on
+    - trigger: conversation
+      command:
+      - κλείσε τα led στα ντραμς
+      - σβήσε τα led στα ντραμς
+      - κλείσε τα φώτα led στα ντραμς
+      - σβήσε τα φώτα led στα ντραμς
+      - κλείσε τον φωτισμό led στα ντραμς
+      - σβήσε τον φωτισμό led στα ντραμς
+      id: led_οff
+    conditions: []
+    actions:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: led_on
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+        - set_conversation_response: Άναψα τα LED στα ντραμς.
+      - conditions:
+        - condition: trigger
+          id: led_οff
+        sequence:
+        - action: light.turn_off
+          target:
+            entity_id: light.pinkradio_led_drums
+        - set_conversation_response: Έκλεισα τα LED στα ντραμς.
+    mode: single
+  - id: '1790962544206'
+    alias: Voice - LED ON/OFF
+    description: Άνοιγμα/Σβήσιμο των LED με φωνητική εντολή
+    triggers:
+    - trigger: conversation
+      command:
+      - άναψε τα led
+      - άνοιξε τα led
+      - άναψε τα φώτα led
+      - άνοιξε τα φώτα led
+      - άναψε τον φωτισμό led
+      - άνοιξε τον φωτισμό led
+      - άναψε τον led φωτισμό
+      - άνοιξε τον led φωτισμό
+      id: led_on
+    - trigger: conversation
+      command:
+      - κλείσε τα led
+      - σβήσε τα led
+      - κλείσε τα φώτα led
+      - σβήσε τα φώτα led
+      - κλείσε τον φωτισμό
+      - σβήσε τον φωτισμό
+      id: led_οff
+    conditions: []
+    actions:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: led_on
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id:
+            - light.pinkradio_led_main
+            - light.pinkradio_led_drums
+        - set_conversation_response: Άναψα όλα τα φώτα LED.
+      - conditions:
+        - condition: trigger
+          id: led_οff
+        sequence:
+        - action: light.turn_off
+          target:
+            entity_id:
+            - light.pinkradio_led_main
+            - light.pinkradio_led_drums
+        - set_conversation_response: Έκλεισα όλα τα φώτα LED.
+    mode: single
+  - id: '1790963495364'
+    alias: Voice - LED Colour Drums
+    description: Αλλαγή χρώματος των LED στα drums
+    triggers:
+    - trigger: conversation
+      command:
+      - κάνε τα led στα ντραμς {color} χρώμα
+      - βάλε τα led στα ντραμς {color} χρώμα
+      - άλλαξε τα led στα ντραμς σε {color} χρώμα
+      - κάνε τα led στα drums {color} χρώμα
+      - βάλε τα led στα drums {color} χρώμα
+      - άλλαξε τα led στα drums σε {color} χρώμα
+      - κάνε τα drums led {color} χρώμα
+      - βάλε τα drums led {color} χρώμα
+      - κάνε τα ντραμς led {color} χρώμα
+      - βάλε τα ντραμς led {color} χρώμα
+    conditions: []
+    actions:
+    - variables:
+        color: '{{ trigger.slots.color | lower }}'
+    - choose:
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''ροζ'', ''ροζέ'', ''pink''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 226
+            - 100
+            - 216
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''κόκκινο'', ''κόκκινα'', ''κοκκινο'', ''κοκκινα'',
+            ''red''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 255
+            - 0
+            - 0
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''μπλε'', ''blue''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 0
+            - 0
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''πράσινο'', ''πράσινα'', ''πρασινο'', ''πρασινα'',
+            ''green''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 0
+            - 255
+            - 0
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''μωβ'', ''μοβ'', ''purple''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 128
+            - 0
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''πορτοκαλί'', ''πορτοκαλι'', ''orange''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 255
+            - 80
+            - 0
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''κίτρινο'', ''κίτρινα'', ''κιτρινο'', ''κιτρινα'',
+            ''yellow''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 255
+            - 255
+            - 0
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''λευκό'', ''λευκά'', ''λευκο'', ''λευκα'',
+            ''άσπρο'', ''ασπρο'', ''white''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 255
+            - 255
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''θαλασσί'', ''θαλασσι'', ''κυανό'', ''κυανο'',
+            ''cyan''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 0
+            - 255
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''magenta'', ''ματζέντα'', ''ματζεντα'', ''φούξια'',
+            ''φουξια'', ''fuchsia''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 255
+            - 0
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''τυρκουάζ'', ''τυρκουαζ'', ''turquoise''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 0
+            - 255
+            - 180
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''γαλάζιο'', ''γαλαζιο'', ''γαλάζια'', ''γαλαζια'',
+            ''light blue''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 0
+            - 150
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''σκούρο μπλε'', ''σκουρο μπλε'', ''deep blue'']
+            }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 0
+            - 30
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''βιολετί'', ''βιολετι'', ''violet''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 180
+            - 0
+            - 255
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''λάιμ'', ''λαιμ'', ''lime''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 150
+            - 255
+            - 0
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''μέντα'', ''μεντα'', ''mint''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 50
+            - 255
+            - 150
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''χρυσό'', ''χρυσο'', ''χρυσά'', ''χρυσα'',
+            ''gold''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 255
+            - 150
+            - 0
+            - 0
+      - conditions:
+        - condition: template
+          value_template: '{{ color in [''ζεστό λευκό'', ''ζεστο λευκο'', ''ζεστά λευκά'',
+            ''ζεστα λευκα'', ''warm white''] }}
+
+            '
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_drums
+          data:
+            rgbw_color:
+            - 255
+            - 160
+            - 80
+            - 0
+    - set_conversation_response: Έκανα τα LED στα drums {{ color }}.
+    mode: single
+
+script:
+  studio_led_disco_mode:
+    alias: Studio LED Disco Mode
+    description: Συνεχής εναλλαγή RGB χρωμάτων στα LED του studio
+    sequence:
+    - repeat:
+        while:
+        - condition: template
+          value_template: '{{ true }}'
+        sequence:
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 226
+            - 100
+            - 216
+            - 0
+            brightness_pct: 75
+            transition: 2
+        - delay: 00:00:03
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 130
+            - 0
+            - 255
+            - 0
+            brightness_pct: 75
+            transition: 2
+        - delay: 00:00:03
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 0
+            - 40
+            - 255
+            - 0
+            brightness_pct: 75
+            transition: 2
+        - delay: 00:00:03
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 0
+            - 255
+            - 255
+            - 0
+            brightness_pct: 75
+            transition: 2
+        - delay: 00:00:03
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 255
+            - 0
+            - 255
+            - 0
+            brightness_pct: 75
+            transition: 2
+        - delay: 00:00:03
+        - action: light.turn_on
+          target:
+            entity_id: light.pinkradio_led_main
+          data:
+            rgbw_color:
+            - 255
+            - 0
+            - 0
+            - 0
+            brightness_pct: 75
+            transition: 2
+        - delay: 00:00:03
+    mode: restart

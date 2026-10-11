@@ -5,172 +5,501 @@ views:
   icon: mdi:radio
   type: sections
   max_columns: 3
+  dense_section_placement: true
   sections:
   - type: grid
     cards:
     - type: heading
-      heading: Studio Power
+      heading: Studio
+      icon: mdi:radio-tower
+    - type: tile
+      entity: script.pink_radio_studio_control
+      name: Άνοιγμα studio
+      icon: mdi:power
+      hide_state: true
+      vertical: false
+      tap_action: &id001
+        action: perform-action
+        perform_action: script.pink_radio_studio_control
+        data:
+          studio_action: prepare
+      icon_tap_action: *id001
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
+      entity: script.pink_radio_studio_control
+      name: Κλείσιμο studio
+      icon: mdi:power-off
+      hide_state: true
+      vertical: false
+      tap_action: &id002
+        action: perform-action
+        perform_action: script.pink_radio_studio_control
+        data:
+          studio_action: 'off'
+        confirmation:
+          text: Να κλείσω όλο το Pink Radio studio;
+      icon_tap_action: *id002
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
+      entity: script.pink_radio_studio_audio_control
+      name: Ήχος ON
+      icon: mdi:speaker
+      hide_state: true
+      vertical: false
+      tap_action: &id003
+        action: perform-action
+        perform_action: script.pink_radio_studio_audio_control
+        data:
+          action: 'on'
+      icon_tap_action: *id003
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
+      entity: script.pink_radio_studio_audio_control
+      name: Ήχος OFF
+      icon: mdi:speaker-off
+      hide_state: true
+      vertical: false
+      tap_action: &id004
+        action: perform-action
+        perform_action: script.pink_radio_studio_audio_control
+        data:
+          action: 'off'
+      icon_tap_action: *id004
+      grid_options:
+        columns: 6
+        rows: 1
+  - type: grid
+    cards:
+    - type: heading
+      heading: Ήχος
+      icon: mdi:knob
     - type: tile
       entity: switch.pinkradio_onyx_console
-      name: Console + KRK
-      icon: mdi:audio-mixer
-      vertical: true
+      name: Κονσόλα Onyx
+      icon: mdi:tune-vertical
       tap_action:
         action: toggle
-    - type: tile
-      entity: switch.pinkradio_krk_speakers
-      name: Studio Device 2
-      icon: mdi:power-socket-eu
-      vertical: true
-      tap_action:
+      icon_tap_action:
         action: toggle
+      grid_options:
+        columns: 6
+        rows: 1
     - type: tile
-      entity: switch.pinkradio_neon_logo
-      name: Guitar Amp
+      entity: switch.pinkradio_guitar_amp
+      name: Ενισχυτής κιθάρας
       icon: mdi:amplifier
-      vertical: true
       tap_action:
         action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
+      entity: switch.pinkradio_krk_left
+      name: KRK αριστερό
+      icon: mdi:speaker
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
+      entity: switch.pinkradio_krk_right
+      name: KRK δεξί
+      icon: mdi:speaker
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 6
+        rows: 1
+  - type: grid
+    cards:
+    - type: heading
+      heading: Neon
+      icon: mdi:sign-text
     - type: tile
       entity: switch.pinkradio_neon_onair
-      name: Neon
-      icon: mdi:led-strip-variant
-      vertical: true
+      name: ON AIR
+      icon: mdi:broadcast
       tap_action:
         action: toggle
-  - type: grid
-    cards:
-    - type: heading
-      heading: Studio Lights
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 6
+        rows: 1
     - type: tile
-      entity: light.pinkradio_led_main
-      name: Studio LED
-      icon: mdi:led-strip-variant
-      vertical: true
-    - type: tile
-      entity: light.pinkradio_led_drums
-      name: Drums LED
-      icon: mdi:led-strip-variant
-      vertical: true
-  - type: grid
-    cards:
-    - type: heading
-      heading: Light Modes
-    - type: button
+      entity: switch.pinkradio_neon_logo
       name: Pink Radio
       icon: mdi:heart
-      show_state: false
       tap_action:
-        action: call-service
-        service: light.turn_on
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
+      entity: switch.pinkradio_neon_anarchy
+      name: Anarchy
+      icon: mdi:alpha-a-circle-outline
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
+      entity: switch.pinkradio_neon_thunder
+      name: Thunder
+      icon: mdi:flash
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
+      entity: script.pink_radio_neon_control
+      name: Όλα ON
+      icon: mdi:lightbulb-group
+      hide_state: true
+      vertical: false
+      tap_action: &id005
+        action: perform-action
+        perform_action: script.pink_radio_neon_control
+        data:
+          action: 'on'
+      icon_tap_action: *id005
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
+      entity: script.pink_radio_neon_control
+      name: Όλα OFF
+      icon: mdi:lightbulb-group-off
+      hide_state: true
+      vertical: false
+      tap_action: &id006
+        action: perform-action
+        perform_action: script.pink_radio_neon_control
+        data:
+          action: 'off'
+      icon_tap_action: *id006
+      grid_options:
+        columns: 6
+        rows: 1
+  - type: grid
+    cards:
+    - type: heading
+      heading: LED
+      icon: mdi:led-strip-variant
+    - type: tile
+      entity: light.pinkradio_led_main
+      name: LED Studio
+      features:
+      - type: light-brightness
+      features_position: inline
+      grid_options:
+        columns: 12
+        rows: 1
+    - type: tile
+      entity: light.pinkradio_led_drums
+      name: LED Drums
+      features:
+      - type: light-brightness
+      features_position: inline
+      grid_options:
+        columns: 12
+        rows: 1
+    - type: tile
+      entity: light.pinkradio_led_main
+      name: Pink Radio
+      icon: mdi:heart
+      hide_state: true
+      vertical: false
+      tap_action: &id007
+        action: perform-action
+        perform_action: light.turn_on
         target:
-          entity_id:
+          entity_id: &id008
           - light.pinkradio_led_main
           - light.pinkradio_led_drums
         data:
-          rgb_color:
+          rgbw_color:
           - 226
           - 100
           - 216
-          brightness: 255
-    - type: button
+          - 0
+          brightness_pct: 80
+          transition: 2
+      icon_tap_action: *id007
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
+      entity: light.pinkradio_led_main
       name: ON AIR
-      icon: mdi:radio-tower
-      show_state: false
-      tap_action:
-        action: call-service
-        service: light.turn_on
+      icon: mdi:broadcast
+      hide_state: true
+      vertical: false
+      tap_action: &id009
+        action: perform-action
+        perform_action: light.turn_on
         target:
-          entity_id:
-          - light.pinkradio_led_main
-          - light.pinkradio_led_drums
+          entity_id: *id008
         data:
-          rgb_color:
+          rgbw_color:
           - 255
           - 0
           - 0
-          brightness: 255
-    - type: button
+          - 0
+          brightness_pct: 75
+          transition: 2
+      icon_tap_action: *id009
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
+      entity: light.pinkradio_led_main
       name: Rock
       icon: mdi:guitar-electric
-      show_state: false
-      tap_action:
-        action: call-service
-        service: light.turn_on
+      hide_state: true
+      vertical: false
+      tap_action: &id010
+        action: perform-action
+        perform_action: light.turn_on
         target:
-          entity_id:
-          - light.pinkradio_led_main
-          - light.pinkradio_led_drums
+          entity_id: *id008
         data:
-          rgb_color:
-          - 128
+          rgbw_color:
+          - 120
           - 0
           - 255
-          brightness: 255
-    - type: button
-      name: LEDs OFF
+          - 0
+          brightness_pct: 65
+          transition: 2
+      icon_tap_action: *id010
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
+      entity: light.pinkradio_led_main
+      name: Night
+      icon: mdi:weather-night
+      hide_state: true
+      vertical: false
+      tap_action: &id011
+        action: perform-action
+        perform_action: light.turn_on
+        target:
+          entity_id: *id008
+        data:
+          rgbw_color:
+          - 255
+          - 70
+          - 10
+          - 0
+          brightness_pct: 25
+          transition: 3
+      icon_tap_action: *id011
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
+      entity: script.studio_led_disco_mode
+      name: Disco
+      icon: mdi:disc
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
+      entity: light.pinkradio_led_main
+      name: LED OFF
       icon: mdi:lightbulb-off-outline
-      show_state: false
-      tap_action:
-        action: call-service
-        service: light.turn_off
+      hide_state: true
+      vertical: false
+      tap_action: &id012
+        action: perform-action
+        perform_action: light.turn_off
         target:
-          entity_id:
-          - light.pinkradio_led_main
-          - light.pinkradio_led_drums
+          entity_id: *id008
+      icon_tap_action: *id012
+      grid_options:
+        columns: 6
+        rows: 1
   - type: grid
     cards:
     - type: heading
-      heading: Master Control
-    - type: button
-      name: STUDIO ON
-      icon: mdi:power
-      show_state: false
-      tap_action:
-        action: call-service
-        service: homeassistant.turn_on
+      heading: Σκούπα
+      icon: mdi:robot-vacuum
+      badges:
+      - type: entity
+        entity: sensor.pinkradio_vacuum_battery_level
+    - type: tile
+      entity: vacuum.pinkradio_vacuum
+      name: Pink Radio Vacuum
+      features:
+      - type: vacuum-commands
+        commands:
+        - start_pause
+        - stop
+        - return_home
+      grid_options:
+        columns: 12
+        rows: 2
+    - type: tile
+      entity: sensor.pinkradio_vacuum_status
+      name: Κατάσταση
+      grid_options:
+        columns: 12
+        rows: 1
+    - type: tile
+      entity: select.pinkradio_vacuum_suction_level
+      name: Ισχύς
+      features:
+      - type: select-options
+      features_position: inline
+      grid_options:
+        columns: 12
+        rows: 1
+    - type: tile
+      entity: select.pinkradio_vacuum_mode
+      name: Λειτουργία
+      features:
+      - type: select-options
+      features_position: inline
+      grid_options:
+        columns: 12
+        rows: 1
+    - type: tile
+      entity: button.pinkradio_vacuum_start_only_sweep
+      name: Σκούπισμα
+      icon: mdi:broom
+      hide_state: true
+      vertical: false
+      tap_action: &id013
+        action: perform-action
+        perform_action: button.press
         target:
-          entity_id:
-          - switch.pinkradio_onyx_console
-          - switch.pinkradio_krk_speakers
-          - switch.pinkradio_spare_plug
-    - type: button
-      name: STUDIO OFF
-      icon: mdi:power-off
-      show_state: false
-      tap_action:
-        action: call-service
-        confirmation:
-          text: Να κλείσω όλο το Pink Radio studio;
-        service: homeassistant.turn_off
+          entity_id: button.pinkradio_vacuum_start_only_sweep
+      icon_tap_action: *id013
+      grid_options:
+        columns: 4
+        rows: 1
+    - type: tile
+      entity: button.pinkradio_vacuum_start_mop
+      name: Σφουγγάρισμα
+      icon: mdi:water
+      hide_state: true
+      vertical: false
+      tap_action: &id014
+        action: perform-action
+        perform_action: button.press
         target:
-          entity_id:
-          - switch.pinkradio_onyx_console
-          - switch.pinkradio_krk_speakers
-          - switch.pinkradio_neon_logo
-          - switch.pinkradio_spare_plug
-          - light.pinkradio_led_main
-          - light.pinkradio_led_drums
+          entity_id: button.pinkradio_vacuum_start_mop
+      icon_tap_action: *id014
+      grid_options:
+        columns: 4
+        rows: 1
+    - type: tile
+      entity: button.pinkradio_vacuum_start_sweep_mop
+      name: Και τα δύο
+      icon: mdi:broom
+      hide_state: true
+      vertical: false
+      tap_action: &id015
+        action: perform-action
+        perform_action: button.press
+        target:
+          entity_id: button.pinkradio_vacuum_start_sweep_mop
+      icon_tap_action: *id015
+      grid_options:
+        columns: 4
+        rows: 1
   - type: grid
     cards:
     - type: heading
-      heading: Status
+      heading: Φωνητικός βοηθός
+      icon: mdi:microphone-message
+    - type: tile
+      entity: assist_satellite.pinkradio_studio_satellite
+      name: Pink Assistant
+      grid_options:
+        columns: 12
+        rows: 1
+    - type: tile
+      entity: media_player.pinkradio_studio_assistant
+      name: Ένταση
+      features:
+      - type: media-player-volume-slider
+      features_position: inline
+      grid_options:
+        columns: 12
+        rows: 1
+    - type: tile
+      entity: switch.pinkradio_studio_assistant_mute
+      name: Mute μικροφώνου
+      icon: mdi:microphone-off
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
+      entity: switch.pinkradio_studio_assistant_wake_sound
+      name: Wake sound
+      icon: mdi:bullhorn
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 6
+        rows: 1
+  - type: grid
+    cards:
+    - type: heading
+      heading: Κατανάλωση
+      icon: mdi:flash
     - type: entities
-      title: Pink Radio Studio
-      show_header_toggle: false
       entities:
-      - entity: switch.pinkradio_onyx_console
-        name: Console + KRK
-        icon: mdi:audio-mixer
-      - entity: switch.pinkradio_krk_speakers
-        name: Studio Device 2
-      - entity: switch.pinkradio_neon_logo
-        name: Guitar Amp
-        icon: mdi:amplifier
-      - entity: switch.pinkradio_spare_plug
-        name: Neon
-        icon: mdi:led-strip-variant
-      - entity: light.pinkradio_led_main
-        name: Studio LED
-      - entity: light.pinkradio_led_drums
-        name: Drums LED
+      - entity: sensor.pinkradio_onyx_console_power
+        name: Κονσόλα
+      - entity: sensor.pinkradio_krk_left_power
+        name: KRK αριστερό
+      - entity: sensor.pinkradio_krk_right_power
+        name: KRK δεξί
+      - entity: sensor.pinkradio_guitar_amp_power
+        name: Ενισχυτής
+      - entity: sensor.pinkradio_neon_onair_power
+        name: Neon ON AIR
+      - entity: sensor.pinkradio_neon_logo_power
+        name: Neon Pink Radio
+      - entity: sensor.pinkradio_neon_anarchy_power
+        name: Neon Anarchy
+      - entity: sensor.pinkradio_neon_thunder_power
+        name: Neon Thunder
+      - entity: sensor.pinkradio_led_main_power
+        name: LED Studio
+      - entity: sensor.pinkradio_led_drums_power
+        name: LED Drums

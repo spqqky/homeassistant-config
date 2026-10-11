@@ -2,6 +2,10 @@
 # Loads default set of integrations. Do not remove.
 default_config:
 
+# Λογική ανά scope/λειτουργία: packages/<scope>/<scope>_<λειτουργία>.yaml (βλ. CLAUDE.md)
+homeassistant:
+  packages: !include_dir_named packages
+
 # Load frontend themes from the themes folder
 frontend:
   themes: !include_dir_merge_named themes

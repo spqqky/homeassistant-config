@@ -1,0 +1,437 @@
+# packages/home/home_media.yaml (scope: home)
+# Μεταφέρθηκε αυτούσιο από automations.yaml/scripts.yaml στο βήμα 2β. Επεξεργασία μόνο εδώ, όχι από το UI.
+
+automation:
+  - id: '1790339596864'
+    alias: Voice - Music Assistant
+    description: ''
+    triggers:
+    - trigger: conversation
+      command:
+      - παίξε {song} στο JBL
+      - παίξε {song} στο σαλόνι
+      id: jbl
+    - trigger: conversation
+      command:
+      - παίξε {song} στη Νεφέλη
+      - παίξε {song} στο δωμάτιο της Νεφέλης
+      id: nefeli
+    - trigger: conversation
+      command:
+      - παίξε {song} στην Αλεξάνδρα
+      - παίξε {song} στο δωμάτιο της Αλεξάνδρας
+      id: alex
+    - trigger: conversation
+      command:
+      - παίξε {song} στη Sarah
+      - παίξε {song} στη Σάρα
+      - παίξε {song} στο δωμάτιο της Sarah
+      - παίξε {song} στο δωμάτιο της Σάρας
+      - παίξε {song} στη κρεββατοκάμαρα
+      - παίξε {song} στην κρεββατοκάμαρα
+      id: sarah
+    - trigger: conversation
+      command:
+      - παίξε {song} στη Νεφέλη και την Αλεξάνδρα
+      - παίξε {song} στην Αλεξάνδρα και τη Νεφέλη
+      - παίξε {song} στα δωμάτια της Αλεξάνδρας και της Νεφέλης
+      - παίξε {song} στα δωμάτια της Νεφέλης και της Αλεξάνδρας
+      - παίξε {song} στα παιδικά δωμάτια
+      - παίξε {song} στα παιδιά
+      id: kids
+    - trigger: conversation
+      command:
+      - παίξε {song} σε όλους
+      - παίξε {song} σε όλα τα ηχεία
+      - βάλε {song} σε όλους
+      id: all
+    conditions: []
+    actions:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: jbl
+        sequence:
+        - set_conversation_response: Παίζω {{ trigger.slots.song }} στο JBL.
+        - action: music_assistant.play_media
+          target:
+            entity_id: media_player.home_living_room_speaker
+          data:
+            media_id: '{{ trigger.slots.song }}'
+      - conditions:
+        - condition: trigger
+          id: nefeli
+        sequence:
+        - set_conversation_response: Παίζω {{ trigger.slots.song }} στο δωμάτιο της
+            Νεφέλης.
+        - action: music_assistant.play_media
+          target:
+            entity_id: media_player.home_nefeli_room_speaker
+          data:
+            media_id: '{{ trigger.slots.song }}'
+      - conditions:
+        - condition: trigger
+          id: sarah
+        sequence:
+        - set_conversation_response: Παίζω {{ trigger.slots.song }} στο δωμάτιο της
+            Σάρας.
+        - action: music_assistant.play_media
+          target:
+            entity_id: media_player.home_bedroom_speaker
+          data:
+            media_id: '{{ trigger.slots.song }}'
+      - conditions:
+        - condition: trigger
+          id: alex
+        sequence:
+        - set_conversation_response: Παίζω {{ trigger.slots.song }} στο δωμάτιο της
+            Αλεξάνδρας.
+        - action: music_assistant.play_media
+          target:
+            entity_id: media_player.home_alex_room_speaker
+          data:
+            media_id: '{{ trigger.slots.song }}'
+      - conditions:
+        - condition: trigger
+          id: all
+        sequence:
+        - set_conversation_response: Παίζω {{ trigger.slots.song }} σε όλα τα ηχεία.
+        - action: music_assistant.play_media
+          target:
+            entity_id:
+            - media_player.oikiake_omada_2
+          data:
+            media_id: '{{ trigger.slots.song }}'
+      - conditions:
+        - condition: trigger
+          id: kids
+        sequence:
+        - set_conversation_response: Παίζω {{ trigger.slots.song }} στα παιδικά δωμάτια.
+        - action: music_assistant.play_media
+          target:
+            entity_id:
+            - media_player.kids_2
+          data:
+            media_id: '{{ trigger.slots.song }}'
+    mode: single
+  - id: '1790340541525'
+    alias: Voice - Radio
+    description: ''
+    triggers:
+    - trigger: conversation
+      command:
+      - παίξε το σταθμό {station} στο JBL
+      - βάλε το σταθμό {station} στο JBL
+      - παίξε το ραδιόφωνο {station} στο JBL
+      - παίξε το σταθμό {station} στο σαλόνι
+      - βάλε το σταθμό {station} στο σαλόνι
+      - παίξε το ραδιόφωνο {station} στο σαλόνι
+      id: play_jbl
+    - trigger: conversation
+      command:
+      - παίξε το σταθμό {station} στη Νεφέλη
+      - βάλε το σταθμό {station} στη Νεφέλη
+      - παίξε το ραδιόφωνο {station} στη Νεφέλη
+      - παίξε το σταθμό {station} στο δωμάτιο της Νεφέλης
+      - βάλε το σταθμό {station} στο δωμάτιο της Νεφέλης
+      id: play_nefeli
+    - trigger: conversation
+      command:
+      - παίξε το σταθμό {station} στη Σάρα
+      - βάλε το σταθμό {station} στη Σάρα
+      - παίξε το ραδιόφωνο {station} στη Σάρα
+      - παίξε το σταθμό {station} στην κρεβατοκάμαρα
+      - βάλε το σταθμό {station} στην κρεβατοκάμαρα
+      - παίξε το ραδιόφωνο {station} στην κρεβατοκάμαρα
+      id: play_sarah
+    - trigger: conversation
+      command:
+      - παίξε το σταθμό {station} στην Αλεξάνδρα
+      - βάλε το σταθμό {station} στην Αλεξάνδρα
+      - παίξε το ραδιόφωνο {station} στην Αλεξάνδρα
+      - παίξε το σταθμό {station} στο δωμάτιο της Αλεξάνδρας
+      - βάλε το σταθμό {station} στο δωμάτιο της Αλεξάνδρας
+      id: play_alexandra
+    - trigger: conversation
+      command:
+      - παίξε το σταθμό {station} στα παιδιά
+      - βάλε το σταθμό {station} στα παιδιά
+      - παίξε το ραδιόφωνο {station} στα παιδιά
+      - παίξε το σταθμό {station} στα παιδικά δωμάτια
+      - βάλε το σταθμό {station} στα παιδικά δωμάτια
+      id: play_kids
+    - trigger: conversation
+      command:
+      - παίξε το σταθμό {station} σε όλους
+      - βάλε το σταθμό {station} σε όλους
+      - παίξε το ραδιόφωνο {station} σε όλους
+      - παίξε το σταθμό {station} σε όλα τα ηχεία
+      - βάλε το σταθμό {station} σε όλα τα ηχεία
+      id: play_all
+    - trigger: conversation
+      command:
+      - σταμάτα το ραδιόφωνο στο JBL
+      - κλείσε το ραδιόφωνο στο JBL
+      - σταμάτα το ηχείο JBL
+      - σταμάτα το ηχείο στο σαλόνι
+      - σταμάτα το ραδιόφωνο στο σαλόνι
+      - κλείσε το ραδιόφωνο στο σαλόνι
+      - σταμάτα τη μουσική στο JBL
+      - σταμάτα τη μουσική στο σαλόνι
+      id: stop_jbl
+    - trigger: conversation
+      command:
+      - σταμάτα το ραδιόφωνο στη Νεφέλη
+      - κλείσε το ραδιόφωνο στη Νεφέλη
+      - σταμάτα το ηχείο στη Νεφέλη
+      - σταμάτα τη μουσική στη Νεφέλη
+      - σταμάτα στο δωμάτιο της Νεφέλης
+      id: stop_nefeli
+    - trigger: conversation
+      command:
+      - σταμάτα το ραδιόφωνο στη Σάρα
+      - κλείσε το ραδιόφωνο στη Σάρα
+      - σταμάτα το ηχείο στη Σάρα
+      - σταμάτα τη μουσική στη Σάρα
+      - σταμάτα το ραδιόφωνο στην κρεβατοκάμαρα
+      - κλείσε το ραδιόφωνο στην κρεβατοκάμαρα
+      - σταμάτα τη μουσική στην κρεβατοκάμαρα
+      id: stop_sarah
+    - trigger: conversation
+      command:
+      - σταμάτα το ραδιόφωνο στην Αλεξάνδρα
+      - κλείσε το ραδιόφωνο στην Αλεξάνδρα
+      - σταμάτα το ηχείο στην Αλεξάνδρα
+      - σταμάτα τη μουσική στην Αλεξάνδρα
+      - σταμάτα στο δωμάτιο της Αλεξάνδρας
+      id: stop_alexandra
+    - trigger: conversation
+      command:
+      - σταμάτα το ραδιόφωνο στα παιδιά
+      - κλείσε το ραδιόφωνο στα παιδιά
+      - σταμάτα τη μουσική στα παιδιά
+      - σταμάτα στα παιδικά δωμάτια
+      id: stop_kids
+    - trigger: conversation
+      command:
+      - σταμάτα το ραδιόφωνο παντού
+      - κλείσε το ραδιόφωνο παντού
+      - σταμάτα το ραδιόφωνο σε όλους
+      - σταμάτα τη μουσική παντού
+      - σταμάτα τη μουσική σε όλους
+      - σταμάτα όλα τα ηχεία
+      id: stop_all
+    conditions: []
+    actions:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: play_jbl
+        sequence:
+        - set_conversation_response: Παίζω {{ trigger.slots.station }} στο σαλόνι.
+        - action: music_assistant.play_media
+          target:
+            entity_id: media_player.home_living_room_speaker
+          data:
+            media_id: '{{ trigger.slots.station }}'
+            media_type: radio
+      - conditions:
+        - condition: trigger
+          id: play_nefeli
+        sequence:
+        - set_conversation_response: Παίζω {{ trigger.slots.station }} στο δωμάτιο της
+            Νεφέλης.
+        - action: music_assistant.play_media
+          target:
+            entity_id: media_player.home_nefeli_room_speaker
+          data:
+            media_id: '{{ trigger.slots.station }}'
+            media_type: radio
+      - conditions:
+        - condition: trigger
+          id: play_sarah
+        sequence:
+        - set_conversation_response: Παίζω {{ trigger.slots.station }} στην κρεβατοκάμαρα.
+        - action: music_assistant.play_media
+          target:
+            entity_id: media_player.home_bedroom_speaker
+          data:
+            media_id: '{{ trigger.slots.station }}'
+            media_type: radio
+      - conditions:
+        - condition: trigger
+          id: play_alexandra
+        sequence:
+        - set_conversation_response: Παίζω {{ trigger.slots.station }} στο δωμάτιο της
+            Αλεξάνδρας.
+        - action: music_assistant.play_media
+          target:
+            entity_id: media_player.home_alex_room_speaker
+          data:
+            media_id: '{{ trigger.slots.station }}'
+            media_type: radio
+      - conditions:
+        - condition: trigger
+          id: play_kids
+        sequence:
+        - set_conversation_response: Παίζω {{ trigger.slots.station }} στα παιδικά δωμάτια.
+        - action: music_assistant.play_media
+          target:
+            entity_id: media_player.kids_2
+          data:
+            media_id: '{{ trigger.slots.station }}'
+            media_type: radio
+      - conditions:
+        - condition: trigger
+          id: play_all
+        sequence:
+        - set_conversation_response: Παίζω {{ trigger.slots.station }} σε όλα τα ηχεία.
+        - action: music_assistant.play_media
+          target:
+            entity_id: media_player.oikiake_omada_2
+          data:
+            media_id: '{{ trigger.slots.station }}'
+            media_type: radio
+      - conditions:
+        - condition: trigger
+          id: stop_jbl
+        sequence:
+        - action: media_player.media_stop
+          target:
+            entity_id: media_player.home_living_room_speaker
+        - set_conversation_response: Σταμάτησα το σαλόνι.
+      - conditions:
+        - condition: trigger
+          id: stop_nefeli
+        sequence:
+        - action: media_player.media_stop
+          target:
+            entity_id: media_player.home_nefeli_room_speaker
+        - set_conversation_response: Σταμάτησα το δωμάτιο της Νεφέλης.
+      - conditions:
+        - condition: trigger
+          id: stop_sarah
+        sequence:
+        - action: media_player.media_stop
+          target:
+            entity_id: media_player.home_bedroom_speaker
+        - set_conversation_response: Σταμάτησα την κρεβατοκάμαρα.
+      - conditions:
+        - condition: trigger
+          id: stop_alexandra
+        sequence:
+        - action: media_player.media_stop
+          target:
+            entity_id: media_player.home_alex_room_speaker
+        - set_conversation_response: Σταμάτησα το δωμάτιο της Αλεξάνδρας.
+      - conditions:
+        - condition: trigger
+          id: stop_kids
+        sequence:
+        - action: media_player.media_stop
+          target:
+            entity_id: media_player.kids_2
+        - set_conversation_response: Σταμάτησα τα παιδικά δωμάτια.
+      - conditions:
+        - condition: trigger
+          id: stop_all
+        sequence:
+        - action: media_player.media_stop
+          target:
+            entity_id: media_player.oikiake_omada_2
+        - set_conversation_response: Σταμάτησα όλα τα ηχεία.
+    mode: single
+
+script:
+  voice_pe_volume_control:
+    alias: Voice PE - Volume Control
+    description: Control the volume of the Home main Voice PE in the living room. Use
+      when Chris asks to set the assistant volume, mute its speaker, or turn its sound
+      back on. This does not change the JBL volume.
+    mode: single
+    fields:
+      volume_percent:
+        name: Volume percentage
+        description: Requested Voice PE speaker volume from 0 to 100. Use 0 to mute.
+          If Chris asks to turn the sound back on without specifying a level, use 50.
+        required: true
+        selector:
+          number:
+            min: 0
+            max: 100
+            step: 1
+    sequence:
+    - action: media_player.volume_set
+      target:
+        entity_id: media_player.home_living_room_assistant
+      data:
+        volume_level: '{{ volume_percent | float / 100 }}'
+    - stop: Η ένταση του Voice PE ρυθμίστηκε στο {{ volume_percent }}%.
+  jbl_volume_control:
+    alias: JBL - Volume Control
+    description: Control the volume of the JBL Nest speaker in the living room. Use
+      when Chris explicitly asks to change the JBL or living room speaker volume. Do
+      not change the Voice PE volume.
+    mode: single
+    fields:
+      volume_percent:
+        name: Volume percentage
+        description: Requested JBL volume from 0 to 100. Use 0 for silence.
+        required: true
+        selector:
+          number:
+            min: 0
+            max: 100
+            step: 1
+    sequence:
+    - action: media_player.volume_set
+      target:
+        entity_id: media_player.home_living_room_speaker
+      data:
+        volume_level: '{{ volume_percent | float / 100 }}'
+    - stop: Η ένταση του JBL ρυθμίστηκε στο {{ volume_percent }}%.
+  nefeli_nest_volume_control:
+    alias: Nefeli Nest - Volume Control
+    description: Control the volume of the Nest Audio speaker in Nefeli's room. Use
+      when Chris asks to change the volume of Nefeli's speaker or the speaker in Nefeli's
+      room.
+    mode: single
+    fields:
+      volume_percent:
+        name: Volume percentage
+        description: Requested volume from 0 to 100. Use 0 to mute.
+        required: true
+        selector:
+          number:
+            min: 0
+            max: 100
+            step: 1
+    sequence:
+    - action: media_player.volume_set
+      target:
+        entity_id: media_player.home_nefeli_room_speaker
+      data:
+        volume_level: '{{ volume_percent | float / 100 }}'
+    - stop: Η ένταση στο δωμάτιο της Νεφέλης ρυθμίστηκε στο {{ volume_percent }}%.
+  sarah_nest_volume_control:
+    alias: Sarah Nest - Volume Control
+    description: Control the volume of the Nest Mini speaker in Sarah's room or the
+      main bedroom.
+    mode: single
+    fields:
+      volume_percent:
+        name: Volume percentage
+        description: Requested speaker volume from 0 to 100. Use 0 to mute.
+        required: true
+        selector:
+          number:
+            min: 0
+            max: 100
+            step: 1
+    sequence:
+    - action: media_player.volume_set
+      target:
+        entity_id: media_player.home_bedroom_speaker
+      data:
+        volume_level: '{{ volume_percent | float / 100 }}'
+    - stop: Η ένταση στην κρεβατοκάμαρα ρυθμίστηκε στο {{ volume_percent }}%.

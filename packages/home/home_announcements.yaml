@@ -1,0 +1,182 @@
+# packages/home/home_announcements.yaml (scope: home)
+# Μεταφέρθηκε αυτούσιο από automations.yaml/scripts.yaml στο βήμα 2β. Επεξεργασία μόνο εδώ, όχι από το UI.
+
+automation:
+  - id: '1790276166517'
+    alias: Voice - Ανακοινώσεις
+    description: 'Στέλνει φωνητικά μηνύματα σε συγκεκριμένα δωμάτια μέσω των αντίστοιχων
+      Google Cast ηχείων, χωρίς χρήση Gemini.
+
+      '
+    triggers:
+    - trigger: conversation
+      command:
+      - πες στη Νεφέλη {message}
+      - πες στην Νεφέλη {message}
+      - στη Νεφέλη {message}
+      - στην Νεφέλη {message}
+      - πες στη μικρή {message}
+      - πες στην μικρή {message}
+      - στη μικρή {message}
+      - στην μικρή {message}
+      - πες στο δωμάτιο της Νεφέλης {message}
+      id: tell_nefeli
+    - trigger: conversation
+      command:
+      - πες στο Χρήστο {message}
+      - πες στον Χρήστο {message}
+      - πες στο μπαμπά {message}
+      - πες στον μπαμπά {message}
+      - πες στο σαλόνι {message}
+      - στο Χρήστο {message}
+      - στον Χρήστο {message}
+      - στο μπαμπά {message}
+      - στον μπαμπά {message}
+      - στο σαλόνι {message}
+      id: tell_δαδ
+    - trigger: conversation
+      command:
+      - πες στη Σάρα {message}
+      - πες στην Σάρα {message}
+      - πες στη μαμά {message}
+      - πες στην μαμά {message}
+      - στη Σάρα {message}
+      - στην Σάρα {message}
+      - στη μαμά {message}
+      - στην μαμά {message}
+      - πες στην κρεβατοκάμαρα {message}
+      id: tell_sarah
+    - trigger: conversation
+      command:
+      - πες στην Αλεξάνδρα {message}
+      - πες στη Αλεξάνδρα {message}
+      - στην Αλεξάνδρα {message}
+      - στη Αλεξάνδρα {message}
+      - πες στην μεγάλη {message}
+      - πες στη μεγάλη {message}
+      - στην μεγάλη {message}
+      - στη μεγάλη {message}
+      - πες στο δωμάτιο της Αλεξάνδρας {message}
+      id: tell_alexandra
+    - trigger: conversation
+      command:
+      - πες στα παιδιά {message}
+      - πες στα παιδικά δωμάτια {message}
+      - στα παιδιά {message}
+      - στα παιδικά δωμάτια {message}
+      id: tell_kids
+    - trigger: conversation
+      command:
+      - πες σε όλους {message}
+      - σε όλους {message}
+      - ανακοίνωσε σε όλους {message}
+      - πες σε όλα τα ηχεία {message}
+      - σε όλα τα ηχεία {message}
+      id: tell_all
+    conditions: []
+    actions:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: tell_nefeli
+        sequence:
+        - set_conversation_response: ''
+        - action: tts.speak
+          target:
+            entity_id: tts.home_assistant_cloud
+          data:
+            media_player_entity_id: media_player.home_nefeli_room_speaker
+            message: '{{ trigger.slots.message }}'
+            language: el-GR
+            options:
+              preferred_format: mp3
+              preferred_sample_rate: 22050
+              preferred_bitrate: 48
+      - conditions:
+        - condition: trigger
+          id: tell_dad
+        sequence:
+        - set_conversation_response: ''
+        - action: tts.speak
+          target:
+            entity_id: tts.home_assistant_cloud
+          data:
+            media_player_entity_id: media_player.home_living_room_speaker
+            message: '{{ trigger.slots.message }}'
+            language: el-GR
+            options:
+              preferred_format: mp3
+              preferred_sample_rate: 22050
+              preferred_bitrate: 48
+      - conditions:
+        - condition: trigger
+          id: tell_sarah
+        sequence:
+        - set_conversation_response: ''
+        - action: tts.speak
+          target:
+            entity_id: tts.home_assistant_cloud
+          data:
+            media_player_entity_id: media_player.home_bedroom_speaker
+            message: '{{ trigger.slots.message }}'
+            language: el-GR
+            options:
+              preferred_format: mp3
+              preferred_sample_rate: 22050
+              preferred_bitrate: 48
+      - conditions:
+        - condition: trigger
+          id: tell_alexandra
+        sequence:
+        - set_conversation_response: ''
+        - action: tts.speak
+          target:
+            entity_id: tts.home_assistant_cloud
+          data:
+            media_player_entity_id: media_player.home_alex_room_speaker
+            message: '{{ trigger.slots.message }}'
+            language: el-GR
+            options:
+              preferred_format: mp3
+              preferred_sample_rate: 22050
+              preferred_bitrate: 48
+      - conditions:
+        - condition: trigger
+          id: tell_kids
+        sequence:
+        - set_conversation_response: ''
+        - action: tts.speak
+          target:
+            entity_id: tts.home_assistant_cloud
+          data:
+            media_player_entity_id:
+            - media_player.home_nefeli_room_speaker
+            - media_player.home_alex_room_speaker
+            message: '{{ trigger.slots.message }}'
+            language: el-GR
+            options:
+              preferred_format: mp3
+              preferred_sample_rate: 22050
+              preferred_bitrate: 48
+      - conditions:
+        - condition: trigger
+          id: tell_all
+        sequence:
+        - set_conversation_response: ''
+        - action: tts.speak
+          target:
+            entity_id: tts.home_assistant_cloud
+          data:
+            media_player_entity_id:
+            - media_player.home_living_room_speaker
+            - media_player.home_nefeli_room_speaker
+            - media_player.home_alex_room_speaker
+            - media_player.home_bedroom_speaker
+            message: '{{ trigger.slots.message }}'
+            language: el-GR
+            options:
+              preferred_format: mp3
+              preferred_sample_rate: 22050
+              preferred_bitrate: 48
+    mode: queued
+    max: 10

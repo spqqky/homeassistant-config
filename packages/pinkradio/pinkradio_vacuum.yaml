@@ -1,0 +1,227 @@
+# packages/pinkradio/pinkradio_vacuum.yaml (scope: pinkradio)
+# Μεταφέρθηκε αυτούσιο από automations.yaml/scripts.yaml στο βήμα 2β. Επεξεργασία μόνο εδώ, όχι από το UI.
+
+automation:
+  - id: '1791037741942'
+    alias: Voice - Pink Radio Σκούπα
+    description: Φωνητικός έλεγχος και κατάσταση της Xiaomi S20 στο Pink Radio
+    triggers:
+    - trigger: conversation
+      command:
+      - σκούπισε το στούντιο
+      - καθάρισε το στούντιο
+      - σκούπισε το pink radio
+      - καθάρισε το pink radio
+      - κάνε σκούπισμα στο στούντιο
+      - κάνε σκούπισμα στο pink radio
+      id: sweep
+    - trigger: conversation
+      command:
+      - σφουγγάρισε το στούντιο
+      - σφουγγάρισε το pink radio
+      - κάνε σφουγγάρισμα στο στούντιο
+      - κάνε σφουγγάρισμα στο pink radio
+      - ξεκίνα σφουγγάρισμα στο στούντιο
+      - ξεκίνα σφουγγάρισμα στο pink radio
+      id: mop
+    - trigger: conversation
+      command:
+      - σκούπισε και σφουγγάρισε το στούντιο
+      - σκούπισε και σφουγγάρισε το pink radio
+      - κάνε σκούπισμα και σφουγγάρισμα στο στούντιο
+      - κάνε σκούπισμα και σφουγγάρισμα στο pink radio
+      - καθάρισε και σφουγγάρισε το στούντιο
+      - καθάρισε και σφουγγάρισε το pink radio
+      id: sweep_mop
+    - trigger: conversation
+      command:
+      - ξεκίνα τη σκούπα στο στούντιο
+      - ξεκίνα τη σκούπα του στούντιο
+      - ξεκίνα το καθάρισμα στο στούντιο
+      - ξεκίνα τη σκούπα στο pink radio
+      - ξεκίνα τη σκούπα του pink radio
+      - ξεκίνα το καθάρισμα στο pink radio
+      id: start
+    - trigger: conversation
+      command:
+      - σταμάτα τη σκούπα στο στούντιο
+      - σταμάτα τη σκούπα στο pink radio
+      - σταμάτα τη σκούπα του pink radio
+      - σταμάτα το καθάρισμα στο στούντιο
+      - σταμάτα το καθάρισμα στο pink radio
+      id: stop
+    - trigger: conversation
+      command:
+      - κάνε παύση στη σκούπα στο στούντιο
+      - κάνε παύση στη σκούπα του στούντιο
+      - παύση καθαρισμού στο στούντιο
+      - κάνε παύση στη σκούπα στο pink radio
+      - κάνε παύση στη σκούπα του pink radio
+      - παύση καθαρισμού στο pink radio
+      id: pause
+    - trigger: conversation
+      command:
+      - συνέχισε τη σκούπα στο στούντιο
+      - συνέχισε τη σκούπα του στούντιο
+      - συνέχισε το καθάρισμα στο στούντιο
+      - συνέχισε τη σκούπα στο pink radio
+      - συνέχισε τη σκούπα του pink radio
+      - συνέχισε το καθάρισμα στο pink radio
+      id: resume
+    - trigger: conversation
+      command:
+      - γύρνα τη σκούπα του pink radio στη βάση
+      - γύρνα τη σκούπα του στούντιο στη βάση
+      - γύρνα τη σκούπα στο στούντιο στη βάση
+      - γύρνα τη σκούπα στο pink radio στη βάση
+      - στείλε τη σκούπα του pink radio στη βάση
+      - στείλε τη σκούπα του στούντιο στη βάση
+      id: dock
+    - trigger: conversation
+      command:
+      - τι μπαταρία έχει η σκούπα στο στούντιο
+      - πόση μπαταρία έχει η σκούπα στο στούντιο
+      - πόσο φορτισμένη είναι η σκούπα στο στούντιο
+      - τι μπαταρία έχει η σκούπα στο studio
+      - πόση μπαταρία έχει η σκούπα στο studio
+      - πόσο φορτισμένη είναι η σκούπα στο studio
+      - τι μπαταρία έχει η σκούπα στο pink radio
+      - πόση μπαταρία έχει η σκούπα στο pink radio
+      - πόσο φορτισμένη είναι η σκούπα στο pink radio
+      id: battery
+    - trigger: conversation
+      command:
+      - τι κάνει η σκούπα στο στούντιο
+      - τι κάνει τώρα η σκούπα στο στούντιο
+      - ποια είναι η κατάσταση της σκούπας στο στούντιο
+      - τι κάνει η σκούπα στο pink radio
+      - τι κάνει τώρα η σκούπα στο pink radio
+      - ποια είναι η κατάσταση της σκούπας στο pink radio
+      id: status
+    - trigger: conversation
+      command:
+      - είναι η σκούπα του στούντιο στη βάση
+      - η σκούπα στο στούντιο είναι στη βάση
+      - είναι η σκούπα του pink radio στη βάση
+      - η σκούπα στο pink radio είναι στη βάση
+      id: dock_status
+    conditions: []
+    actions:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: sweep
+        sequence:
+        - action: select.select_option
+          target:
+            entity_id: select.pinkradio_vacuum_mode
+          data:
+            option: Sweep
+        - action: vacuum.set_fan_speed
+          continue_on_error: true
+          target:
+            entity_id: vacuum.pinkradio_vacuum
+          data:
+            fan_speed: Basic
+        - action: button.press
+          target:
+            entity_id: button.pinkradio_vacuum_start_only_sweep
+        - set_conversation_response: Ξεκινάω σκούπισμα στο Pink Radio.
+      - conditions:
+        - condition: trigger
+          id: mop
+        sequence:
+        - action: select.select_option
+          target:
+            entity_id: select.pinkradio_vacuum_mode
+          data:
+            option: Mop
+        - action: button.press
+          target:
+            entity_id: button.pinkradio_vacuum_start_mop
+        - set_conversation_response: Ξεκινάω σφουγγάρισμα στο Pink Radio.
+      - conditions:
+        - condition: trigger
+          id: sweep_mop
+        sequence:
+        - action: button.press
+          target:
+            entity_id: button.pinkradio_vacuum_start_sweep_mop
+        - set_conversation_response: Ξεκινάω σκούπισμα και σφουγγάρισμα στο Pink Radio.
+      - conditions:
+        - condition: trigger
+          id: start
+        sequence:
+        - action: vacuum.set_fan_speed
+          continue_on_error: true
+          target:
+            entity_id: vacuum.pinkradio_vacuum
+          data:
+            fan_speed: Basic
+        - action: vacuum.start
+          target:
+            entity_id: vacuum.pinkradio_vacuum
+        - set_conversation_response: Ξεκινάω το καθάρισμα στο Pink Radio.
+      - conditions:
+        - condition: trigger
+          id: stop
+        sequence:
+        - action: vacuum.stop
+          target:
+            entity_id: vacuum.pinkradio_vacuum
+        - set_conversation_response: Σταμάτησα τη σκούπα στο Pink Radio.
+      - conditions:
+        - condition: trigger
+          id: pause
+        sequence:
+        - action: vacuum.pause
+          target:
+            entity_id: vacuum.pinkradio_vacuum
+        - set_conversation_response: Έκανα παύση στη σκούπα του Pink Radio.
+      - conditions:
+        - condition: trigger
+          id: resume
+        sequence:
+        - action: vacuum.start
+          target:
+            entity_id: vacuum.pinkradio_vacuum
+        - set_conversation_response: Συνεχίζω το καθάρισμα στο Pink Radio.
+      - conditions:
+        - condition: trigger
+          id: dock
+        sequence:
+        - action: vacuum.return_to_base
+          target:
+            entity_id: vacuum.pinkradio_vacuum
+        - set_conversation_response: Επιστρέφω στη βάση στο Pink Radio.
+      - conditions:
+        - condition: trigger
+          id: battery
+        sequence:
+        - set_conversation_response: Η μπαταρία της σκούπας στο Pink Radio είναι στο
+            {{ state_attr('vacuum.pinkradio_vacuum', 'battery_level') | int(0) }} τοις
+            εκατό.
+      - conditions:
+        - condition: trigger
+          id: status
+        sequence:
+        - set_conversation_response: '{% set s = states(''vacuum.pinkradio_vacuum'')
+            %} {% set d = state_attr(''vacuum.pinkradio_vacuum'', ''vacuum.status_desc'')
+            %} {% if s == ''cleaning'' or d == ''Cleaning'' %}Η σκούπα στο Pink Radio
+            καθαρίζει αυτή τη στιγμή.{% elif s == ''paused'' or d == ''Paused'' %}Η
+            σκούπα στο Pink Radio είναι σε παύση.{% elif s == ''returning'' or d ==
+            ''Returning'' %}Η σκούπα στο Pink Radio επιστρέφει στη βάση.{% elif s ==
+            ''docked'' or d in [''Charged'',''Charging''] %}Η σκούπα στο Pink Radio
+            είναι στη βάση.{% elif s == ''error'' %}Η σκούπα στο Pink Radio έχει κάποιο
+            σφάλμα.{% else %}Η κατάσταση της σκούπας στο Pink Radio είναι {{ d if d
+            else s }}.{% endif %}'
+      - conditions:
+        - condition: trigger
+          id: dock_status
+        sequence:
+        - set_conversation_response: '{% set s = states(''vacuum.pinkradio_vacuum'')
+            %} {% set d = state_attr(''vacuum.pinkradio_vacuum'', ''vacuum.status_desc'')
+            %} {% if s == ''docked'' or d in [''Charged'',''Charging''] %}Ναι, η σκούπα
+            στο Pink Radio είναι στη βάση.{% else %}Όχι, η σκούπα στο Pink Radio δεν
+            είναι αυτή τη στιγμή στη βάση.{% endif %}'
+    mode: single

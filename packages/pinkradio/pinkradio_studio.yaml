@@ -1,0 +1,339 @@
+# packages/pinkradio/pinkradio_studio.yaml (scope: pinkradio)
+# Μεταφέρθηκε αυτούσιο από automations.yaml/scripts.yaml στο βήμα 2β. Επεξεργασία μόνο εδώ, όχι από το UI.
+
+automation:
+  - id: '1791046516667'
+    alias: Voice - Pink Radio Studio Control
+    description: Ενιαίος φωνητικός έλεγχος neon, audio και συνολικής προετοιμασίας studio
+    triggers:
+    - trigger: conversation
+      command:
+      - άναψε τα neon στο στούντιο
+      - άναψε τα neon στο studio
+      - άναψε τα neon στο pink radio
+      - ανάψε τα neon στο στούντιο
+      - ανάψε τα neon στο studio
+      - ανάψε τα neon στο pink radio
+      - άνοιξε τα neon στο στούντιο
+      - άνοιξε τα neon στο studio
+      - άνοιξε τα neon στο pink radio
+      - άναψε τα νέον στο στούντιο
+      - άναψε τα νέον στο studio
+      - άναψε τα νέον στο pink radio
+      - ανάψε τα νέον στο στούντιο
+      - ανάψε τα νέον στο studio
+      - ανάψε τα νέον στο pink radio
+      - άνοιξε τα νέον στο στούντιο
+      - άνοιξε τα νέον στο studio
+      - άνοιξε τα νέον στο pink radio
+      - ανάψε τις πινακίδες στο στούντιο
+      - ανάψε τις πινακίδες στο studio
+      - ανάψε τις πινακίδες στο pink radio
+      - άναψε τις πινακίδες στο στούντιο
+      - άναψε τις πινακίδες στο studio
+      - άναψε τις πινακίδες στο pink radio
+      - άνοιξε τις πινακίδες στο στούντιο
+      - άνοιξε τις πινακίδες στο studio
+      - άνοιξε τις πινακίδες στο pink radio
+      id: neon_on
+    - trigger: conversation
+      command:
+      - κλείσε τα neon στο στούντιο
+      - κλείσε τα neon στο studio
+      - κλείσε τα neon στο pink radio
+      - σβήσε τα neon στο στούντιο
+      - σβήσε τα neon στο studio
+      - σβήσε τα neon στο pink radio
+      - κλείσε τις πινακίδες στο στούντιο
+      - κλείσε τις πινακίδες στο studio
+      - κλείσε τις πινακίδες στο pink radio
+      - σβήσε τις πινακίδες στο στούντιο
+      - σβήσε τις πινακίδες στο studio
+      - σβήσε τις πινακίδες στο pink radio
+      id: neon_off
+    - trigger: conversation
+      command:
+      - άναψε τον ήχο στο στούντιο
+      - άναψε τον ήχο στο studio
+      - άναψε την κονσόλα και τα ηχεία
+      - άναψε κονσόλα και ηχεία
+      - άναψε το studio audio
+      - άνοιξε τον ήχο στο στούντιο
+      - άνοιξε τον ήχο στο studio
+      - άνοιξε την κονσόλα και τα ηχεία
+      - άνοιξε κονσόλα και ηχεία
+      - άνοιξε το studio audio
+      id: audio_on
+    - trigger: conversation
+      command:
+      - κλείσε τον ήχο στο στούντιο
+      - κλείσε τον ήχο στο studio
+      - κλείσε την κονσόλα και τα ηχεία
+      - κλείσε κονσόλα και ηχεία
+      - κλείσε το studio audio
+      - σβήσε τον ήχο στο στούντιο
+      - σβήσε τον ήχο στο studio
+      - σβήσε την κονσόλα και τα ηχεία
+      - σβήσε κονσόλα και ηχεία
+      - σβήσε το studio audio
+      id: audio_off
+    - trigger: conversation
+      command:
+      - ετοίμασε το στούντιο
+      - ετοίμασε το studio
+      - ετοίμασε το pink radio
+      - ετοιμάσε το στούντιο
+      - ετοιμάσε το studio
+      - ετοιμάσε το pink radio
+      - άνοιξε το στούντιο
+      - άνοιξε το studio
+      - ανοίξε το στούντιο
+      - ανοίξε το studio
+      - άναψε το στούντιο
+      - άναψε το studio
+      - ανάψε το στούντιο
+      - ανάψε το studio
+      - άνοιξε όλο το στούντιο
+      - άνοιξε όλο το studio
+      - άναψε όλο το στούντιο
+      - άναψε όλο το studio
+      - ανάψε όλο το στούντιο
+      - ανάψε όλο το studio
+      id: prepare
+    - trigger: conversation
+      command:
+      - κλείσε το στούντιο
+      - κλείσε το studio
+      - κλείσε το pink radio
+      - σβήσε το στούντιο
+      - σβήσε το studio
+      id: studio_off
+    conditions: []
+    actions:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: neon_on
+        sequence:
+        - action: script.pink_radio_neon_control
+          data:
+            action: 'on'
+        - set_conversation_response: Άναψα τα neon στο studio.
+      - conditions:
+        - condition: trigger
+          id: neon_off
+        sequence:
+        - action: script.pink_radio_neon_control
+          data:
+            action: 'off'
+        - set_conversation_response: Έκλεισα τα neon στο studio.
+      - conditions:
+        - condition: trigger
+          id: audio_on
+        sequence:
+        - action: script.pink_radio_studio_audio_control
+          data:
+            action: 'on'
+        - set_conversation_response: Άναψα τον ήχο στο studio.
+      - conditions:
+        - condition: trigger
+          id: audio_off
+        sequence:
+        - action: script.pink_radio_studio_audio_control
+          data:
+            action: 'off'
+        - set_conversation_response: Έκλεισα τον ήχο στο studio.
+      - conditions:
+        - condition: trigger
+          id: prepare
+        sequence:
+        - action: script.pink_radio_studio_control
+          data:
+            studio_action: prepare
+        - set_conversation_response: Το studio είναι έτοιμο.
+      - conditions:
+        - condition: trigger
+          id: studio_off
+        sequence:
+        - action: script.pink_radio_studio_control
+          data:
+            studio_action: 'off'
+        - set_conversation_response: Έκλεισα το studio.
+    mode: single
+  - id: '1790453241879'
+    alias: Voice - Guitar Amp ON/OFF
+    description: Φωνητικός έλεγχος ενισχυτή κιθάρας Pink Radio
+    triggers:
+    - trigger: conversation
+      command:
+      - άναψε τον ενισχυτή
+      - άνοιξε τον ενισχυτή
+      - άναψε τον ενισχυτή κιθάρας
+      - άνοιξε τον ενισχυτή κιθάρας
+      - άναψε τον κιθαριστικό ενισχυτή
+      - άνοιξε τον κιθαριστικό ενισχυτή
+      - άναψε τον μάρσαλ
+      - άνοιξε τον μάρσαλ
+      - άναψε τον marshal
+      - άνοιξε τον marshal
+      - άναψε την κιθάρα
+      id: amp_on
+    - trigger: conversation
+      command:
+      - κλείσε τον ενισχυτή
+      - κλείσε τον ενισχυτή κιθάρας
+      - κλείσε τον κιθαριστικό ενισχυτή
+      - κλείσε τον μάρσαλ
+      - κλείσε τον marshal
+      - κλείσε την κιθάρα
+      - σβήσε τον ενισχυτή
+      - σβήστε τον ενισχυτή
+      - σβήσε τον ενισχυτή κιθάρας
+      - σβήσε τον κιθαριστικό ενισχυτή
+      - σβήστε τον κιθαριστικό ενισχυτή
+      - σβήσε τον μάρσαλ
+      - σβήστε τον μάρσαλ
+      - σβήσε τον marshal
+      - σβήστε τον marshal
+      - σβήσε την κιθάρα
+      - σβήστε την κιθάρα
+      id: amp_off
+    actions:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: amp_on
+        sequence:
+        - action: switch.turn_on
+          target:
+            entity_id: switch.pinkradio_guitar_amp
+        - set_conversation_response: Άναψα τον ενισχυτή κιθάρας.
+      - conditions:
+        - condition: trigger
+          id: amp_off
+        sequence:
+        - action: switch.turn_off
+          target:
+            entity_id: switch.pinkradio_guitar_amp
+        - set_conversation_response: Έκλεισα τον ενισχυτή κιθάρας.
+    mode: single
+
+script:
+  pink_radio_neon_control:
+    alias: Pink Radio - Neon Control
+    mode: single
+    fields:
+      action:
+        required: true
+        selector:
+          select:
+            options:
+            - 'on'
+            - 'off'
+    sequence:
+    - choose:
+      - conditions:
+        - condition: template
+          value_template: '{{ action == ''on'' }}'
+        sequence:
+        - action: switch.turn_on
+          target:
+            entity_id:
+            - switch.pinkradio_neon_onair
+            - switch.pinkradio_neon_anarchy
+            - switch.pinkradio_neon_thunder
+            - switch.pinkradio_neon_logo
+      - conditions:
+        - condition: template
+          value_template: '{{ action == ''off'' }}'
+        sequence:
+        - action: switch.turn_off
+          target:
+            entity_id:
+            - switch.pinkradio_neon_onair
+            - switch.pinkradio_neon_anarchy
+            - switch.pinkradio_neon_thunder
+            - switch.pinkradio_neon_logo
+    description: ''
+  pink_radio_studio_audio_control:
+    alias: Pink Radio - Studio Audio Control
+    mode: single
+    fields:
+      action:
+        required: true
+        selector:
+          select:
+            options:
+            - 'on'
+            - 'off'
+    sequence:
+    - choose:
+      - conditions:
+        - condition: template
+          value_template: '{{ action == ''on'' }}'
+        sequence:
+        - action: switch.turn_on
+          target:
+            entity_id:
+            - switch.pinkradio_onyx_console
+            - switch.pinkradio_krk_left
+            - switch.pinkradio_krk_right
+      - conditions:
+        - condition: template
+          value_template: '{{ action == ''off'' }}'
+        sequence:
+        - action: switch.turn_off
+          target:
+            entity_id:
+            - switch.pinkradio_onyx_console
+            - switch.pinkradio_krk_left
+            - switch.pinkradio_krk_right
+  pink_radio_studio_control:
+    alias: Pink Radio - Studio Control
+    description: Κεντρικός έλεγχος προετοιμασίας και κλεισίματος του Pink Radio studio
+    mode: single
+    fields:
+      studio_action:
+        name: Action
+        required: true
+        selector:
+          select:
+            options:
+            - prepare
+            - 'off'
+    sequence:
+    - choose:
+      - conditions:
+        - condition: template
+          value_template: '{{ studio_action == ''prepare'' }}'
+        sequence:
+        - action: script.pink_radio_studio_audio_control
+          data:
+            action: 'on'
+        - action: script.pink_radio_neon_control
+          data:
+            action: 'on'
+        - action: light.turn_on
+          target:
+            entity_id:
+            - light.pinkradio_led_main
+          data:
+            rgb_color:
+            - 226
+            - 100
+            - 216
+            brightness_pct: 70
+      - conditions:
+        - condition: template
+          value_template: '{{ studio_action == ''off'' }}'
+        sequence:
+        - action: light.turn_off
+          target:
+            entity_id:
+            - light.pinkradio_led_main
+        - action: script.pink_radio_neon_control
+          data:
+            action: 'off'
+        - action: script.pink_radio_studio_audio_control
+          data:
+            action: 'off'

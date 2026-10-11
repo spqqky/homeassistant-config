@@ -45,6 +45,25 @@
 10. Μυστικά μόνο στο `secrets.yaml` (ignored), με `!secret`.
 11. Απαντήσεις και σχόλια στα ελληνικά. Τα ονόματα entities/scripts σε λατινικά, snake_case.
 
+## Packages
+
+`configuration.yaml` → `homeassistant: packages: !include_dir_named packages` (recursive, το όνομα αρχείου είναι το κλειδί,
+άρα πρέπει να είναι μοναδικό). Μετά από αλλαγή στο `packages:` χρειάζεται **restart**, για τα υπόλοιπα αρκεί reload.
+
+| Αρχείο | Περιεχόμενο |
+|---|---|
+| `packages/home/home_vacuum.yaml` | φωνητικά της σκούπας σπιτιού |
+| `packages/home/home_announcements.yaml` | Voice - Ανακοινώσεις |
+| `packages/home/home_media.yaml` | Music Assistant, Radio, scripts έντασης |
+| `packages/pinkradio/pinkradio_studio.yaml` | Studio Control, Guitar Amp, scripts neon/audio/studio |
+| `packages/pinkradio/pinkradio_led.yaml` | φωνητικά των LED, disco script |
+| `packages/pinkradio/pinkradio_vacuum.yaml` | φωνητικά της σκούπας Pink |
+| `packages/shared/shared_reminders.yaml` | reminders (scripts + notifications) |
+| `packages/shared/shared_shopping.yaml` | shopping list scripts |
+
+Το `automations.yaml` / `scripts.yaml` κρατούν μόνο ό,τι φτιάχνεται από το UI. Ό,τι φτιαχτεί εκεί μεταφέρεται στο σωστό package
+στο επόμενο βήμα που αγγίζει τη λειτουργία.
+
 ## Δομή και naming convention
 
 **Floors / areas** (βήμα 2):
@@ -77,13 +96,13 @@
 | Nefeli Room Assistant | `assist_satellite.home_nefeli_room_satellite` | `assist_satellite.nefeli_satellite` |
 | Alex Room Assistant | `assist_satellite.home_alex_room_satellite` | `assist_satellite.alex_satellite` |
 | Pink Radio Studio Assistant | `assist_satellite.pinkradio_studio_satellite` | `assist_satellite.pink_satellite` |
-| Studio Spare Plug | `switch.pinkradio_spare_plug` | `switch.pink_radio_plug1` |
+| Studio KRK Left | `switch.pinkradio_krk_left` | `switch.pink_radio_plug1` |
 | Studio Neon ON AIR | `switch.pinkradio_neon_onair` | `switch.pink_radio_plug2` |
 | Studio Neon Anarchy | `switch.pinkradio_neon_anarchy` | `switch.pink_radio_plug3` |
 | Studio Neon Thunder | `switch.pinkradio_neon_thunder` | `switch.pink_radio_plug4` |
 | Studio Neon Pink Radio | `switch.pinkradio_neon_logo` | `switch.pink_radio_plug5` |
 | Studio Onyx Console | `switch.pinkradio_onyx_console` | `switch.pink_radio_plug6` |
-| Studio KRK Speakers | `switch.pinkradio_krk_speakers` | `switch.pink_radio_plug7` |
+| Studio KRK Right | `switch.pinkradio_krk_right` | `switch.pink_radio_plug7` |
 | Studio Guitar Amp | `switch.pinkradio_guitar_amp` | `switch.pink_radio_plug8` |
 | Studio LED Main | `light.pinkradio_led_main` | `light.pink_radio_led_main` |
 | Studio LED Drums | `light.pinkradio_led_drums` | `light.pink_radio_led_drums` |
@@ -100,6 +119,8 @@
   **διαγραφή και επαναπροσθήκη** του entry, όχι Configure.
 - Voice PE firmware **26.9.0**: crash κατά την αναπαραγωγή TTS (βλ. `docs/INVENTORY.md`). Ο Pink είναι σε **26.6.0**,
   με skip στο 26.9.0. Μην κάνεις update στα Voice PE χωρίς δοκιμή. Wake sound OFF στον Pink.
+- STT: το pipeline «Home Assistant» (Pink) χρησιμοποιεί **Google AI STT**, γιατί το HA Cloud έκοβε λέξεις (π.χ. «στο»).
+  Γνωστά: hallucinations, 503 σε ώρες αιχμής. Η σύγκριση γίνεται στο βήμα 9.
 - Debug Voice PE: `tools/esphome_logs.py "<ESPHome entry>"` (WSL venv `~/ha-venv`, `aioesphomeapi`). Pipeline debug: Settings →
   Voice assistants → pipeline → ⋮ → Debug. Το κλειδί είναι τα events `stt-vad-start`/`stt-vad-end`.
 
@@ -203,7 +224,7 @@ Media players: `media_player.jbl_nest`, `media_player.nefeli_room`, `media_playe
 
 - LED: `light.pink_radio_led_main`, `light.pink_radio_led_drums` → θα γίνουν `light.pinkradio_*`.
 - Shelly plugs (παλιά IDs): `switch.pink_radio_plug2` … `switch.pink_radio_plug7`.
-  Λογική: plug1 κενό, plug2 neon ON AIR, plug3 neon Anarchy, plug4 neon Thunder, plug5 neon Pink Radio, plug6 κονσόλα Onyx12, plug7 ηχεία KRK, plug8 ενισχυτής κιθάρας.
+  Λογική: plug1 KRK αριστερό, plug2 neon ON AIR, plug3 neon Anarchy, plug4 neon Thunder, plug5 neon Pink Radio, plug6 κονσόλα Onyx12, plug7 KRK δεξί, plug8 ενισχυτής κιθάρας.
   → θα πάρουν λειτουργικά ονόματα `pinkradio_*`.
 - Υπάρχοντα scripts και τελικά ονόματα:
 
