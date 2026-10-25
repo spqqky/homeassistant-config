@@ -225,7 +225,11 @@ automation:
           - set_conversation_response: >-
               Δεν κατάλαβα ποιο δωμάτιο. Πες για παράδειγμα «σκούπισε το σαλόνι» ή «σκούπισε όλο το σπίτι».
           - stop: Άγνωστο δωμάτιο
-      - if: "{{ state_attr('vacuum.home_vacuum', 'battery_level') | int(0) < 20 }}"
+      - if: "{{ states('vacuum.home_vacuum') in ['unavailable', 'unknown'] }}"
+        then:
+          - set_conversation_response: Η σκούπα του σπιτιού δεν απαντάει αυτή τη στιγμή. Το Home Assistant δεν τη βλέπει, δοκίμασε σε λίγο.
+          - stop: Σκούπα unavailable
+      - if: "{{ 0 <= state_attr('vacuum.home_vacuum', 'battery_level') | int(-1) < 20 }}"
         then:
           - set_conversation_response: >-
               Η μπαταρία της σκούπας είναι στο {{ state_attr('vacuum.home_vacuum', 'battery_level') | int(0) }}%.

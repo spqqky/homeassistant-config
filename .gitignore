@@ -33,3 +33,6 @@ Thumbs.db
 
 # Reinstallable HACS component
 custom_components/hacs/
+custom_components/xiaomi_miot/
+custom_components/xiaomi_vac/
+custom_components/xiaomi_vac

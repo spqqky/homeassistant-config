@@ -80,7 +80,9 @@ automation:
   - variables:
       vac: "{{ 'vacuum.pinkradio_vacuum' if which == 'pinkradio' else 'vacuum.home_vacuum' }}"
       label: "{{ 'Η σκούπα του studio' if which == 'pinkradio' else 'Η σκούπα του σπιτιού' }}"
-      battery: "{{ state_attr(vac, 'battery_level') | int(0) }}"
+      # unavailable/unknown = το HA δεν «βλέπει» τη σκούπα (π.χ. xiaomi_miot χωρίς απάντηση). Τότε battery = -1.
+      available: "{{ states(vac) not in ['unavailable', 'unknown'] }}"
+      battery: "{{ state_attr(vac, 'battery_level') | int(-1) if available else -1 }}"
       st: "{{ states(vac) }}"
       desc: "{{ state_attr(vac, 'vacuum.status_desc') }}"
       status_text: >-
@@ -109,10 +111,15 @@ automation:
         mop: "{{ 'σφουγγάρισμα' if which == 'pinkradio' else 'σκούπισμα και σφουγγάρισμα' }}"
         mop_wet: σκούπισμα και σφουγγάρισμα με πολύ νερό
         sweep_mop: σκούπισμα και σφουγγάρισμα
+  - if: "{{ not available }}"
+    then:
+    - set_conversation_response: >-
+        {{ label }} δεν απαντάει αυτή τη στιγμή. Το Home Assistant δεν τη βλέπει, δοκίμασε σε λίγο.
+    - stop: Σκούπα unavailable
   - choose:
     - conditions: "{{ trigger.id == 'clean' }}"
       sequence:
-      - if: "{{ battery < 20 }}"
+      - if: "{{ 0 <= battery < 20 }}"
         then:
         - set_conversation_response: "{{ label }} έχει {{ battery }}% μπαταρία. Άφησέ τη να φορτίσει λίγο πρώτα."
         - stop: Χαμηλή μπαταρία
@@ -165,7 +172,7 @@ automation:
       - set_conversation_response: "{{ label }} επιστρέφει στη βάση."
     - conditions: "{{ trigger.id == 'battery' }}"
       sequence:
-      - set_conversation_response: "{{ label }} έχει {{ battery }}% μπαταρία."
+      - set_conversation_response: "{{ (label ~ ' έχει ' ~ battery ~ '% μπαταρία.') if battery >= 0 else (label ~ ' δεν δίνει μπαταρία αυτή τη στιγμή.') }}"
     - conditions: "{{ trigger.id == 'status' }}"
       sequence:
-      - set_conversation_response: "{{ label }} {{ status_text }}. Μπαταρία {{ battery }}%."
+      - set_conversation_response: "{{ label }} {{ status_text }}.{{ (' Μπαταρία ' ~ battery ~ '%.') if battery >= 0 else '' }}"
