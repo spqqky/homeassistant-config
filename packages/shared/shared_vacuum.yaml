@@ -7,7 +7,8 @@
 #      studio → studio, όλο το σπίτι (και σαλόνι) → σπίτι, Assist από browser → σπίτι.
 # Δικαιώματα: studio σκούπα από studio + σαλόνι (+ browser). Σκούπα σπιτιού μόνο από το floor home (+ browser).
 #
-# Καθαρισμός ανά δωμάτιο του σπιτιού («σκούπισε το σαλόνι»): home_vacuum.yaml.
+# Καθαρισμός ανά δωμάτιο («σκούπισε το σαλόνι και το χολ») επίσης εδώ, στο ΙΔΙΟ trigger «clean»: αν δύο automations
+# ταιριάζουν στην ίδια φράση, το HA τα εκτελεί ΚΑΙ ΤΑ ΔΥΟ (βλ. CLAUDE.md).
 # Εδώ: γενικά (ξεκίνα, σκούπισε, σκούπισε εδώ, σφουγγάρισε, σταμάτα, παύση, συνέχισε, βάση, μπαταρία, κατάσταση).
 # «σκούπισε εδώ» στο σπίτι → μόνο το δωμάτιο του satellite.
 
@@ -22,6 +23,7 @@ automation:
     command:
     - "(ξεκίνα|ξεκινα) (τη (σκούπα|σκουπα)|το (καθάρισμα|καθαρισμα)|το (σκούπισμα|σκουπισμα)|το (σφουγγάρισμα|σφουγγαρισμα)) [(στο|του) ((στούντιο|στουντιο)|studio|pink radio|(σπίτι|σπιτι)|(σπιτιού|σπιτιου))]"
     - "((σκούπισε|σκουπισε)|(καθάρισε|καθαρισε)|(σφουγγάρισε|σφουγγαρισε)) [και (σφουγγάρισε|σφουγγαρισε) ][((δυνατά|δυνατα)|(ήσυχα|ησυχα)|(απαλά|απαλα)|με (πολύ|πολυ) (νερό|νερο)) ][((εδώ|εδω)|(το|στο) ((στούντιο|στουντιο)|studio|pink radio)|[(όλο|ολο) ]το (σπίτι|σπιτι))]"
+    - "((σκούπισε|σκουπισε)|(καθάρισε|καθαρισε)|(σφουγγάρισε|σφουγγαρισε)) [και (σφουγγάρισε|σφουγγαρισε) ]{rooms}"
     - "(κάνε|κανε) ((σκούπισμα|σκουπισμα)|(σφουγγάρισμα|σφουγγαρισμα)|(σκούπισμα|σκουπισμα) και (σφουγγάρισμα|σφουγγαρισμα)) [((εδώ|εδω)|στο ((στούντιο|στουντιο)|studio|pink radio|(σπίτι|σπιτι)))]"
   - trigger: conversation
     id: stop
@@ -65,8 +67,24 @@ automation:
       in_home: "{{ d is not none and (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or f == 'home') }}"
       says_studio: "{{ ['στουντιο', 'studio', 'pink'] | select('in', text) | list | count > 0 }}"
       says_home: "{{ 'σπιτ' in text }}"
+      # Δωμάτια του σπιτιού από λέξεις-κλειδιά (room IDs του χάρτη): 3 σαλόνι · 4 WC · 5 χολ · 7 Νεφέλη · 8 κρεβατοκάμαρα · 9 Αλεξάνδρα · 10 μπάνιο
+      room_ids: >-
+        {%- set ns = namespace(ids=[]) -%}
+        {%- set kw = [('σαλον', [3]), ('χολ', [5]), ('χωλ', [5]), ('hall', [5]), ('νεφελη', [7]), ('αλεξανδρ', [9]),
+                      ('παιδικ', [7, 9]), ('κρεβατοκαμαρ', [8]), ('υπνοδωματι', [8]), ('μπανιο', [10]),
+                      ('wc', [4]), ('βε σε', [4]), ('βεσε', [4]), ('τουαλετα', [4])] -%}
+        {%- for k, ids in kw -%}{%- if k in text -%}{%- set ns.ids = ns.ids + ids -%}{%- endif -%}{%- endfor -%}
+        {%- if text is search('(^|\\s)w(\\s|$)') -%}{%- set ns.ids = ns.ids + [4] -%}{%- endif -%}
+        {{- ns.ids | unique | list -}}
+      whole_house: "{{ 'ολο το σπιτι' in text or 'παντου' in text }}"
+      # Ό,τι ειπώθηκε μετά το ρήμα και δεν είναι τρόπος καθαρισμού: αν μείνει κάτι χωρίς δωμάτιο → άγνωστο δωμάτιο
+      leftover: >-
+        {{ text | regex_replace('[.,;!?]', ' ')
+           | regex_replace('^\\s*(σκουπισε|καθαρισε|σφουγγαρισε)(\\s+και\\s+σφουγγαρισε)?', '')
+           | regex_replace('(^|\\s)(δυνατα|ησυχα|απαλα|με|πολυ|νερο|το|τη|την|τα|τον|στο|στη|στην|στα|στον)(?=\\s|$)', ' ')
+           | trim }}
       which: >-
-        {{ 'pinkradio' if says_studio else ('home' if says_home else ('pinkradio' if in_studio else 'home')) }}
+        {{ 'pinkradio' if says_studio else ('home' if (says_home or room_ids | count > 0) else ('pinkradio' if in_studio else 'home')) }}
       allowed: >-
         {{ d is none
            or (which == 'pinkradio' and (in_studio or a == 'living_room'))
@@ -134,12 +152,24 @@ automation:
           then:
           - set_conversation_response: Δεν ξέρω σε ποιο δωμάτιο είσαι. Πες μου ποιο, π.χ. «σκούπισε το σαλόνι».
           - stop: Άγνωστο δωμάτιο
+        - if: "{{ 'rooms' in (trigger.slots | default({})) and room_ids | count == 0 and not whole_house and 'εδω' not in text and leftover != '' }}"
+          then:
+          - set_conversation_response: >-
+              Δεν κατάλαβα ποιο δωμάτιο. Πες για παράδειγμα «σκούπισε το σαλόνι» ή «σκούπισε όλο το σπίτι».
+          - stop: Άγνωστο δωμάτιο
+        - variables:
+            clean_rooms: "{{ here_rooms if 'εδω' in text else ([] if whole_house else room_ids) }}"
+            room_names: {3: στο σαλόνι, 4: στο WC, 5: στο χολ, 7: στο δωμάτιο της Νεφέλης, 8: στην κρεβατοκάμαρα, 9: στο δωμάτιο της Αλεξάνδρας, 10: στο μπάνιο}
+            where_text: >-
+              {%- if 'εδω' in text and clean_rooms | count > 0 -%}εδώ
+              {%- elif clean_rooms | count == 0 -%}σε όλο το σπίτι
+              {%- else -%}{%- set n = namespace(out=[]) -%}{%- for i in clean_rooms -%}{%- set n.out = n.out + [room_names[i | int]] -%}{%- endfor -%}
+              {{- n.out[0] if n.out | count == 1 else (n.out[:-1] | join(', ') ~ ' και ' ~ n.out[-1]) -}}{%- endif -%}
         - action: script.home_vacuum_clean
           data:
-            rooms: "{{ here_rooms }}"
+            rooms: "{{ clean_rooms }}"
             mode: "{{ clean_mode }}"
-        - set_conversation_response: >-
-            Ξεκινάω {{ mode_text[clean_mode] }} {{ 'εδώ' if here_rooms | count > 0 else 'σε όλο το σπίτι' }}.
+        - set_conversation_response: "Ξεκινάω {{ mode_text[clean_mode] }} {{ where_text }}."
     - conditions: "{{ trigger.id == 'stop' }}"
       sequence:
       - action: vacuum.stop

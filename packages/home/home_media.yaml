@@ -45,7 +45,15 @@ automation:
       - "(παίξε|παιξε) {song} [σε ](όλα|ολα) τα (ηχεία|ηχεια)"
       - "(βάλε|βαλε) {song} [σε ](όλους|ολους)"
       id: all
-    conditions: []
+    # Αν δύο triggers ταιριάζουν στην ίδια φράση, το HA εκτελεί και τα δύο. Εδώ κόβουμε όταν το {song} «έφαγε»
+    # ραδιόφωνο (το χειρίζεται το «Voice - Radio») ή άλλον στόχο («… στη Νεφέλη και την Αλεξάνδρα» → μόνο kids).
+    conditions:
+      - condition: template
+        value_template: >-
+          {% set s = trigger.slots.song | default('') | lower %}
+          {{ not (s is search('^(το |τον )?(σταθμ|ραδιοφων|ραδιόφων)'))
+             and not (s is search('(στη|στην|στο|στα|σε)\\s+(νεφελ|νεφέλ|αλεξανδρ|αλεξάνδρ|σαρα|σάρα|σαλον|σαλόν|κρεβατ|κρεββατ|παιδ|ολους|όλους)'))
+             and not (s is search('\\sκαι(\\s+(τη|την))?$')) }}
     actions:
     - alias: "Guard: μόνο από το floor home"
       if:

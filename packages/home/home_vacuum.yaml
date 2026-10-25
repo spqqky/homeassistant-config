@@ -3,7 +3,7 @@
 # Σκούπα σπιτιού (Xiaomi S20+, xiaomi.vacuum.b108gl) → vacuum.home_vacuum
 #
 # - script.home_vacuum_clean(rooms, mode): ΟΛΗ η λογική καθαρισμού, σε ένα σημείο.
-# - automation «Home Vacuum - Voice Clean»: «σκούπισε / καθάρισε / σφουγγάρισε <δωμάτια>».
+# - Φωνητικός καθαρισμός ανά δωμάτιο: shared/shared_vacuum.yaml.
 #   Mode από λέξεις-κλειδιά της φράσης, δωμάτια από λέξεις-κλειδιά (οποιοσδήποτε συνδυασμός).
 # - Γενικές εντολές (ξεκίνα, σταμάτα, παύση, βάση, μπαταρία, κατάσταση, «σκούπισε εδώ»): shared/shared_vacuum.yaml (βήμα 8γ).
 # - Απαντήσεις ΜΟΝΟ με set_conversation_response (ακούγονται στο ηχείο του δωματίου της εντολής).
@@ -172,91 +172,4 @@ input_select:
       - Σκούπισμα + σφουγγάρισμα
       - Σφουγγάρισμα με πολύ νερό
 
-automation:
-  - id: home_vacuum_voice_clean
-    alias: Home Vacuum - Voice Clean
-    description: «σκούπισε / καθάρισε / σφουγγάρισε <δωμάτια>», με δυνατά / ήσυχα / με πολύ νερό.
-    mode: single
-    triggers:
-      - trigger: conversation
-        command:
-          - "((σκούπισε|σκουπισε)|(καθάρισε|καθαρισε)|(σφουγγάρισε|σφουγγαρισε)) {rooms}"
-          - "((σκούπισε|σκουπισε)|(καθάρισε|καθαρισε)) και (σφουγγάρισε|σφουγγαρισε) {rooms}"
-    conditions: []
-    actions:
-      - alias: "Guard: μόνο από το floor home"
-        if:
-          - condition: template
-            value_template: >-
-              {% set d = trigger.device_id | default(none) %}
-              {% set a = area_id(d) if d else none %}
-              {{ d is not none and not (a in ['living_room', 'nefeli_room', 'alex_room', 'bedroom', 'office'] or floor_id(d) == 'home') }}
-        then:
-          - set_conversation_response: Αυτό γίνεται μόνο από το σπίτι.
-          - stop: Εκτός scope (home)
-      - variables:
-          text: "{{ trigger.sentence | lower | replace('ά','α') | replace('έ','ε') | replace('ή','η') | replace('ί','ι') | replace('ό','ο') | replace('ύ','υ') | replace('ώ','ω') | replace('ϊ','ι') | replace('ΐ','ι') | replace('ϋ','υ') | replace('ΰ','υ') }}"  # χωρίς τόνους: οι λέξεις-κλειδιά παρακάτω γράφονται χωρίς τόνο
-          clean_mode: >-
-            {% if 'σφουγγαρ' in text %}{{ 'mop_wet' if 'πολυ νερο' in text else 'mop' }}
-            {% elif 'δυνατ' in text %}strong
-            {% elif 'ησυχ' in text or 'απαλ' in text %}quiet
-            {% else %}normal{% endif %}
-          # λέξη-κλειδί → (room IDs, όνομα για την απάντηση)
-          room_ids: >-
-            {% set ns = namespace(ids=[]) %}
-            {% set kw = [
-              ('σαλον', [3]), ('χολ', [5]), ('χωλ', [5]), ('hall', [5]),
-              ('νεφελη', [7]), ('αλεξανδρ', [9]), ('παιδικ', [7, 9]),
-              ('κρεβατοκαμαρ', [8]), ('υπνοδωματι', [8]),
-              ('μπανιο', [10]),
-              ('wc', [4]), ('βε σε', [4]), ('βεσε', [4]), ('τουαλετα', [4])
-            ] %}
-            {% for k, ids in kw %}{% if k in text %}{% set ns.ids = ns.ids + ids %}{% endif %}{% endfor %}
-            {% if text is search('(^|\\s)w(\\s|$)') %}{% set ns.ids = ns.ids + [4] %}{% endif %}
-            {{ ns.ids | unique | list }}
-          whole_house: "{{ 'ολο το σπιτι' in text or 'παντου' in text }}"
-          studio: "{{ 'στουντιο' in text or 'studio' in text or 'pink' in text }}"
-      - if: "{{ studio }}"
-        then:
-          - set_conversation_response: Για τη σκούπα του studio πες «σκούπισε το στούντιο».
-          - stop: Studio
-      - if: "{{ not whole_house and room_ids | count == 0 }}"
-        then:
-          - set_conversation_response: >-
-              Δεν κατάλαβα ποιο δωμάτιο. Πες για παράδειγμα «σκούπισε το σαλόνι» ή «σκούπισε όλο το σπίτι».
-          - stop: Άγνωστο δωμάτιο
-      - if: "{{ states('vacuum.home_vacuum') in ['unavailable', 'unknown'] }}"
-        then:
-          - set_conversation_response: Η σκούπα του σπιτιού δεν απαντάει αυτή τη στιγμή. Το Home Assistant δεν τη βλέπει, δοκίμασε σε λίγο.
-          - stop: Σκούπα unavailable
-      - if: "{{ 0 <= state_attr('vacuum.home_vacuum', 'battery_level') | int(-1) < 20 }}"
-        then:
-          - set_conversation_response: >-
-              Η μπαταρία της σκούπας είναι στο {{ state_attr('vacuum.home_vacuum', 'battery_level') | int(0) }}%.
-              Άφησέ τη να φορτίσει λίγο πρώτα.
-          - stop: Χαμηλή μπαταρία
-      - action: script.home_vacuum_clean
-        data:
-          rooms: "{{ [] if whole_house else room_ids }}"
-          mode: "{{ clean_mode | trim }}"
-      - variables:
-          names:
-            3: στο σαλόνι
-            4: στο WC
-            5: στο χολ
-            7: στο δωμάτιο της Νεφέλης
-            8: στην κρεβατοκάμαρα
-            9: στο δωμάτιο της Αλεξάνδρας
-            10: στο μπάνιο
-          mode_text:
-            normal: Ξεκινάω σκούπισμα
-            strong: Ξεκινάω δυνατό σκούπισμα
-            quiet: Ξεκινάω ήσυχο σκούπισμα
-            mop: Ξεκινάω σκούπισμα και σφουγγάρισμα
-            mop_wet: Ξεκινάω σφουγγάρισμα με πολύ νερό
-          where: >-
-            {% if whole_house %}σε όλο το σπίτι
-            {% else %}{% set n = namespace(out=[]) %}{% for i in room_ids %}{% set n.out = n.out + [names[i | int]] %}{% endfor %}
-            {% if n.out | count == 1 %}{{ n.out[0] }}{% else %}{{ n.out[:-1] | join(', ') }} και {{ n.out[-1] }}{% endif %}{% endif %}
-      - set_conversation_response: "{{ mode_text[clean_mode | trim] }} {{ where | trim }}."
-
+# Οι φωνητικές εντολές (και ανά δωμάτιο) είναι στο shared/shared_vacuum.yaml (ένα trigger, βλ. βήμα 8γ/2026-10-25).

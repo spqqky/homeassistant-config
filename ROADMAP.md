@@ -39,3 +39,5 @@
 - 2026-10-11 — Βήματα 7 και 8 ολοκληρώθηκαν. LED: χωρίς προσδιορισμό → και τα δύο σετ. Σκούπες: κοινό «Vacuum - Voice Control», επιλογή ανά χώρο, Pink ✅ (studio εκτελείται, σπίτι απορρίπτεται).
 - 2026-10-11 — Βήμα 9 ολοκληρώθηκε. Το HA Cloud STT γράφει συχνά χωρίς τόνους και χάνει προθέσεις: οι φράσεις το καλύπτουν. Κάθε νέα φράση → `python3 tools/accent_variants.py packages --apply`.
 - 2026-10-11 — Βήμα 12 ξεκίνησε πριν από τα 10/11 (επιλογή χρήστη): dashboard «Σπίτι» με τη σκούπα.
+- 2026-10-25 — Τέλος συνδρομής Home Assistant Cloud: STT → Google AI STT, TTS → Google Translate σε όλα τα pipelines. Σκούπα studio unavailable: βρέθηκε στην .146 αντί για την .132 (κράτηση DHCP στον router). Automations σκούπας: «δεν απαντάει» αντί για 0% όταν είναι unavailable.
+- 2026-10-25 — Ξανά συνδρομή Nabu Casa (ετήσια): πίσω σε HA Cloud STT/TTS. Bug: δύο automations στην ίδια φράση → το HA διάλεξε το λάθος. «Home Vacuum - Voice Clean» → μέσα στο trigger clean του `shared_vacuum`. Condition στο Music Assistant. Νέο `tools/voice_overlaps.py`.

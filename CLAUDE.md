@@ -53,7 +53,7 @@
 | Αρχείο | Περιεχόμενο |
 |---|---|
 | `packages/core/core_voice.yaml` | `script.voice_speak`, χάρτης χώρου → ηχείου |
-| `packages/home/home_vacuum.yaml` | `script.home_vacuum_clean`, «Home Vacuum - Voice Clean» (ανά δωμάτιο), helpers και scripts του dashboard (`_clean_selected`, `_clean_all`) |
+| `packages/home/home_vacuum.yaml` | `script.home_vacuum_clean`, helpers και scripts του dashboard (`_clean_selected`, `_clean_all`). Χωρίς φωνητικά |
 | `packages/home/home_announcements.yaml` | Voice - Ανακοινώσεις |
 | `packages/home/home_media.yaml` | Music Assistant, Radio, scripts έντασης |
 | `packages/pinkradio/pinkradio_studio.yaml` | «Pink Radio - Voice Studio» (neon, κονσόλα, KRK, ήχος, ενισχυτής, studio), scripts `pinkradio_neon_control` / `_studio_audio_control` / `_studio_control` |
@@ -61,7 +61,7 @@
 | `packages/pinkradio/pinkradio_vacuum.yaml` | `script.pinkradio_vacuum_clean` |
 | `packages/shared/shared_reminders.yaml` | reminders (scripts + notifications) |
 | `packages/shared/shared_shopping.yaml` | shopping list scripts |
-| `packages/shared/shared_vacuum.yaml` | «Vacuum - Voice Control»: κοινές εντολές και για τις δύο σκούπες, επιλογή σκούπας ανά χώρο |
+| `packages/shared/shared_vacuum.yaml` | «Vacuum - Voice Control»: ΟΛΕΣ οι φωνητικές εντολές σκούπας (και ανά δωμάτιο), επιλογή σκούπας ανά χώρο |
 
 Το `automations.yaml` / `scripts.yaml` κρατούν μόνο ό,τι φτιάχνεται από το UI. Ό,τι φτιαχτεί εκεί μεταφέρεται στο σωστό package
 στο επόμενο βήμα που αγγίζει τη λειτουργία.
@@ -164,10 +164,14 @@
   με skip στο 26.9.0. Μην κάνεις update στα Voice PE χωρίς δοκιμή. Wake sound OFF στον Pink.
 - **Selectors σε script fields:** ποτέ κενό `{}` (π.χ. `area: {}`, `object: {}`). Το HA το απορρίπτει
   («Only one type can be specified») και απενεργοποιεί το script. Γράφεται `object:` (χωρίς τιμή) ή `area:` + `multiple: false`.
-- STT: το pipeline «Home Assistant» (Pink) χρησιμοποιεί **Google AI STT**, γιατί το HA Cloud έκοβε λέξεις (π.χ. «στο»).
-  Γνωστά: hallucinations, 503 σε ώρες αιχμής, αργό (13,6 s σε μια εντολή, έναντι ~0,2 s του HA Cloud). Η σύγκριση γίνεται στο βήμα 9.
-  Ο Pink έχει δικό του pipeline «Pink Radio» (τοπικός agent, Google AI STT, HA Cloud TTS).
-- **Νέες φράσεις:** μετά από κάθε προσθήκη → `python3 tools/accent_variants.py packages --apply` (το HA Cloud STT γράφει συχνά χωρίς τόνους).
+- **Χωρίς συνδρομή Home Assistant Cloud (από 2026-10-25):** STT = **Google AI STT** (el-GR), TTS = **Google Translate** (`tts.google_translate_en_com`, el).
+  Google AI STT: δωρεάν όριο Gemini → περιστασιακά `stt-stream-failed`, αργό, πιθανά hallucinations. Λύσεις αν ενοχλεί: billing στο API key ή Google Cloud STT.
+  Ο Pink έχει δικό του pipeline «Pink Radio» (τοπικός agent, Google AI STT, Google Translate TTS).
+- **Δύο automations στην ίδια φράση:** το HA εκτελεί ΕΝΑ, όχι απαραίτητα το πιο συγκεκριμένο (2026-10-25: το «σκούπισε … το pink
+  radio» πήγε στη σκούπα σπιτιού με `{rooms}` και όχι στην κοινή). Μια φράση με wildcard
+  (`{rooms}`, `{song}`) πιάνει σχεδόν τα πάντα: ό,τι αφορά το ίδιο θέμα μπαίνει στο ΙΔΙΟ trigger, αλλιώς condition σε
+  επίπεδο automation. Έλεγχος: `~/ha-venv/bin/python tools/voice_overlaps.py` (φράσεις στο `docs/voice_test_sentences.txt`).
+- **Νέες φράσεις:** μετά από κάθε προσθήκη → `python3 tools/accent_variants.py packages --apply` (το STT γράφει συχνά χωρίς τόνους).
   Λέξεις-κλειδιά μέσα σε templates: πάνω σε κείμενο χωρίς τόνους (`text`), άρα γράφονται χωρίς τόνο.
 - **Debug φωνής, με τη σειρά:** `python3 tools/voice_debug.py [φίλτρο pipeline]` → τι άκουσε το STT, χρόνοι, αν απάντησε automation
   («τοπικά») ή agent, σφάλματα. Χωρίς `stt-vad-start` = πρόβλημα μικροφώνου/Voice PE. «άκουσε» σωστό αλλά error = λείπει φράση.
@@ -198,9 +202,7 @@ Media players: `media_player.jbl_nest`, `media_player.nefeli_room`, `media_playe
 ### TTS
 
 - `tts.google_translate_en_com` με `language: el` δουλεύει για direct TTS σε Google Cast / Nest.
-- Το `script.voice_speak` χρησιμοποιεί **`tts.home_assistant_cloud`, el-GR, AthinaNeural**, για να είναι η ίδια φωνή με τις
-  απαντήσεις των assistants. Δουλεύει και στο Cast entity και στο `_ma`.
-  Σε ορισμένα pipelines έχει χρησιμοποιηθεί και το Home Assistant Cloud TTS.
+- Το `script.voice_speak` χρησιμοποιεί **`tts.google_translate_en_com`, `language: el`** (χωρίς συνδρομή Cloud από 2026-10-25).
 - Για ανακοινώσεις είναι πιο αξιόπιστο το explicit `tts.speak` από το να βασιζόμαστε στο output routing του Assist:
 
   ```yaml
