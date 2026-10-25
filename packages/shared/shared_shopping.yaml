@@ -1,63 +1,207 @@
-# packages/shared/shared_shopping.yaml (κοινό και για τους δύο χώρους)
-# Μεταφέρθηκε αυτούσιο από automations.yaml/scripts.yaml στο βήμα 2β. Επεξεργασία μόνο εδώ, όχι από το UI.
+# packages/shared/shared_shopping.yaml (scope: shared, βήμα 10)
+#
+# Λίστα αγορών → todo.shopping_list. Κοινή για σπίτι και studio (επιτρέπεται από όλους τους χώρους).
+#
+# Scripts (το «API» της λίστας, επιστρέφουν response):
+#   shopping_list_add_items(products)    → προσθέτει, αγνοεί ό,τι υπάρχει ήδη     → {added, existing}
+#   shopping_list_read_items             → τα εκκρεμή προϊόντα                     → {items, text}
+#   shopping_list_remove_items(products) → τα σημειώνει ως αγορασμένα (completed) → {done, missing}
+# «products»: κείμενο με κόμματα / «και» / «κι» (π.χ. «γάλα, ψωμί και αυγά»).
+# Η σύγκριση ονομάτων γίνεται χωρίς τόνους και κεφαλαία («Γάλα» = «γαλα»).
+#
+# Automation «Shopping List - Voice»: πρόσθεσε / τι έχει η λίστα / πήρα-σβήσε. Απάντηση με set_conversation_response.
 
 script:
   shopping_list_add_items:
     alias: Shopping List - Add Items
-    description: 'Προσθέτει ένα ή περισσότερα προϊόντα στη λίστα αγορών. Χρησιμοποιείται
-      από το Assist/Gemini για φωνητικές εντολές.
-
-      '
+    description: Προσθέτει ένα ή περισσότερα προϊόντα στη λίστα αγορών (αγνοεί όσα υπάρχουν ήδη).
+    mode: queued
+    max: 10
+    icon: mdi:cart-plus
     fields:
       products:
         name: Προϊόντα
-        description: 'Προϊόντα χωρισμένα με κόμμα ή με τη λέξη "και". Παράδειγμα: γάλα,
-          βούτυρο και τυρί
-
-          '
+        description: Με κόμμα ή «και», π.χ. «γάλα, ψωμί και αυγά».
         required: true
         selector:
           text:
     sequence:
-    - variables:
-        items: "{{ (products\n  | regex_replace('(?i)\\s+και\\s+', ','))\n  .split(',')
-          }}\n"
-    - repeat:
-        for_each: '{{ items }}'
-        sequence:
-        - variables:
-            product_name: '{{ repeat.item | trim }}'
-        - condition: template
-          value_template: '{{ product_name | length > 0 }}'
-        - action: shopping_list.add_item
-          data:
-            name: '{{ product_name }}'
-    mode: queued
-    max: 10
+      - action: todo.get_items
+        target:
+          entity_id: todo.shopping_list
+        data:
+          status: needs_action
+        response_variable: current
+      - variables:
+          # ίδια κανονικοποίηση παντού: πεζά, χωρίς τόνους, χωρίς άρθρα μπροστά
+          wanted: >-
+            {%- set ns = namespace(out=[]) -%}
+            {%- for p in (products | regex_replace('\\s+(και|κι)\\s+', ',') | regex_replace('[.;!?]', '')).split(',') -%}
+              {%- set p = p | trim | regex_replace('^(το|τη|την|τα|τον|ένα|ενα|μια|μία|λίγο|λιγο|λίγα|λιγα|κι|και)\\s+', '') | trim -%}
+              {%- if p | length > 0 -%}{%- set ns.out = ns.out + [p] -%}{%- endif -%}
+            {%- endfor -%}
+            {{ ns.out }}
+          have: >-
+            {%- set ns = namespace(out=[]) -%}
+            {%- for i in current['todo.shopping_list']['items'] -%}
+              {%- set ns.out = ns.out + [i.summary | lower | replace('ά','α') | replace('έ','ε') | replace('ή','η') | replace('ί','ι') | replace('ό','ο') | replace('ύ','υ') | replace('ώ','ω') | trim] -%}
+            {%- endfor -%}
+            {{ ns.out }}
+          split: >-
+            {%- set ns = namespace(add=[], exist=[], seen=[]) -%}
+            {%- for p in wanted -%}
+              {%- set k = p | lower | replace('ά','α') | replace('έ','ε') | replace('ή','η') | replace('ί','ι') | replace('ό','ο') | replace('ύ','υ') | replace('ώ','ω') -%}
+              {%- if k in have -%}{%- set ns.exist = ns.exist + [p] -%}
+              {%- elif k not in ns.seen -%}{%- set ns.add = ns.add + [p] -%}{%- set ns.seen = ns.seen + [k] -%}{%- endif -%}
+            {%- endfor -%}
+            {{ {'added': ns.add, 'existing': ns.exist} }}
+      - repeat:
+          for_each: "{{ split.added }}"
+          sequence:
+            - action: todo.add_item
+              target:
+                entity_id: todo.shopping_list
+              data:
+                item: "{{ repeat.item }}"
+      - stop: ok
+        response_variable: split
+
   shopping_list_read_items:
     alias: Shopping List - Read Items
-    description: 'Επιστρέφει τα προϊόντα που υπάρχουν αυτή τη στιγμή στη λίστα αγορών.
-      Χρησιμοποίησε αυτό το script όταν ο χρήστης ρωτά τι έχει στη λίστα για ψώνια,
-      τι χρειάζεται να αγοράσει ή τι υπάρχει στη shopping list.
-
-      '
+    description: Επιστρέφει τα προϊόντα που εκκρεμούν στη λίστα αγορών (items και έτοιμο κείμενο text).
+    mode: parallel
+    icon: mdi:cart-outline
     sequence:
-    - action: todo.get_items
-      target:
-        entity_id: todo.shopping_list
-      data:
-        status: needs_action
-      response_variable: shopping_items
-    - variables:
-        item_names: "{{ shopping_items['todo.shopping_list']['items']\n   | map(attribute='summary')\n
-          \  | list }}\n"
-        result:
-          items: "{{ shopping_items['todo.shopping_list']['items']\n   | map(attribute='summary')\n
-            \  | list }}\n"
-          text: "{% set names = shopping_items['todo.shopping_list']['items']\n   |
-            map(attribute='summary')\n   | list %}\n{% if names | length == 0 %}\n  Η
-            λίστα για ψώνια είναι άδεια.\n{% else %}\n  Στη λίστα για ψώνια έχεις {{
-            names | join(', ') }}.\n{% endif %}\n"
-    - stop: Shopping list returned
-      response_variable: result
-    mode: single
+      - action: todo.get_items
+        target:
+          entity_id: todo.shopping_list
+        data:
+          status: needs_action
+        response_variable: current
+      - variables:
+          result: >-
+            {%- set names = current['todo.shopping_list']['items'] | map(attribute='summary') | list -%}
+            {%- if names | count == 0 -%}{%- set t = 'Η λίστα αγορών είναι άδεια.' -%}
+            {%- elif names | count == 1 -%}{%- set t = 'Στη λίστα έχεις μόνο ' ~ names[0] ~ '.' -%}
+            {%- else -%}{%- set t = 'Στη λίστα έχεις ' ~ (names[:-1] | join(', ')) ~ ' και ' ~ names[-1] ~ '.' -%}{%- endif -%}
+            {{ {'items': names, 'text': t} }}
+      - stop: ok
+        response_variable: result
+
+  shopping_list_remove_items:
+    alias: Shopping List - Remove Items
+    description: Σημειώνει προϊόντα ως αγορασμένα (completed). Δεν τα διαγράφει, φαίνονται στα ολοκληρωμένα.
+    mode: queued
+    max: 10
+    icon: mdi:cart-check
+    fields:
+      products:
+        name: Προϊόντα
+        description: Με κόμμα ή «και».
+        required: true
+        selector:
+          text:
+    sequence:
+      - action: todo.get_items
+        target:
+          entity_id: todo.shopping_list
+        data:
+          status: needs_action
+        response_variable: current
+      - variables:
+          wanted: >-
+            {%- set ns = namespace(out=[]) -%}
+            {%- for p in (products | regex_replace('\\s+(και|κι)\\s+', ',') | regex_replace('[.;!?]', '')).split(',') -%}
+              {%- set p = p | trim | regex_replace('^(το|τη|την|τα|τον|ένα|ενα|μια|μία|λίγο|λιγο|λίγα|λιγα|κι|και)\\s+', '') | trim -%}
+              {%- if p | length > 0 -%}{%- set ns.out = ns.out + [p] -%}{%- endif -%}
+            {%- endfor -%}
+            {{ ns.out }}
+          # προϊόν της φράσης → ακριβές summary στη λίστα (ίσο, ή το ένα περιέχει το άλλο: «χαρτί» → «Χαρτί τουαλέτα»)
+          match: >-
+            {%- set ns = namespace(done=[], miss=[]) -%}
+            {%- for p in wanted -%}
+              {%- set k = p | lower | replace('ά','α') | replace('έ','ε') | replace('ή','η') | replace('ί','ι') | replace('ό','ο') | replace('ύ','υ') | replace('ώ','ω') -%}
+              {%- set m = namespace(hit=none) -%}
+              {%- for i in current['todo.shopping_list']['items'] if m.hit is none -%}
+                {%- set s = i.summary | lower | replace('ά','α') | replace('έ','ε') | replace('ή','η') | replace('ί','ι') | replace('ό','ο') | replace('ύ','υ') | replace('ώ','ω') | trim -%}
+                {%- if s == k or k in s or s in k -%}{%- set m.hit = i.summary -%}{%- endif -%}
+              {%- endfor -%}
+              {%- if m.hit is not none and m.hit not in ns.done -%}{%- set ns.done = ns.done + [m.hit] -%}
+              {%- elif m.hit is none -%}{%- set ns.miss = ns.miss + [p] -%}{%- endif -%}
+            {%- endfor -%}
+            {{ {'done': ns.done, 'missing': ns.miss} }}
+      - repeat:
+          for_each: "{{ match.done }}"
+          sequence:
+            - action: todo.update_item
+              target:
+                entity_id: todo.shopping_list
+              data:
+                item: "{{ repeat.item }}"
+                status: completed
+      - stop: ok
+        response_variable: match
+
+automation:
+- id: shared_shopping_voice
+  alias: Shopping List - Voice
+  description: «πρόσθεσε … στη λίστα», «τι έχει η λίστα», «πήρα …» / «σβήσε … από τη λίστα».
+  mode: queued
+  max: 5
+  triggers:
+  - trigger: conversation
+    id: add
+    command:
+    - "((πρόσθεσε|προσθεσε)|(βάλε|βαλε)|(γράψε|γραψε)) {products} στη (λίστα|λιστα) [((αγορών|αγορων)|για (ψώνια|ψωνια)|για τα (ψώνια|ψωνια)|του (σούπερ|σουπερ) (μάρκετ|μαρκετ))]"
+    - "((πρόσθεσε|προσθεσε)|(βάλε|βαλε)|(γράψε|γραψε)) στη (λίστα|λιστα) [((αγορών|αγορων)|για (ψώνια|ψωνια)|για τα (ψώνια|ψωνια)|του (σούπερ|σουπερ) (μάρκετ|μαρκετ))] {products}"
+  - trigger: conversation
+    id: read
+    command:
+    - "τι ((έχει|εχει)|(έχω|εχω)|(έχουμε|εχουμε)|(υπάρχει|υπαρχει)) στη (λίστα|λιστα) [((αγορών|αγορων)|για (ψώνια|ψωνια)|για τα (ψώνια|ψωνια)|του (σούπερ|σουπερ) (μάρκετ|μαρκετ))]"
+    - "((διάβασε|διαβασε)|πες μου) τη (λίστα|λιστα) [((αγορών|αγορων)|για (ψώνια|ψωνια)|για τα (ψώνια|ψωνια)|του (σούπερ|σουπερ) (μάρκετ|μαρκετ))]"
+    - "τι ((πρέπει|πρεπει)|(χρειάζεται|χρειαζεται)) να ((πάρω|παρω)|(αγοράσω|αγορασω)|(πάρουμε|παρουμε)|(αγοράσουμε|αγορασουμε))"
+  - trigger: conversation
+    id: remove
+    command:
+    - "((σβήσε|σβησε)|(βγάλε|βγαλε)|(αφαίρεσε|αφαιρεσε)|(διέγραψε|διεγραψε)) {products} (από|απο) τη (λίστα|λιστα) [((αγορών|αγορων)|για (ψώνια|ψωνια)|για τα (ψώνια|ψωνια)|του (σούπερ|σουπερ) (μάρκετ|μαρκετ))]"
+    - "((πήρα|πηρα)|(αγόρασα|αγορασα)|(πήραμε|πηραμε)|(αγοράσαμε|αγορασαμε)) {products}"
+  conditions: []
+  actions:
+  - choose:
+    - conditions: "{{ trigger.id == 'add' }}"
+      sequence:
+      - action: script.shopping_list_add_items
+        data:
+          products: "{{ trigger.slots.products }}"
+        response_variable: res
+      - variables:
+          a: "{{ res.added }}"
+          e: "{{ res.existing }}"
+          a_text: "{{ a[0] if a | count == 1 else ((a[:-1] | join(', ')) ~ ' και ' ~ (a[-1] if a else '')) }}"
+          e_text: "{{ e[0] if e | count == 1 else ((e[:-1] | join(', ')) ~ ' και ' ~ (e[-1] if e else '')) }}"
+      - set_conversation_response: >-
+          {%- if a and e -%}Πρόσθεσα {{ a_text }}. {{ e_text | capitalize }} {{ 'υπάρχουν' if e | count > 1 else 'υπάρχει' }} ήδη.
+          {%- elif a -%}Πρόσθεσα {{ a_text }} στη λίστα.
+          {%- elif e -%}{{ e_text | capitalize }} {{ 'υπάρχουν' if e | count > 1 else 'υπάρχει' }} ήδη στη λίστα.
+          {%- else -%}Δεν κατάλαβα τι να προσθέσω.{%- endif -%}
+    - conditions: "{{ trigger.id == 'read' }}"
+      sequence:
+      - action: script.shopping_list_read_items
+        response_variable: res
+      - set_conversation_response: "{{ res.text }}"
+    - conditions: "{{ trigger.id == 'remove' }}"
+      sequence:
+      - action: script.shopping_list_remove_items
+        data:
+          products: "{{ trigger.slots.products }}"
+        response_variable: res
+      - variables:
+          d: "{{ res.done }}"
+          m: "{{ res.missing }}"
+          d_text: "{{ d[0] if d | count == 1 else ((d[:-1] | join(', ')) ~ ' και ' ~ (d[-1] if d else '')) }}"
+          m_text: "{{ m[0] if m | count == 1 else ((m[:-1] | join(', ')) ~ ' και ' ~ (m[-1] if m else '')) }}"
+      - set_conversation_response: >-
+          {%- if d and m -%}Έσβησα {{ d_text }}. {{ m_text | capitalize }} δεν {{ 'ήταν' }} στη λίστα.
+          {%- elif d -%}Έσβησα {{ d_text }} από τη λίστα.
+          {%- elif m -%}{{ m_text | capitalize }} δεν είναι στη λίστα.
+          {%- else -%}Δεν κατάλαβα τι να σβήσω.{%- endif -%}
