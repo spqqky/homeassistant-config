@@ -1,140 +1,228 @@
-# packages/shared/shared_reminders.yaml (κοινό και για τους δύο χώρους)
-# Μεταφέρθηκε αυτούσιο από automations.yaml/scripts.yaml στο βήμα 2β. Επεξεργασία μόνο εδώ, όχι από το UI.
+# packages/shared/shared_reminders.yaml (scope: shared, βήμα 11 – Reminders v2)
+#
+# Δεδομένα: calendar.reminders, μέσω της custom integration reminder_manager (create/find/update/delete).
+# Κάθε ειδοποίηση είναι ένα event στο ημερολόγιο τη στιγμή που πρέπει να ειδοποιήσει. Η περιγραφή του
+# κρατά παραλήπτες, «πριν», επανάληψη και id (βλ. custom_components/reminder_manager/__init__.py).
+#
+# Scripts = εργαλεία του Gemini (exposed): Reminder - Create / Find / Update / Delete.
+# Automation «Reminders - Notify»: στην ώρα της ειδοποίησης → push στο κινητό + φωνή στο ηχείο του δωματίου
+# κάθε παραλήπτη. Ήσυχες ώρες 22:00–08:00: μόνο push.
 
 automation:
-  - id: '1790410395557'
-    alias: Reminders - Chris Notifications
-    description: ''
-    triggers:
-    - trigger: calendar
-      entity_id: calendar.reminders
-      event: start
-      offset: 0:00:00
-    conditions: []
-    actions:
-    - action: notify.send_message
-      target:
-        entity_id: notify.chris_smartphone
-      data:
-        title: Υπενθύμιση
-        message: '{{ trigger.calendar_event.summary }}'
-    mode: queued
+- id: shared_reminders_notify
+  alias: Reminders - Notify
+  description: Ειδοποίηση υπενθύμισης στους παραλήπτες της (κινητό + ηχείο δωματίου).
+  mode: queued
+  max: 20
+  triggers:
+  - trigger: calendar
+    entity_id: calendar.reminders
+    event: start
+    offset: "0:00:00"
+  conditions: []
+  actions:
+  - variables:
+      # Παραλήπτης → κινητό (notify entity, κενό = χωρίς push ακόμα) και χώρος για το ηχείο (script.voice_speak)
+      people:
+        chris: {notify: notify.chris_smartphone, area: living_room}
+        nefeli: {notify: "", area: nefeli_room}
+        alex: {notify: "", area: alex_room}
+      desc: "{{ trigger.calendar_event.description | default('') }}"
+      text: "{{ trigger.calendar_event.summary }}"
+      recipients: >-
+        {% set m = desc | regex_findall('για:\\s*([a-z,\\s]+)') %}
+        {{ (m[0].split(',') | map('trim') | reject('eq', '') | list) if m else ['chris'] }}
+      before: >-
+        {% set m = desc | regex_findall('πριν:\\s*(\\d+)') or desc | regex_findall('Υπενθύμιση\\s+(\\d+)\\s+λεπτά πριν') %}
+        {{ m[0] | int if m else 0 }}
+      when_text: >-
+        {%- set b = before | int -%}
+        {%- if b == 0 -%}
+        {%- elif b == 1440 -%}αύριο αυτή την ώρα
+        {%- elif b % 1440 == 0 -%}σε {{ (b / 1440) | int }} μέρες
+        {%- elif b == 60 -%}σε μία ώρα
+        {%- elif b % 60 == 0 -%}σε {{ (b / 60) | int }} ώρες
+        {%- else -%}σε {{ b }} λεπτά{%- endif -%}
+      message: "{{ ('Υπενθύμιση: ' ~ text ~ '.') if when_text == '' else ('Υπενθύμιση, ' ~ when_text ~ ': ' ~ text ~ '.') }}"
+      quiet: "{{ now().hour >= 22 or now().hour < 8 }}"
+  - repeat:
+      for_each: "{{ recipients }}"
+      sequence:
+      - variables:
+          p: "{{ people.get(repeat.item, {}) }}"
+      - if: "{{ p.get('notify', '') != '' }}"
+        then:
+        - action: notify.send_message
+          continue_on_error: true
+          target:
+            entity_id: "{{ p.notify }}"
+          data:
+            title: Υπενθύμιση
+            message: "{{ message }}"
+      - if: "{{ p.get('area', '') != '' and not quiet }}"
+        then:
+        - action: script.voice_speak
+          continue_on_error: true
+          data:
+            message: "{{ message }}"
+            area: "{{ p.area }}"
 
 script:
-  reminder_create_chris:
-    alias: Reminder - Create Chris
-    description: Create a reminder for Chris. Use this whenever Chris asks to be reminded
-      about something. Extract the event text, exact event date and time, and how many
-      minutes before the event Chris wants the notification. Convert natural Greek date/time
-      expressions to YYYY-MM-DD HH:MM:SS. If no advance reminder is specified, use 0
-      minutes.
+  reminder_create:
+    alias: Reminder - Create
+    description: >-
+      Create a reminder. Convert Greek date/time to event_datetime "YYYY-MM-DD HH:MM" (Europe/Athens).
+      minutes_before: notification offsets in minutes before the event, comma separated (e.g. "1440,60"); "0" if none said.
+      recipients: comma separated from chris, nefeli, alex (Χρήστος=chris, Νεφέλη=nefeli, Αλεξάνδρα=alex); default chris.
+      repeat: none|daily|weekly|weekdays|monthly|yearly; for weekly on specific days set days (MO,TU,WE,TH,FR,SA,SU).
+      Confirm only if status is created.
     mode: queued
+    icon: mdi:bell-plus
     fields:
       reminder_text:
-        name: Reminder text
-        description: What Chris wants to be reminded about.
+        name: Κείμενο
         required: true
         selector:
           text:
       event_datetime:
-        name: Event date and time
-        description: Exact event date and time in YYYY-MM-DD HH:MM:SS format.
+        name: Ώρα γεγονότος (YYYY-MM-DD HH:MM)
         required: true
         selector:
           text:
       minutes_before:
-        name: Minutes before
-        description: 'Minutes before the event to notify Chris. Examples: 10, 30, 60,
-          1440.'
-        required: true
-        default: 0
+        name: Λεπτά πριν (με κόμμα)
+        default: "0"
         selector:
-          number:
-            min: 0
-            max: 10080
-            step: 1
-    sequence:
-    - variables:
-        event_ts: '{{ as_timestamp(strptime(event_datetime, ''%Y-%m-%d %H:%M:%S''))
-          }}'
-        reminder_ts: '{{ event_ts - ((minutes_before | int) * 60) }}'
-        reminder_start: '{{ reminder_ts | timestamp_custom(''%Y-%m-%d %H:%M:%S'', true)
-          }}'
-        reminder_end: '{{ (reminder_ts + 60) | timestamp_custom(''%Y-%m-%d %H:%M:%S'',
-          true) }}'
-        event_display: '{{ event_ts | timestamp_custom(''%d/%m/%Y %H:%M'', true) }}'
-    - condition: template
-      value_template: '{{ event_ts > as_timestamp(now()) }}'
-    - condition: template
-      value_template: '{{ reminder_ts > as_timestamp(now()) }}'
-    - action: calendar.create_event
-      target:
-        entity_id: calendar.reminders
-      data:
-        summary: '{{ reminder_text }}'
-        description: 'Ραντεβού/γεγονός: {{ event_display }} | Υπενθύμιση {{ minutes_before
-          }} λεπτά πριν.'
-        start_date_time: '{{ reminder_start }}'
-        end_date_time: '{{ reminder_end }}'
-    - stop: Η υπενθύμιση δημιουργήθηκε επιτυχώς για {{ reminder_text }}, {{ minutes_before
-        }} λεπτά πριν από το γεγονός.
-  reminder_find_chris:
-    alias: Reminder - Find Chris
-    description: Find upcoming reminders for Chris in calendar.reminders. Use this to
-      answer questions about existing reminders and before attempting to cancel one.
-      Search by subject, name or date. Never claim to have deleted an event.
-    mode: single
-    fields:
-      search_text:
-        name: Search text
-        description: Optional keyword to search for, such as Mailo or κτηνίατρος. Leave
-          empty to list all upcoming reminders.
-        required: false
-        default: ''
+          text:
+      recipients:
+        name: Παραλήπτες (chris, nefeli, alex)
+        default: chris
+        selector:
+          text:
+      repeat:
+        name: Επανάληψη
+        default: none
+        selector:
+          select:
+            options: [none, daily, weekly, weekdays, monthly, yearly]
+      days:
+        name: Μέρες (για weekly)
         selector:
           text:
     sequence:
-    - action: calendar.get_events
-      target:
-        entity_id: calendar.reminders
+    - action: reminder_manager.create_reminder
       data:
-        duration:
-          days: 730
-      response_variable: agenda
-    - variables:
-        results:
-          events: '{{ agenda[''calendar.reminders''][''events''] | selectattr(''summary'',
-            ''search'', search_text | default('''', true), ignorecase=True) | list }}'
-          calendar: calendar.reminders
-    - stop: Reminder search completed
-      response_variable: results
-  reminder_delete_chris:
-    alias: Reminder - Delete Chris
-    description: Delete one reminder for Chris. Use only when Chris explicitly asks
-      to cancel a reminder. Extract the subject and optional exact appointment date.
-      If multiple reminders match, ask for clarification. Never claim deletion unless
-      the returned status is deleted.
-    mode: single
+        text: "{{ reminder_text }}"
+        event_datetime: "{{ event_datetime }}"
+        before: "{{ minutes_before | default('0', true) | string }}"
+        recipients: "{{ recipients | default('chris', true) | string }}"
+        repeat: "{{ repeat | default('none', true) }}"
+        days: "{{ days | default('', true) | string }}"
+      response_variable: result
+    - stop: done
+      response_variable: result
+
+  reminder_find:
+    alias: Reminder - Find
+    description: >-
+      Find upcoming reminders. ALWAYS use this before answering about existing reminders and before update/delete.
+      search_text: subject keyword (empty = all). Returns event_datetime (the real appointment time), minutes_before,
+      recipients and repeat for each reminder.
+    mode: parallel
+    icon: mdi:bell-search
     fields:
       search_text:
-        name: Search text
-        description: Subject of the reminder to cancel, such as Mailo.
+        name: Αναζήτηση
+        default: ""
+        selector:
+          text:
+    sequence:
+    - action: reminder_manager.find_reminders
+      data:
+        search_text: "{{ search_text | default('', true) }}"
+      response_variable: result
+    - stop: done
+      response_variable: result
+
+  reminder_update:
+    alias: Reminder - Update
+    description: >-
+      Change ONE existing reminder (move time, rename, change notifications, recipients or repeat). Only fill the
+      new_* fields that change. status: updated → confirm; not_found / multiple_matches (ask which) / invalid / error → explain.
+    mode: queued
+    icon: mdi:bell-cog
+    fields:
+      search_text:
+        name: Ποια υπενθύμιση
         required: true
         selector:
           text:
       event_date:
-        name: Event date
-        description: Optional date of the actual appointment in YYYY-MM-DD format. Leave
-          empty when the user does not specify a date.
-        required: false
-        default: ''
+        name: Ημερομηνία γεγονότος (YYYY-MM-DD), αν χρειάζεται
+        selector:
+          text:
+      new_event_datetime:
+        name: Νέα ώρα (YYYY-MM-DD HH:MM)
+        selector:
+          text:
+      new_text:
+        name: Νέο κείμενο
+        selector:
+          text:
+      new_minutes_before:
+        name: Νέα λεπτά πριν
+        selector:
+          text:
+      new_recipients:
+        name: Νέοι παραλήπτες
+        selector:
+          text:
+      new_repeat:
+        name: Νέα επανάληψη
+        selector:
+          select:
+            options: [none, daily, weekly, weekdays, monthly, yearly]
+      new_days:
+        name: Νέες μέρες
+        selector:
+          text:
+    sequence:
+    - action: reminder_manager.update_reminder
+      data:
+        search_text: "{{ search_text }}"
+        event_date: "{{ event_date | default('', true) }}"
+        new_text: "{{ new_text | default('', true) }}"
+        new_event_datetime: "{{ new_event_datetime | default('', true) }}"
+        new_before: "{{ new_minutes_before | default('', true) | string }}"
+        new_recipients: "{{ new_recipients | default('', true) | string }}"
+        new_repeat: "{{ new_repeat | default('', true) }}"
+        new_days: "{{ new_days | default('', true) | string }}"
+      response_variable: result
+    - stop: done
+      response_variable: result
+
+  reminder_delete:
+    alias: Reminder - Delete
+    description: >-
+      Delete ONE reminder, only when explicitly asked. Deletes all its notifications (and the whole series if recurring).
+      status: deleted → confirm; not_found; multiple_matches → describe them and ask which; invalid; error.
+    mode: queued
+    icon: mdi:bell-remove
+    fields:
+      search_text:
+        name: Ποια υπενθύμιση
+        required: true
+        selector:
+          text:
+      event_date:
+        name: Ημερομηνία γεγονότος (YYYY-MM-DD), αν χρειάζεται
         selector:
           text:
     sequence:
     - action: reminder_manager.delete_reminder
       data:
-        search_text: '{{ search_text }}'
-        event_date: '{{ event_date | default('''', true) }}'
-      response_variable: deletion_result
-    - stop: Reminder deletion request completed.
-      response_variable: deletion_result
+        search_text: "{{ search_text }}"
+        event_date: "{{ event_date | default('', true) }}"
+      response_variable: result
+    - stop: done
+      response_variable: result

@@ -1,19 +1,96 @@
-delete_reminder:
-  name: Delete reminder
-  description: Find and delete one matching reminder from calendar.reminders.
+create_reminder:
+  name: Create reminder
+  description: Δημιουργεί υπενθύμιση στο calendar.reminders, με μία ή περισσότερες ειδοποιήσεις και προαιρετική επανάληψη.
+  fields:
+    text:
+      required: true
+      example: "Οδοντίατρος"
+      selector:
+        text:
+    event_datetime:
+      required: true
+      description: Ώρα του γεγονότος, YYYY-MM-DD HH:MM (ώρα Ελλάδας).
+      example: "2026-11-03 10:00"
+      selector:
+        text:
+    before:
+      description: Λεπτά πριν από το γεγονός, με κόμμα για πολλές ειδοποιήσεις (π.χ. 1440,60). Κενό = 0.
+      example: "1440,60"
+      selector:
+        text:
+    recipients:
+      description: chris, nefeli, alex (με κόμμα). Κενό = chris.
+      example: "chris"
+      selector:
+        text:
+    repeat:
+      default: none
+      selector:
+        select:
+          options: [none, daily, weekly, weekdays, monthly, yearly]
+    days:
+      description: Μόνο για weekly. MO,TU,WE,TH,FR,SA,SU.
+      example: "MO,TH"
+      selector:
+        text:
+    until:
+      description: Προαιρετικά, τέλος επανάληψης YYYY-MM-DD.
+      selector:
+        text:
+
+find_reminders:
+  name: Find reminders
+  description: Επόμενες υπενθυμίσεις (ομαδοποιημένες· οι επαναλαμβανόμενες με την επόμενη εμφάνιση).
   fields:
     search_text:
-      name: Search text
-      description: Reminder subject to search for.
+      selector:
+        text:
+    event_date:
+      description: YYYY-MM-DD της πραγματικής ημερομηνίας του γεγονότος.
+      selector:
+        text:
+
+update_reminder:
+  name: Update reminder
+  description: Αλλάζει ΜΙΑ υπενθύμιση (ώρα, κείμενο, ειδοποιήσεις, παραλήπτες, επανάληψη). Ό,τι λείπει μένει ίδιο.
+  fields:
+    search_text:
+      required: true
+      selector:
+        text:
+    event_date:
+      selector:
+        text:
+    new_text:
+      selector:
+        text:
+    new_event_datetime:
+      selector:
+        text:
+    new_before:
+      selector:
+        text:
+    new_recipients:
+      selector:
+        text:
+    new_repeat:
+      selector:
+        select:
+          options: [none, daily, weekly, weekdays, monthly, yearly]
+    new_days:
+      selector:
+        text:
+
+delete_reminder:
+  name: Delete reminder
+  description: Διαγράφει ΜΙΑ υπενθύμιση (όλες τις ειδοποιήσεις της· για επαναλαμβανόμενη, όλη τη σειρά).
+  fields:
+    search_text:
       required: true
       example: "Mailo"
       selector:
         text:
-
     event_date:
-      name: Event date
-      description: Optional appointment date in YYYY-MM-DD format. This refers to the actual event, not the earlier notification.
-      required: false
-      example: "2027-05-18"
+      description: Προαιρετικά YYYY-MM-DD της πραγματικής ημερομηνίας.
       selector:
         text:

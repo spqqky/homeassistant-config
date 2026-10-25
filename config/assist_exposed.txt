@@ -21,9 +21,10 @@ script.nefeli_nest_volume_control
 script.sarah_nest_volume_control
 
 # Reminders
-script.reminder_create_chris
-script.reminder_find_chris
-script.reminder_delete_chris
+script.reminder_create
+script.reminder_find
+script.reminder_update
+script.reminder_delete
 
 # Λίστα αγορών
 todo.shopping_list

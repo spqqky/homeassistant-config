@@ -15,8 +15,8 @@
 | 7 | Home vacuum: ανά δωμάτιο, Basic default, φωνητικές εντολές | ✅ | `script.home_vacuum_clean` + «Voice Clean» (ανά δωμάτιο, δυνατά/ήσυχα/σφουγγάρισμα). Εκκρεμεί πραγματικός καθαρισμός από το σπίτι |
 | 8 | Pink studio: 3 scripts, σκούπα pinkradio, φωνητικές εντολές με isolation | ✅ | 8α διακόπτες (`pinkradio_voice_studio`), 8β LED (11 → 1 automation), 8γ `shared_vacuum.yaml`: «η σκούπα» = σκούπα του χώρου. Δοκιμές από τον Pink ✅ |
 | 9 | Pipelines: local + Gemini, ελληνικό prompt με φιλικό ύφος, διαδικασία debug για το STT | ✅ | STT: HA Cloud παντού (απόφαση χρήστη). Φράσεις ανθεκτικές: προαιρετική πρόθεση, παραλλαγές χωρίς τόνο (`tools/accent_variants.py`), templates χωρίς τόνους. `tools/voice_debug.py`, `tools/pipelines_dump.py`. Νέο `docs/prompts/home_gemini.txt` (ελληνικό). Εκκρεμεί: επικόλληση prompt, Relaxed στα Voice PE |
-| 10 | Shopping list: πολλαπλά items και ανάγνωση | ⬜ | |
-| 11 | Reminders v2: recurring, πολλαπλοί χρόνοι ειδοποίησης, recipient, αλλαγή υπάρχοντος | ⬜ | |
+| 10 | Shopping list: πολλαπλά items και ανάγνωση | ✅ | `shared_shopping.yaml`: τοπικές φωνητικές εντολές (πρόσθεσε / τι έχει / πήρα-σβήσε), scripts Add/Read/Remove με response, χωρίς διπλότυπα, σύγκριση χωρίς τόνους |
+| 11 | Reminders v2: recurring, πολλαπλοί χρόνοι ειδοποίησης, recipient, αλλαγή υπάρχοντος | 🔄 | `reminder_manager` v2 + scripts Create/Find/Update/Delete + «Reminders - Notify» (κινητό + ηχείο). Παραλήπτες chris/nefeli/alex. Εκκρεμεί: δοκιμή, notify entities παιδιών |
 | 12 | Dashboards: νέα dashboards για `home` και `pinkradio` | 🔄 | Προτεραιότητα του χρήστη (πριν από 10/11). Πρώτη έκδοση «Σπίτι»: μόνο σκούπα, για κινητό (`docs/lovelace_home.yaml`, helpers στο `home_vacuum.yaml`) |
 | 13 | Satellite Σάρας (όταν έρθει) | ⬜ | |
 
@@ -41,3 +41,4 @@
 - 2026-10-11 — Βήμα 12 ξεκίνησε πριν από τα 10/11 (επιλογή χρήστη): dashboard «Σπίτι» με τη σκούπα.
 - 2026-10-25 — Τέλος συνδρομής Home Assistant Cloud: STT → Google AI STT, TTS → Google Translate σε όλα τα pipelines. Σκούπα studio unavailable: βρέθηκε στην .146 αντί για την .132 (κράτηση DHCP στον router). Automations σκούπας: «δεν απαντάει» αντί για 0% όταν είναι unavailable.
 - 2026-10-25 — Ξανά συνδρομή Nabu Casa (ετήσια): πίσω σε HA Cloud STT/TTS. Bug: δύο automations στην ίδια φράση → το HA διάλεξε το λάθος. «Home Vacuum - Voice Clean» → μέσα στο trigger clean του `shared_vacuum`. Condition στο Music Assistant. Νέο `tools/voice_overlaps.py`.
+- 2026-10-25 — Βήμα 10 ολοκληρώθηκε. Η λίστα δουλεύει από όλους τους χώρους, χωρίς LLM.

@@ -60,7 +60,7 @@
 | `packages/pinkradio/pinkradio_led.yaml` | «Pink Radio - Voice LED» (on/off, %, χρώματα, modes, disco), `script.pinkradio_led_disco_mode` |
 | `packages/pinkradio/pinkradio_vacuum.yaml` | `script.pinkradio_vacuum_clean` |
 | `packages/shared/shared_reminders.yaml` | reminders (scripts + notifications) |
-| `packages/shared/shared_shopping.yaml` | shopping list scripts |
+| `packages/shared/shared_shopping.yaml` | «Shopping List - Voice» + scripts Add/Read/Remove (επιστρέφουν response) |
 | `packages/shared/shared_vacuum.yaml` | «Vacuum - Voice Control»: ΟΛΕΣ οι φωνητικές εντολές σκούπας (και ανά δωμάτιο), επιλογή σκούπας ανά χώρο |
 
 Το `automations.yaml` / `scripts.yaml` κρατούν μόνο ό,τι φτιάχνεται από το UI. Ό,τι φτιαχτεί εκεί μεταφέρεται στο σωστό package
@@ -290,18 +290,22 @@ Media players: `media_player.jbl_nest`, `media_player.nefeli_room`, `media_playe
   | Pink Radio - Studio Audio Control | `script.pinkradio_studio_audio_control` | on/off |
   | Pink Radio - Studio Control | `script.pinkradio_studio_control` | prepare/off |
 
-### Reminders
+### Reminders (v2, βήμα 11)
 
-- `calendar.reminders` + custom integration `reminder_manager`.
-- Scripts: «Reminder - Create Chris», «Reminder - Find Chris», «Reminder - Delete Chris».
-  Το Gemini τα χρησιμοποιεί για δημιουργία, αναζήτηση και διαγραφή.
-- Automation στέλνει notification στο κινητό όταν φτάνει το calendar event.
-- Μελλοντικά: recurring, πολλαπλοί χρόνοι ειδοποίησης, επιλογή recipient, αλλαγή υπάρχοντος,
-  ίσως ξεχωριστό πραγματικό calendar.
+- `calendar.reminders` + custom integration `reminder_manager` v2 (Python): `create_reminder`, `find_reminders`,
+  `update_reminder`, `delete_reminder`. Όλα επιστρέφουν response με `status`. Αλλαγή στον κώδικα → **restart** του HA.
+- Ένα event ανά ειδοποίηση, τη στιγμή της ειδοποίησης. Περιγραφή:
+  `Ραντεβού/γεγονός: dd/mm/YYYY HH:MM | για: chris,nefeli | πριν: 60 | επανάληψη: weekly | μέρες: MO | id: xxxxxxxx`.
+  Κοινό `id` = μία υπενθύμιση. Τα παλιά events (v1) διαβάζονται (παραλήπτης chris).
+- Παραλήπτες: `chris`, `nefeli`, `alex`. Χάρτης παραλήπτη → κινητό / χώρος στο «Reminders - Notify»
+  (`packages/shared/shared_reminders.yaml`). Νεφέλη/Αλεξάνδρα: μόνο ηχείο μέχρι να μπουν τα notify entities τους.
+  Ήσυχες ώρες 22:00–08:00: μόνο push.
+- Scripts του Gemini (exposed): «Reminder - Create / Find / Update / Delete» (`script.reminder_*`).
+  Το `docs/prompts/common_assistant.txt` είναι παλιό (αναφέρει τα `*_chris`), δεν χρησιμοποιείται.
 
 ### Shopping list
 
-- `todo.shopping_list`. Scripts: «Shopping List - Add Items», «Shopping List - Read Items».
+- `todo.shopping_list`. Scripts: «Shopping List - Add Items», «- Read Items», «- Remove Items» (τα σημειώνει completed). Φωνή: τοπικά, όλοι οι χώροι.
 - Στόχος:
   - «βάλε γάλα ψωμί και τυρί στη λίστα» → προστίθενται και τα τρία.
   - «τι έχω στη λίστα για ψώνια;» → διαβάζει τη λίστα.
