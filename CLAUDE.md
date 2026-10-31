@@ -164,9 +164,10 @@
   με skip στο 26.9.0. Μην κάνεις update στα Voice PE χωρίς δοκιμή. Wake sound OFF στον Pink.
 - **Selectors σε script fields:** ποτέ κενό `{}` (π.χ. `area: {}`, `object: {}`). Το HA το απορρίπτει
   («Only one type can be specified») και απενεργοποιεί το script. Γράφεται `object:` (χωρίς τιμή) ή `area:` + `multiple: false`.
-- **Χωρίς συνδρομή Home Assistant Cloud (από 2026-10-25):** STT = **Google AI STT** (el-GR), TTS = **Google Translate** (`tts.google_translate_en_com`, el).
-  Google AI STT: δωρεάν όριο Gemini → περιστασιακά `stt-stream-failed`, αργό, πιθανά hallucinations. Λύσεις αν ενοχλεί: billing στο API key ή Google Cloud STT.
-  Ο Pink έχει δικό του pipeline «Pink Radio» (τοπικός agent, Google AI STT, Google Translate TTS).
+- **Συνδρομή Home Assistant Cloud (Nabu Casa, ετήσια από 2026-10-25):** όλα τα pipelines σε STT = `stt.home_assistant_cloud`,
+  TTS = `tts.home_assistant_cloud` (Athina· Nestoras για Alex/Nefeli Gemini). Το HA Cloud STT γράφει συχνά χωρίς τόνους.
+  Εναλλακτική αν λήξει: Google AI STT (δωρεάν όριο Gemini → `stt-stream-failed`, αργό) + Google Translate TTS.
+  Ο Pink έχει δικό του pipeline «Pink Radio» (τοπικός agent, HA Cloud STT/TTS).
 - **Δύο automations στην ίδια φράση:** το HA εκτελεί ΕΝΑ, όχι απαραίτητα το πιο συγκεκριμένο (2026-10-25: το «σκούπισε … το pink
   radio» πήγε στη σκούπα σπιτιού με `{rooms}` και όχι στην κοινή). Μια φράση με wildcard
   (`{rooms}`, `{song}`) πιάνει σχεδόν τα πάντα: ό,τι αφορά το ίδιο θέμα μπαίνει στο ΙΔΙΟ trigger, αλλιώς condition σε
@@ -202,7 +203,7 @@ Media players: `media_player.jbl_nest`, `media_player.nefeli_room`, `media_playe
 ### TTS
 
 - `tts.google_translate_en_com` με `language: el` δουλεύει για direct TTS σε Google Cast / Nest.
-- Το `script.voice_speak` χρησιμοποιεί **`tts.google_translate_en_com`, `language: el`** (χωρίς συνδρομή Cloud από 2026-10-25).
+- Το `script.voice_speak` χρησιμοποιεί **`tts.google_translate_en_com`, `language: el`** (έμεινε από το διάστημα χωρίς Cloud· δουλεύει, δεν αλλάχτηκε).
 - Για ανακοινώσεις είναι πιο αξιόπιστο το explicit `tts.speak` από το να βασιζόμαστε στο output routing του Assist:
 
   ```yaml
@@ -220,7 +221,7 @@ Media players: `media_player.jbl_nest`, `media_player.nefeli_room`, `media_playe
 
 ### STT
 
-- `stt.google_ai_stt` σε `el-GR`.
+- `stt.home_assistant_cloud` σε `el-GR` (σε όλα τα pipelines).
 - Έχει υπάρξει σοβαρό STT hallucination: το «σκούπισε το σαλόνι», ειπωμένο σε απόλυτη ησυχία, έγινε
   ολόκληρη άσχετη ελληνική παράγραφος.
 - **Debug:** όταν ένα voice automation δεν ενεργοποιείται, ελέγχουμε κάθε στάδιο χωριστά και δεν θεωρούμε
@@ -298,8 +299,8 @@ Media players: `media_player.jbl_nest`, `media_player.nefeli_room`, `media_playe
   `Ραντεβού/γεγονός: dd/mm/YYYY HH:MM | για: chris,nefeli | πριν: 60 | επανάληψη: weekly | μέρες: MO | id: xxxxxxxx`.
   Κοινό `id` = μία υπενθύμιση. Τα παλιά events (v1) διαβάζονται (παραλήπτης chris).
 - Παραλήπτες: `chris`, `nefeli`, `alex`. Χάρτης παραλήπτη → κινητό / χώρος στο «Reminders - Notify»
-  (`packages/shared/shared_reminders.yaml`). Νεφέλη/Αλεξάνδρα: μόνο ηχείο μέχρι να μπουν τα notify entities τους.
-  Ήσυχες ώρες 22:00–08:00: μόνο push.
+  (`packages/shared/shared_reminders.yaml`). Νεφέλη/Αλεξάνδρα: μόνο ηχείο (απόφαση 2026-10-31, χωρίς Companion app).
+  Ήσυχες ώρες 22:00–08:00: μόνο push· των παιδιών πάνε στο κινητό του Χρήστου («Υπενθύμιση για Νεφέλη»).
 - Scripts του Gemini (exposed): «Reminder - Create / Find / Update / Delete» (`script.reminder_*`).
   Το `docs/prompts/common_assistant.txt` είναι παλιό (αναφέρει τα `*_chris`), δεν χρησιμοποιείται.
 

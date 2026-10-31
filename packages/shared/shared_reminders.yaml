@@ -6,7 +6,7 @@
 #
 # Scripts = εργαλεία του Gemini (exposed): Reminder - Create / Find / Update / Delete.
 # Automation «Reminders - Notify»: στην ώρα της ειδοποίησης → push στο κινητό + φωνή στο ηχείο του δωματίου
-# κάθε παραλήπτη. Ήσυχες ώρες 22:00–08:00: μόνο push.
+# κάθε παραλήπτη. Ήσυχες ώρες 22:00–08:00: μόνο push (όποιος δεν έχει κινητό → push στον Χρήστο).
 
 automation:
 - id: shared_reminders_notify
@@ -22,11 +22,13 @@ automation:
   conditions: []
   actions:
   - variables:
-      # Παραλήπτης → κινητό (notify entity, κενό = χωρίς push ακόμα) και χώρος για το ηχείο (script.voice_speak)
+      # Παραλήπτης → κινητό (notify entity, κενό = χωρίς push) και χώρος για το ηχείο (script.voice_speak).
+      # Νεφέλη/Αλεξάνδρα: μόνο ηχείο (απόφαση 2026-10-31). Στις ήσυχες ώρες → push στο fallback (Χρήστος).
       people:
-        chris: {notify: notify.chris_smartphone, area: living_room}
-        nefeli: {notify: "", area: nefeli_room}
-        alex: {notify: "", area: alex_room}
+        chris: {name: Χρήστο, notify: notify.chris_smartphone, area: living_room}
+        nefeli: {name: Νεφέλη, notify: "", area: nefeli_room}
+        alex: {name: Αλεξάνδρα, notify: "", area: alex_room}
+      fallback_notify: notify.chris_smartphone
       desc: "{{ trigger.calendar_event.description | default('') }}"
       text: "{{ trigger.calendar_event.summary }}"
       recipients: >-
@@ -58,6 +60,16 @@ automation:
             entity_id: "{{ p.notify }}"
           data:
             title: Υπενθύμιση
+            message: "{{ message }}"
+      # Χωρίς κινητό και ήσυχες ώρες: αλλιώς η υπενθύμιση θα χανόταν
+      - if: "{{ p.get('notify', '') == '' and quiet }}"
+        then:
+        - action: notify.send_message
+          continue_on_error: true
+          target:
+            entity_id: "{{ fallback_notify }}"
+          data:
+            title: "Υπενθύμιση για {{ p.get('name', repeat.item) }}"
             message: "{{ message }}"
       - if: "{{ p.get('area', '') != '' and not quiet }}"
         then:
