@@ -17,7 +17,7 @@
 | 9 | Pipelines: local + Gemini, ελληνικό prompt με φιλικό ύφος, διαδικασία debug για το STT | ✅ | STT: HA Cloud παντού (απόφαση χρήστη). Φράσεις ανθεκτικές: προαιρετική πρόθεση, παραλλαγές χωρίς τόνο (`tools/accent_variants.py`), templates χωρίς τόνους. `tools/voice_debug.py`, `tools/pipelines_dump.py`. Νέο `docs/prompts/home_gemini.txt` (ελληνικό). Εκκρεμεί: επικόλληση prompt, Relaxed στα Voice PE |
 | 10 | Shopping list: πολλαπλά items και ανάγνωση | ✅ | `shared_shopping.yaml`: τοπικές φωνητικές εντολές (πρόσθεσε / τι έχει / πήρα-σβήσε), scripts Add/Read/Remove με response, χωρίς διπλότυπα, σύγκριση χωρίς τόνους |
 | 11 | Reminders v2: recurring, πολλαπλοί χρόνοι ειδοποίησης, recipient, αλλαγή υπάρχοντος | 🔄 | `reminder_manager` v2 + scripts Create/Find/Update/Delete + «Reminders - Notify» (κινητό + ηχείο). Παραλήπτες chris/nefeli/alex (παιδιά: μόνο ηχείο). Εκκρεμεί: δοκιμή |
-| 12 | Dashboards: νέα dashboards για `home` και `pinkradio` | 🔄 | Προτεραιότητα του χρήστη (πριν από 10/11). Πρώτη έκδοση «Σπίτι»: μόνο σκούπα, για κινητό (`docs/lovelace_home.yaml`, helpers στο `home_vacuum.yaml`) |
+| 12 | Dashboards: νέα dashboards για `home` και `pinkradio` | ✅ | «Pink Radio» εγκατεστημένο (`docs/lovelace_pink_radio.yaml`). «Σπίτι»: δεν χρειάζεται προς το παρόν (απόφαση χρήστη 2026-10-31). Το `docs/lovelace_home.yaml` (σκούπα, για κινητό) μένει έτοιμο, μη εγκατεστημένο |
 | 13 | Satellite Σάρας (όταν έρθει) | ⬜ | |
 
 ## Ημερολόγιο
@@ -43,3 +43,4 @@
 - 2026-10-25 — Ξανά συνδρομή Nabu Casa (ετήσια): πίσω σε HA Cloud STT/TTS. Bug: δύο automations στην ίδια φράση → το HA διάλεξε το λάθος. «Home Vacuum - Voice Clean» → μέσα στο trigger clean του `shared_vacuum`. Condition στο Music Assistant. Νέο `tools/voice_overlaps.py`.
 - 2026-10-25 — Βήμα 10 ολοκληρώθηκε. Η λίστα δουλεύει από όλους τους χώρους, χωρίς LLM.
 - 2026-10-31 — Βήμα 11: Νεφέλη/Αλεξάνδρα χωρίς Companion app και χωρίς χρήστη HA → υπενθυμίσεις μόνο από το ηχείο του δωματίου τους.
+- 2026-10-31 — Βήμα 12 κλείνει με το dashboard «Pink Radio». Το «Σπίτι» δεν εγκαθίσταται τώρα.
