@@ -147,6 +147,7 @@
 | Studio Onyx Console | `switch.pinkradio_onyx_console` | `switch.pink_radio_plug6` |
 | Studio KRK Right | `switch.pinkradio_krk_right` | `switch.pink_radio_plug7` |
 | Studio Guitar Amp | `switch.pinkradio_guitar_amp` | `switch.pink_radio_plug8` |
+| Studio Guitar Pedals | `switch.pinkradio_guitar_pedals` | (νέο, plug9, 192.168.1.157) |
 | Studio LED Main | `light.pinkradio_led_main` | `light.pink_radio_led_main` |
 | Studio LED Drums | `light.pinkradio_led_drums` | `light.pink_radio_led_drums` |
 | Home Vacuum | `vacuum.home_vacuum` | (ίδιο) |
@@ -281,7 +282,8 @@ Media players: `media_player.jbl_nest`, `media_player.nefeli_room`, `media_playe
 
 - LED: `light.pinkradio_led_main`, `light.pinkradio_led_drums`.
 - Shelly plugs: `switch.pinkradio_*` (βλ. πίνακα naming).
-  Λογική: plug1 KRK αριστερό, plug2 neon ON AIR, plug3 neon Anarchy, plug4 neon Thunder, plug5 neon Pink Radio, plug6 κονσόλα Onyx12, plug7 KRK δεξί, plug8 ενισχυτής κιθάρας.
+  Λογική: plug1 KRK αριστερό, plug2 neon ON AIR, plug3 neon Anarchy, plug4 neon Thunder, plug5 neon Pink Radio, plug6 κονσόλα Onyx12, plug7 KRK δεξί, plug8 ενισχυτής κιθάρας, plug9 πετάλια κιθάρας.
+  «Ο ενισχυτής» στη φωνή ανοίγει/κλείνει μαζί και τα πετάλια (plug8 + plug9).
 - Φωνή: trigger ids `<target>__on/off`. «τον ήχο» χωρίς «στο στούντιο» δεν πιάνει (στο σαλόνι θα έκλεινε το studio αντί για την TV).
 - Scripts:
 

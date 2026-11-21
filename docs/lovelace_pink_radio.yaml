@@ -102,6 +102,17 @@ views:
         columns: 6
         rows: 1
     - type: tile
+      entity: switch.pinkradio_guitar_pedals
+      name: Πετάλια κιθάρας
+      icon: mdi:guitar-pick
+      tap_action:
+        action: toggle
+      icon_tap_action:
+        action: toggle
+      grid_options:
+        columns: 6
+        rows: 1
+    - type: tile
       entity: switch.pinkradio_krk_left
       name: KRK αριστερό
       icon: mdi:speaker
@@ -491,6 +502,8 @@ views:
         name: KRK δεξί
       - entity: sensor.pinkradio_guitar_amp_power
         name: Ενισχυτής
+      - entity: sensor.pinkradio_guitar_pedals_power
+        name: Πετάλια
       - entity: sensor.pinkradio_neon_onair_power
         name: Neon ON AIR
       - entity: sensor.pinkradio_neon_logo_power

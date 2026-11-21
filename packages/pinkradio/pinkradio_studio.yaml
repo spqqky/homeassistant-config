@@ -4,7 +4,8 @@
 # Παραλλαγές inline (οι λίστες του custom_sentences ΔΕΝ λειτουργούν στα triggers).
 # «τον ήχο» θέλει πάντα «στο στούντιο», για να μην κλείνει το studio όταν στο σαλόνι εννοείς την TV.
 # Πρίζες: plug1 KRK αριστερό · plug2 ON AIR · plug3 Anarchy · plug4 Thunder · plug5 Pink Radio (logo)
-#         plug6 κονσόλα Onyx · plug7 KRK δεξί · plug8 ενισχυτής κιθάρας
+#         plug6 κονσόλα Onyx · plug7 KRK δεξί · plug8 ενισχυτής κιθάρας · plug9 πετάλια κιθάρας (192.168.1.157)
+# «ο ενισχυτής» ανοίγει/κλείνει μαζί και τα πετάλια (plug8 + plug9).
 
 automation:
 - id: pinkradio_voice_studio
@@ -90,11 +91,11 @@ automation:
   - trigger: conversation
     id: amp__on
     command:
-    - "((άναψε|αναψε)|(ανάψε|αναψε)|(άνοιξε|ανοιξε)|(ανοίξε|ανοιξε)|(ενεργοποίησε|ενεργοποιησε)) (τον (ενισχυτή|ενισχυτη) [(κιθάρας|κιθαρας)]|τον (κιθαριστικό|κιθαριστικο) (ενισχυτή|ενισχυτη)|τον ((μάρσαλ|μαρσαλ)|marshal|marshall)|την (κιθάρα|κιθαρα)) [(στο|του|στον) ((στούντιο|στουντιο)|studio|pink radio)]"
+    - "((άναψε|αναψε)|(ανάψε|αναψε)|(άνοιξε|ανοιξε)|(ανοίξε|ανοιξε)|(ετοίμασε|ετοιμασε|ετοιμασέ)|(ενεργοποίησε|ενεργοποιησε)) (τον (ενισχυτή|ενισχυτη) [(κιθάρας|κιθαρας|κιθαράς)]|τον (κιθαριστικό|κιθαριστικο) (ενισχυτή|ενισχυτη)|τον ((μάρσαλ|μαρσαλ)|marshal|marshall)|την (κιθάρα|κιθαρα)) [(στο|του|στον) ((στούντιο|στουντιο)|studio|pink radio)]"
   - trigger: conversation
     id: amp__off
     command:
-    - "((κλείσε|κλεισε)|(σβήσε|σβησε)|(σβήσαι|σβησαι)|(σβήστε|σβηστε)|(απενεργοποίησε|απενεργοποιησε)) (τον (ενισχυτή|ενισχυτη) [(κιθάρας|κιθαρας)]|τον (κιθαριστικό|κιθαριστικο) (ενισχυτή|ενισχυτη)|τον ((μάρσαλ|μαρσαλ)|marshal|marshall)|την (κιθάρα|κιθαρα)) [(στο|του|στον) ((στούντιο|στουντιο)|studio|pink radio)]"
+    - "((κλείσε|κλεισε)|(σβήσε|σβησε)|(σβήσαι|σβησαι)|(σβήστε|σβηστε)|(απενεργοποίησε|απενεργοποιησε)) (τον (ενισχυτή|ενισχυτη) [(κιθάρας|κιθαρας|κιθαράς)]|τον (κιθαριστικό|κιθαριστικο) (ενισχυτή|ενισχυτη)|τον ((μάρσαλ|μαρσαλ)|marshal|marshall)|την (κιθάρα|κιθαρα)) [(στο|του|στον) ((στούντιο|στουντιο)|studio|pink radio)]"
   - trigger: conversation
     id: studio__on
     command:
@@ -128,7 +129,7 @@ automation:
         console: switch.pinkradio_onyx_console
         krk_left: switch.pinkradio_krk_left
         krk_right: switch.pinkradio_krk_right
-        amp: switch.pinkradio_guitar_amp
+        amp: [switch.pinkradio_guitar_amp, switch.pinkradio_guitar_pedals]
       names:
         neon_all: τα neon
         neon_onair: το ON AIR
@@ -139,7 +140,7 @@ automation:
         krk_left: το αριστερό KRK
         krk_right: το δεξί KRK
         audio: την κονσόλα και τα ηχεία
-        amp: τον ενισχυτή κιθάρας
+        amp: τον ενισχυτή κιθάρας και τα πετάλια
   - choose:
     - conditions: '{{ target == ''studio'' }}'
       sequence:
@@ -264,6 +265,7 @@ script:
           target:
             entity_id:
             - light.pinkradio_led_main
+            - light.pinkradio_led_drums
           data:
             rgb_color:
             - 226
@@ -278,6 +280,7 @@ script:
           target:
             entity_id:
             - light.pinkradio_led_main
+            - light.pinkradio_led_drums
         - action: script.pinkradio_neon_control
           data:
             action: 'off'
